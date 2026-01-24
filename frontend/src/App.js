@@ -11,11 +11,15 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import TutorRegister from './pages/TutorRegister';
 import TutorLogin from './pages/TutorLogin';
 import ProtectedTutorRoute from './components/ProtectedTutorRoute';
-import EnhancedTutorsList from './pages/EnhancedTutorsList';
-import EnhancedTutorProfile from './pages/EnhancedTutorProfile';
 import AdminLogin from './pages/AdminLogin';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import { AdminProvider } from './context/AdminContext';
+import HomePage from './pages/HomePage';
+import ModernNavbar from './components/ModernNavbar';
+import ModernTutorsList from './pages/ModernTutorsList';
+import EnhancedTutorProfile from './pages/EnhancedTutorProfile';
+import FavoriteTutors from './pages/FavoriteTutors';
+import './styles/modern.css';
 
 // Student Pages
 import StudentDashboard from './pages/StudentDashboard';
@@ -55,6 +59,7 @@ import AdminAnalytics from './pages/AdminAnalytics';
 import { ThemeProvider } from './context/ThemeContext';
 
 import './index.css';
+import './styles/modern.css';
 
 const RedirectIfAuthed = ({ children }) => {
   const { user, role } = useAuth();
@@ -65,6 +70,7 @@ const RedirectIfAuthed = ({ children }) => {
 
 function App() {
   const router = createBrowserRouter([
+    { path: '/', element: <HomePage /> },
     {
       path: '/register',
       element: (
@@ -111,8 +117,9 @@ function App() {
     { path: '/announcements', element: <ProtectedRoute><Announcements /></ProtectedRoute> },
     
     // Public Tutor Pages
-    { path: '/tutors', element: <EnhancedTutorsList /> },
+    { path: '/tutors', element: <ModernTutorsList /> },
     { path: '/tutors/:id', element: <EnhancedTutorProfile /> },
+    { path: '/student/favorites', element: <ProtectedRoute><FavoriteTutors /></ProtectedRoute> },
     
     // Tutor Auth Routes
     { path: '/tutor/register', element: <AuthLayout><TutorRegister /></AuthLayout> },
@@ -155,6 +162,7 @@ function App() {
     <ThemeProvider>
       <AdminProvider>
         <AuthProvider>
+          <ModernNavbar />
           <RouterProvider router={router} />
         </AuthProvider>
       </AdminProvider>
