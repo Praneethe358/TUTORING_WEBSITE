@@ -104,9 +104,15 @@ io.on('connection', (socket) => {
 // Middleware
 app.use(enforceHTTPS); // HTTPS enforcement in production
 
-// Allow localhost variants for development
+// CORS - allow frontend access
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', process.env.CLIENT_URL || 'http://localhost:3000'],
+  origin: [
+    'http://localhost:3000', 
+    'http://localhost:3001', 
+    'http://localhost:3002',
+    'https://hope-tuitions-frontend.onrender.com',
+    process.env.CLIENT_URL
+  ].filter(Boolean),
   credentials: true
 }));
 
