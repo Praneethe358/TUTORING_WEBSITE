@@ -117,7 +117,7 @@ const StudentDashboard = () => {
   return (
     <StudentDashboardLayout>
       {/* Header with Welcome Message */}
-      <div className="mb-6 md:mb-8 bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
+      <div className="student-dashboard-header mb-6 md:mb-8 bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
         <div className="flex items-center gap-4 md:gap-6">
           <div className="flex-shrink-0">
             {user?.avatar ? (
@@ -144,7 +144,7 @@ const StudentDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 mb-4 md:mb-8">
+      <div className="student-stats-grid grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 mb-4 md:mb-8">
         <StatCard
           icon="📚"
           label="Total Classes"
@@ -175,7 +175,7 @@ const StudentDashboard = () => {
         />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="student-main-grid grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content - 2 columns */}
         <div className="lg:col-span-2 space-y-6">
           {/* Upcoming Classes */}

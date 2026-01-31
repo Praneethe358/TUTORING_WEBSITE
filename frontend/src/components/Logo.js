@@ -16,7 +16,7 @@ const Logo = ({ size = 300, withText = false }) => {
 
       {withText && (
         <span
-          className="text-xs sm:text-sm md:text-lg font-bold leading-tight"
+          className="logo-text text-xs sm:text-sm md:text-lg font-bold leading-tight"
           style={{
             letterSpacing: '-0.2px',
             color: colors.textPrimary,

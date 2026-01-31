@@ -11,32 +11,35 @@ import Logo from './Logo';
 const DashboardLayout = ({ sidebar: Sidebar, children, themeClass = '' }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  return (
-    <div
-      className={themeClass}
-      style={{
-        display: 'flex',
-        height: '100vh',
-        backgroundColor: colors.bgSecondary,
-        fontFamily: typography.fontFamily.base,
-        overflow: 'hidden',
-      }}
-    >
-      {/* Mobile Overlay */}
-      {sidebarOpen && (
         <div
-          onClick={() => setSidebarOpen(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 45,
-          }}
-          className="block md:hidden"
-        />
-      )}
-
-      {/* Sidebar - Desktop (always visible) */}
+          className="dashboard-header"
+          style={
+            {
+              position: 'sticky',
+              top: 0,
+              zIndex: 40,
+              backgroundColor: colors.white,
+              boxShadow: shadows.md,
+              borderBottom: `1px solid ${colors.gray200}`,
+              backdropFilter: 'blur(8px)',
+            }
+          }
+        >
+          <div
+            className="dashboard-header-inner"
+            style={
+              {
+                maxWidth: '1200px',
+                margin: '0 auto',
+                padding: `${spacing.md} ${spacing.lg}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: spacing.md,
+              }
+            }
+          >
+            <div className="dashboard-header-brand" style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
       <div className="hidden md:block" style={{ width: 260, flexShrink: 0 }}>
         <Sidebar />
       </div>
@@ -94,7 +97,7 @@ const DashboardLayout = ({ sidebar: Sidebar, children, themeClass = '' }) => {
                 </svg>
               </button>
               {/* Brand Logo */}
-              <Logo size={64} withText={true} />
+              <Logo size={56} withText={true} />
             </div>
             <NotificationBell />
           </div>

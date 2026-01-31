@@ -99,6 +99,39 @@
     margin-left: 0 !important;
     padding: 12px !important;
   }
+
+  /* Dashboard Header */
+  .dashboard-header-inner {
+    padding: 10px 14px !important;
+  }
+
+  .dashboard-header-brand {
+    flex: 1 !important;
+    min-width: 0 !important;
+    justify-content: flex-start !important;
+  }
+
+  .logo-text {
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    display: block !important;
+    text-align: left !important;
+  }
+
+  /* Student Dashboard */
+  .student-dashboard-header .flex {
+    align-items: flex-start !important;
+  }
+
+  .student-stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .student-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
   
   /* Stats Cards */
   .stats-card, [class*="stat"] {
