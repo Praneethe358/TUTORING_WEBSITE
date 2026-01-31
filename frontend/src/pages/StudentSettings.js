@@ -276,15 +276,15 @@ const SettingToggle = ({ label, description, checked, onChange }) => (
         e.stopPropagation();
         onChange();
       }}
-      className={`relative inline-flex h-6 w-11 sm:h-7 sm:w-12 items-center rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex-shrink-0 ${
+      className={`relative inline-flex h-5 w-9 sm:h-7 sm:w-12 items-center rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex-shrink-0 ${
         checked 
           ? 'bg-indigo-600 hover:bg-indigo-700 shadow-md' 
           : 'bg-gray-300 hover:bg-gray-400'
       }`}
     >
       <span
-        className={`inline-block h-5 w-5 sm:h-5 sm:w-5 transform rounded-full bg-white shadow-lg transition-transform duration-300 ease-in-out ${
-          checked ? 'translate-x-5 sm:translate-x-6' : 'translate-x-0.5 sm:translate-x-0.5'
+        className={`inline-block h-4 w-4 sm:h-5 sm:w-5 transform rounded-full bg-white shadow-lg transition-transform duration-300 ease-in-out ${
+          checked ? 'translate-x-4 sm:translate-x-6' : 'translate-x-0.5 sm:translate-x-0.5'
         }`}
       />
     </button>
