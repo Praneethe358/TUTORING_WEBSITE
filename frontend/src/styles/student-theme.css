@@ -1,0 +1,97 @@
+.student-theme {
+  background-color: #F7F1E8;
+  color: #2D221D;
+}
+
+/* Lighten legacy slate backgrounds to the beige/white palette */
+.student-theme .bg-slate-900,
+.student-theme .bg-slate-800,
+.student-theme .bg-slate-700,
+.student-theme [class*="bg-slate-9"],
+.student-theme [class*="bg-slate-8"],
+.student-theme [class*="bg-slate-7"] {
+  background-color: #FFFFFF !important;
+  color: #2D221D !important;
+}
+
+/* Borders and dividers */
+.student-theme .border-slate-900,
+.student-theme .border-slate-800,
+.student-theme .border-slate-700,
+.student-theme .border-slate-600,
+.student-theme .divide-slate-700 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #E6D9CC !important;
+}
+
+/* Text colors */
+.student-theme .text-slate-100,
+.student-theme .text-slate-200,
+.student-theme .text-slate-300,
+.student-theme .text-white {
+  color: #2D221D !important;
+}
+
+.student-theme .text-slate-400 { color: #5F5146 !important; }
+.student-theme .text-slate-500 { color: #9F8A77 !important; }
+
+/* Primary/Accent replacements for indigo/blue variants */
+.student-theme .bg-indigo-600,
+.student-theme .bg-blue-600,
+.student-theme .bg-purple-600,
+.student-theme .bg-orange-600 {
+  background-color: #C2956B !important;
+  color: #2D221D !important;
+  border-color: #A1744D !important;
+}
+.student-theme .hover\:bg-indigo-500:hover,
+.student-theme .hover\:bg-blue-500:hover,
+.student-theme .hover\:bg-purple-500:hover,
+.student-theme .hover\:bg-orange-500:hover {
+  background-color: #A1744D !important;
+}
+
+/* Badges and pills */
+.student-theme .bg-blue-900,
+.student-theme .bg-indigo-900 {
+  background-color: #3A2F2A !important;
+  color: #F8F3EC !important;
+}
+.student-theme .text-blue-300,
+.student-theme .text-indigo-400 { color: #C2956B !important; }
+
+/* Hover slate accents */
+.student-theme .hover\:bg-slate-700:hover,
+.student-theme .hover\:bg-slate-800:hover,
+.student-theme .hover\:bg-slate-900:hover,
+.student-theme .hover\:bg-slate-700\/50:hover,
+.student-theme .hover\:bg-slate-700\/30:hover {
+  background-color: #F1E8DE !important;
+}
+
+/* Tables */
+.student-theme thead.bg-slate-900,
+.student-theme thead.bg-slate-800 {
+  background-color: #F8F3EC !important;
+}
+
+/* Inputs on dark slate */
+.student-theme input.bg-slate-900,
+.student-theme textarea.bg-slate-900,
+.student-theme select.bg-slate-900 {
+  background-color: #FFFFFF !important;
+  color: #2D221D !important;
+  border-color: #E6D9CC !important;
+}
+
+/* Chat/message panels that used slate tints */
+.student-theme .bg-slate-700,
+.student-theme .bg-slate-700\/50,
+.student-theme .bg-slate-700\/30 {
+  background-color: #F7F1E8 !important;
+  color: #2D221D !important;
+}
+
+/* Accent chips */
+.student-theme .bg-green-900 { background-color: #E5F4EC !important; color: #14532D !important; }
+.student-theme .bg-yellow-900 { background-color: #FCEED5 !important; color: #8A6B2F !important; }
+.student-theme .bg-red-900 { background-color: #FDE7E7 !important; color: #8C1C1C !important; }

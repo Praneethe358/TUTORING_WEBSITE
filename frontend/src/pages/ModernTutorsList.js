@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
-import { Button, Container, Grid, Card, Badge, LoadingSpinner, SectionHeading } from '../components/ModernUI';
+import { Button, Container, Grid, Card, Badge, SectionHeading } from '../components/ModernUI';
 import { FavoriteButton } from '../components/FavoriteButton';
 import { ShareButton } from '../utils/socialSharing';
+import CourseraNavbar from '../components/CourseraNavbar';
 import { colors, typography, spacing } from '../theme/designSystem';
 
 const ModernTutorsListPage = () => {
@@ -18,13 +19,14 @@ const ModernTutorsListPage = () => {
 
   useEffect(() => {
     fetchTutors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const fetchTutors = async () => {
     try {
       setLoading(true);
       const response = await api.get('/tutor/public');
-      let filtered = response.data;
+      let filtered = Array.isArray(response.data) ? response.data : [];
 
       if (filters.subject) {
         filtered = filtered.filter(t => 
@@ -44,17 +46,20 @@ const ModernTutorsListPage = () => {
       setTutors(filtered);
     } catch (err) {
       console.error('Error fetching tutors:', err);
+      setTutors([]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ background: colors.bgSecondary, minHeight: '100vh', paddingTop: '80px' }}>
-      <Container style={{ paddingTop: spacing['3xl'], paddingBottom: spacing['3xl'] }}>
-        <SectionHeading
-          title="Find Your Perfect Tutor"
-          subtitle="Connect with expert tutors in 500+ subjects"
+    <>
+      <CourseraNavbar />
+      <div style={{ background: colors.bgSecondary, minHeight: '100vh', paddingTop: '80px' }}>
+        <Container style={{ paddingTop: spacing['3xl'], paddingBottom: spacing['3xl'] }}>
+          <SectionHeading
+            title="Find Your Perfect Tutor"
+            subtitle="Connect with expert tutors in 500+ subjects"
           centered
         />
 
@@ -114,7 +119,16 @@ const ModernTutorsListPage = () => {
 
         {loading ? (
           <div style={{ textAlign: 'center', padding: spacing['3xl'] }}>
-            <LoadingSpinner />
+            <div style={{
+              display: 'inline-block',
+              width: '48px',
+              height: '48px',
+              border: `4px solid ${colors.gray200}`,
+              borderTop: `4px solid ${colors.accent}`,
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+            }} />
+            <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
           </div>
         ) : (
           <>
@@ -134,24 +148,18 @@ const ModernTutorsListPage = () => {
                     width: '80px',
                     height: '80px',
                     borderRadius: '50%',
-                    background: `linear-gradient(135deg, ${colors.accent} 0%, ${colors.accentDark} 100%)`,
+                    background: tutor.avatar
+                      ? `url(http://localhost:5000${tutor.avatar}) center/cover no-repeat`
+                      : `linear-gradient(135deg, ${colors.accent} 0%, ${colors.accentDark} 100%)`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: '40px',
                     marginBottom: spacing.lg,
                     color: colors.white,
+                    fontWeight: typography.fontWeight.bold,
                   }}>
-                    {tutor.avatar ? (
-                      <img src={tutor.avatar} alt={tutor.name} style={{
-                        width: '100%',
-                        height: '100%',
-                        borderRadius: '50%',
-                        objectFit: 'cover',
-                      }} />
-                    ) : (
-                      tutor.name.charAt(0).toUpperCase()
-                    )}
+                    {!tutor.avatar && tutor.name.charAt(0).toUpperCase()}
                   </div>
 
                   {/* Name & Rating */}
@@ -237,6 +245,7 @@ const ModernTutorsListPage = () => {
         )}
       </Container>
     </div>
+    </>
   );
 };
 

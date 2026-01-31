@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import FormInput from '../components/FormInput';
+import { CourseraInput, CourseraButton, CourseraAlert } from '../components/CourseraCard';
+import { colors, typography, spacing } from '../theme/designSystem';
 
-const TutorLogin = () => {
+const TutorLogin = ({ inline = false, onLoginSuccess }) => {
   const navigate = useNavigate();
   const { tutorLogin } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
@@ -18,6 +19,9 @@ const TutorLogin = () => {
     setLoading(true);
     try {
       await tutorLogin(form.email, form.password);
+            if (onLoginSuccess) {
+              onLoginSuccess();
+            }
       navigate('/tutor/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
@@ -28,20 +32,50 @@ const TutorLogin = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1 className="text-2xl font-semibold text-center mb-6">Tutor Login</h1>
-      {error && <div className="mb-4 text-sm text-red-400">{error}</div>}
-      <FormInput label="Email" name="email" type="email" value={form.email} onChange={onChange} required placeholder="tutor@example.com" />
-      <FormInput label="Password" name="password" type="password" value={form.password} onChange={onChange} required placeholder="••••••••" />
-      <button type="submit" disabled={loading} className="w-full py-3 mt-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition disabled:opacity-60">
+      {!inline && (
+        <h1 style={{
+          fontSize: typography.fontSize['2xl'],
+          fontWeight: typography.fontWeight.semibold,
+          textAlign: 'center',
+          marginBottom: spacing.xl,
+          color: colors.textPrimary,
+        }}>
+          Tutor Login
+        </h1>
+      )}
+      {error && <CourseraAlert type="error" onClose={() => setError('')}>{error}</CourseraAlert>}
+      <CourseraInput label="Email" name="email" type="email" value={form.email} onChange={onChange} required placeholder="tutor@example.com" />
+      <CourseraInput label="Password" name="password" type="password" value={form.password} onChange={onChange} required placeholder="••••••••" />
+      <CourseraButton
+        type="submit"
+        disabled={loading}
+        fullWidth={true}
+        style={{ marginTop: spacing.md }}
+      >
         {loading ? 'Signing in...' : 'Sign In'}
-      </button>
-      <div className="text-sm text-slate-400 mt-4 flex justify-between">
-        <Link className="text-indigo-400" to="/forgot-password">Forgot password?</Link>
-        <Link className="text-indigo-400" to="/tutor/register">Create account</Link>
-      </div>
-      <div className="text-xs text-slate-400 mt-3 text-center">
-        Student? <Link className="text-indigo-400" to="/login">Go to student login</Link> | Admin? <Link className="text-indigo-400" to="/admin/login">Go to admin login</Link>
-      </div>
+      </CourseraButton>
+      {!inline && (
+        <>
+          <div style={{
+            fontSize: typography.fontSize.sm,
+            color: colors.textSecondary,
+            marginTop: spacing.lg,
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}>
+            <Link to="/forgot-password" style={{ color: colors.accent, textDecoration: 'none' }}>Forgot password?</Link>
+            <Link to="/tutor/register" style={{ color: colors.accent, textDecoration: 'none' }}>Create account</Link>
+          </div>
+          <div style={{
+            fontSize: typography.fontSize.xs,
+            color: colors.textTertiary,
+            marginTop: spacing.md,
+            textAlign: 'center',
+          }}>
+            Student? <Link to="/login" style={{ color: colors.accent, textDecoration: 'none' }}>Go to student login</Link> | Admin? <Link to="/admin/login" style={{ color: colors.accent, textDecoration: 'none' }}>Go to admin login</Link>
+          </div>
+        </>
+      )}
     </form>
   );
 };

@@ -46,13 +46,18 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    if (role === 'tutor') {
-      await api.post('/tutor/logout');
-    } else {
-      await api.post('/student/logout');
+    try {
+      if (role === 'tutor') {
+        await api.post('/tutor/logout');
+      } else {
+        await api.post('/student/logout');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
     }
     setUser(null);
     setRole(null);
+    window.location.href = '/';
   };
 
   return (

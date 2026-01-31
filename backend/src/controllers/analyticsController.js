@@ -142,92 +142,264 @@ exports.getPlatformAnalytics = async (req, res) => {
   }
 };
 
-// @desc    Get tutor performance analytics
+// @desc    Export analytics summary as CSV
+// @route   GET /api/admin/export/analytics-report
+// @access  Private (Admin only)
+exports.exportAnalyticsReport = async (req, res) => {
+  try {
+    const { period = '30', startDate, endDate } = req.query;
+
+    const useCustomRange = startDate && endDate;
+    const dateFrom = useCustomRange ? new Date(startDate) : (() => {
+      const d = new Date();
+      d.setDate(d.getDate() - parseInt(period));
+      return d;
+    })();
+    const dateTo = useCustomRange ? new Date(endDate) : new Date();
+
+    const [
+      totalStudents,
+      totalTutors,
+      pendingTutors,
+      blockedTutors,
+      newStudents,
+      newTutors,
+      totalClasses,
+      completedClasses,
+      upcomingClasses,
+      cancelledClasses,
+      classesInPeriod,
+      totalAttendance,
+      presentCount,
+      absentCount,
+      totalCourses,
+      activeCourses,
+      pendingCourses,
+      totalMessages,
+      messagesInPeriod
+    ] = await Promise.all([
+      Student.countDocuments({ isActive: true }),
+      Tutor.countDocuments({ status: 'approved', isActive: true }),
+      Tutor.countDocuments({ status: 'pending' }),
+      Tutor.countDocuments({ status: 'blocked' }),
+      Student.countDocuments({ createdAt: { $gte: dateFrom, $lte: dateTo } }),
+      Tutor.countDocuments({ createdAt: { $gte: dateFrom, $lte: dateTo } }),
+      Class.countDocuments({}),
+      Class.countDocuments({ status: 'completed' }),
+      Class.countDocuments({ scheduledAt: { $gte: new Date() }, status: 'scheduled' }),
+      Class.countDocuments({ status: 'cancelled' }),
+      Class.countDocuments({ createdAt: { $gte: dateFrom, $lte: dateTo } }),
+      Attendance.countDocuments({}),
+      Attendance.countDocuments({ status: 'present' }),
+      Attendance.countDocuments({ status: 'absent' }),
+      Course.countDocuments({}),
+      Course.countDocuments({ status: 'approved' }),
+      Course.countDocuments({ status: 'pending' }),
+      Message.countDocuments({}),
+      Message.countDocuments({ createdAt: { $gte: dateFrom, $lte: dateTo } })
+    ]);
+
+    const attendanceRate = totalAttendance > 0 ? ((presentCount / totalAttendance) * 100).toFixed(2) : '0';
+
+    const rows = [
+      ['Metric', 'Value'],
+      ['Period Start', dateFrom.toISOString().split('T')[0]],
+      ['Period End', dateTo.toISOString().split('T')[0]],
+      ['Students (active)', totalStudents],
+      ['Students (new in period)', newStudents],
+      ['Tutors (active approved)', totalTutors],
+      ['Tutors (pending)', pendingTutors],
+      ['Tutors (blocked)', blockedTutors],
+      ['Tutors (new in period)', newTutors],
+      ['Classes (total)', totalClasses],
+      ['Classes (completed)', completedClasses],
+      ['Classes (upcoming)', upcomingClasses],
+      ['Classes (cancelled)', cancelledClasses],
+      ['Classes (created in period)', classesInPeriod],
+      ['Courses (total)', totalCourses],
+      ['Courses (approved)', activeCourses],
+      ['Courses (pending)', pendingCourses],
+      ['Attendance rate %', attendanceRate],
+      ['Messages (total)', totalMessages],
+      ['Messages (in period)', messagesInPeriod]
+    ];
+
+    const csv = rows
+      .map((r) => r.map((cell) => {
+        const str = cell === null || cell === undefined ? '' : String(cell);
+        const escaped = str.replace(/"/g, '""');
+        return `"${escaped}"`;
+      }).join(','))
+      .join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="analytics_report_${new Date().toISOString().split('T')[0]}.csv"`);
+    res.send(csv);
+  } catch (error) {
+    console.error('Export analytics report error:', error);
+    res.status(500).json({ success: false, message: 'Failed to export analytics report', error: error.message });
+  }
+};
+
+// @desc    Get tutor performance analytics (OPTIMIZED with aggregation)
 // @route   GET /api/analytics/tutors
 // @access  Private (Admin only)
 exports.getTutorAnalytics = async (req, res) => {
   try {
     const { limit = 10, sortBy = 'classes' } = req.query;
     
-    // Get tutor statistics
-    const tutors = await Tutor.find({ status: 'approved' })
-      .select('name email subjects experienceYears')
-      .lean();
-    
-    const tutorStats = await Promise.all(
-      tutors.map(async (tutor) => {
-        const classCount = await Class.countDocuments({ 
-          tutor: tutor._id, 
-          status: 'completed' 
-        });
-        
-        const upcomingCount = await Class.countDocuments({ 
-          tutor: tutor._id, 
-          status: 'scheduled',
-          scheduledAt: { $gte: new Date() }
-        });
-        
-        const cancelledCount = await Class.countDocuments({ 
-          tutor: tutor._id, 
-          status: 'cancelled' 
-        });
-        
-        const classes = await Class.find({ 
-          tutor: tutor._id, 
-          status: 'completed' 
-        });
-        const totalHours = classes.reduce((sum, c) => sum + (c.duration / 60), 0);
-        
-        // Get average rating from attendance records
-        const attendanceRecords = await Attendance.find({ 
-          tutor: tutor._id,
-          attentiveness: { $exists: true }
-        });
-        
-        let avgRating = 0;
-        if (attendanceRecords.length > 0) {
-          const totalRating = attendanceRecords.reduce((sum, record) => {
-            const avg = ((record.attentiveness || 0) + 
-                        (record.understanding || 0) + 
-                        (record.preparation || 0)) / 3;
-            return sum + avg;
-          }, 0);
-          avgRating = (totalRating / attendanceRecords.length).toFixed(1);
+    // OPTIMIZED: Use aggregation pipeline instead of N+1 queries
+    const tutorStats = await Tutor.aggregate([
+      {
+        $match: { status: 'approved' }
+      },
+      {
+        $lookup: {
+          from: 'classes',
+          localField: '_id',
+          foreignField: 'tutor',
+          as: 'allClasses'
         }
-        
-        const cancellationRate = (classCount + cancelledCount) > 0
-          ? ((cancelledCount / (classCount + cancelledCount)) * 100).toFixed(1)
-          : 0;
-        
-        return {
-          id: tutor._id,
-          name: tutor.name,
-          email: tutor.email,
-          subjects: tutor.subjects,
-          experience: tutor.experienceYears,
-          completedClasses: classCount,
-          upcomingClasses: upcomingCount,
-          cancelledClasses: cancelledCount,
-          totalHours: totalHours.toFixed(1),
-          averageRating: parseFloat(avgRating),
-          cancellationRate: `${cancellationRate}%`
-        };
-      })
-    );
-    
-    // Sort tutors
-    if (sortBy === 'rating') {
-      tutorStats.sort((a, b) => b.averageRating - a.averageRating);
-    } else if (sortBy === 'hours') {
-      tutorStats.sort((a, b) => parseFloat(b.totalHours) - parseFloat(a.totalHours));
-    } else {
-      tutorStats.sort((a, b) => b.completedClasses - a.completedClasses);
-    }
+      },
+      {
+        $lookup: {
+          from: 'attendances',
+          localField: '_id',
+          foreignField: 'tutor',
+          as: 'attendanceRecords'
+        }
+      },
+      {
+        $addFields: {
+          completedClasses: {
+            $size: {
+              $filter: {
+                input: '$allClasses',
+                as: 'class',
+                cond: { $eq: ['$$class.status', 'completed'] }
+              }
+            }
+          },
+          upcomingClasses: {
+            $size: {
+              $filter: {
+                input: '$allClasses',
+                as: 'class',
+                cond: {
+                  $and: [
+                    { $eq: ['$$class.status', 'scheduled'] },
+                    { $gte: ['$$class.scheduledAt', new Date()] }
+                  ]
+                }
+              }
+            }
+          },
+          cancelledClasses: {
+            $size: {
+              $filter: {
+                input: '$allClasses',
+                as: 'class',
+                cond: { $eq: ['$$class.status', 'cancelled'] }
+              }
+            }
+          },
+          totalHours: {
+            $divide: [
+              {
+                $reduce: {
+                  input: {
+                    $filter: {
+                      input: '$allClasses',
+                      as: 'class',
+                      cond: { $eq: ['$$class.status', 'completed'] }
+                    }
+                  },
+                  initialValue: 0,
+                  in: { $add: ['$$value', '$$this.duration'] }
+                }
+              },
+              60
+            ]
+          },
+          averageRating: {
+            $cond: {
+              if: { $gt: [{ $size: '$attendanceRecords' }, 0] },
+              then: {
+                $avg: {
+                  $map: {
+                    input: '$attendanceRecords',
+                    as: 'record',
+                    in: {
+                      $divide: [
+                        {
+                          $add: [
+                            { $ifNull: ['$$record.attentiveness', 0] },
+                            { $ifNull: ['$$record.understanding', 0] },
+                            { $ifNull: ['$$record.preparation', 0] }
+                          ]
+                        },
+                        3
+                      ]
+                    }
+                  }
+                }
+              },
+              else: 0
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          cancellationRate: {
+            $cond: {
+              if: { $gt: [{ $add: ['$completedClasses', '$cancelledClasses'] }, 0] },
+              then: {
+                $multiply: [
+                  {
+                    $divide: [
+                      '$cancelledClasses',
+                      { $add: ['$completedClasses', '$cancelledClasses'] }
+                    ]
+                  },
+                  100
+                ]
+              },
+              else: 0
+            }
+          }
+        }
+      },
+      {
+        $project: {
+          id: '$_id',
+          name: 1,
+          email: 1,
+          subjects: 1,
+          experience: '$experienceYears',
+          completedClasses: 1,
+          upcomingClasses: 1,
+          cancelledClasses: 1,
+          totalHours: { $round: ['$totalHours', 1] },
+          averageRating: { $round: ['$averageRating', 1] },
+          cancellationRate: { $round: ['$cancellationRate', 1] }
+        }
+      },
+      {
+        $sort: 
+          sortBy === 'rating' ? { averageRating: -1 } :
+          sortBy === 'hours' ? { totalHours: -1 } :
+          { completedClasses: -1 }
+      },
+      {
+        $limit: parseInt(limit)
+      }
+    ]);
     
     res.json({
       success: true,
       count: tutorStats.length,
-      data: tutorStats.slice(0, parseInt(limit))
+      data: tutorStats
     });
   } catch (error) {
     res.status(500).json({ 

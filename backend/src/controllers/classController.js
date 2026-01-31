@@ -4,8 +4,6 @@ const Attendance = require('../models/Attendance');
 const Notification = require('../models/Notification');
 const Student = require('../models/Student');
 const Tutor = require('../models/Tutor');
-const googleService = require('../services/googleService');
-const { refreshGoogleTokens } = require('./googleController');
 
 /**
  * CLASS CONTROLLER
@@ -45,6 +43,7 @@ exports.getClasses = async (req, res) => {
     const classes = await Class.find(query)
       .populate('tutor', 'name email subjects')
       .populate('student', 'name email phone')
+      .populate('students', 'name email phone')
       .populate('course', 'subject durationMinutes')
       .sort({ scheduledAt: upcoming === 'true' ? 1 : -1 })
       .limit(parseInt(limit));
@@ -115,6 +114,7 @@ exports.createClass = async (req, res) => {
     const {
       tutorId,
       studentId,
+      studentIds,
       courseId,
       scheduledAt,
       duration,
@@ -126,146 +126,134 @@ exports.createClass = async (req, res) => {
       recurrencePattern
     } = req.body;
     
+    console.log('📍 Creating class with data:', { tutorId, studentIds: studentIds || [studentId], courseId, scheduledAt, duration, topic });
+    
+    // Support both single studentId and multiple studentIds
+    const finalStudentIds = studentIds && Array.isArray(studentIds) ? studentIds : (studentId ? [studentId] : []);
+    
     // Validate required fields
-    if (!tutorId || !studentId || !scheduledAt || !topic) {
+    if (!tutorId || finalStudentIds.length === 0 || !scheduledAt || !topic) {
+      const missingFields = [];
+      if (!tutorId) missingFields.push('tutorId');
+      if (finalStudentIds.length === 0) missingFields.push('studentIds');
+      if (!scheduledAt) missingFields.push('scheduledAt');
+      if (!topic) missingFields.push('topic');
+      console.log('❌ Missing fields:', missingFields);
       return res.status(400).json({ 
         success: false, 
-        message: 'Missing required fields' 
+        message: `Missing required fields: ${missingFields.join(', ')}` 
       });
     }
     
     // Check tutor exists and is approved
     const tutor = await Tutor.findById(tutorId);
     if (!tutor || tutor.status !== 'approved') {
+      console.log('❌ Tutor not available:', { tutorFound: !!tutor, status: tutor?.status });
       return res.status(400).json({ 
         success: false, 
         message: 'Tutor not available' 
       });
     }
+    console.log('✅ Tutor verified:', tutor._id);
     
-    // Check student exists
-    const student = await Student.findById(studentId);
-    if (!student) {
+    // Check all students exist
+    const students = await Student.find({ _id: { $in: finalStudentIds } });
+    if (students.length !== finalStudentIds.length) {
+      console.log('❌ Some students not found:', { requested: finalStudentIds.length, found: students.length });
       return res.status(400).json({ 
         success: false, 
-        message: 'Student not found' 
+        message: 'One or more students not found' 
       });
     }
+    console.log('✅ All students verified:', students.map(s => s._id));
     
     // Check for scheduling conflicts
     const scheduledDate = new Date(scheduledAt);
     const classDuration = duration || 60;
     const endTime = new Date(scheduledDate.getTime() + classDuration * 60000);
     
+    // Overlap rule: existing.start < newEnd AND existing.end > newStart
+    // We calculate existing.end with $add(existing.start, duration*60000)
     const conflict = await Class.findOne({
       tutor: tutorId,
       status: { $in: ['scheduled', 'ongoing'] },
-      $or: [
-        {
-          scheduledAt: { $lte: scheduledDate },
-          $expr: {
-            $gte: [
+      $expr: {
+        $and: [
+          { $lt: ['$scheduledAt', endTime] },
+          {
+            $gt: [
               { $add: ['$scheduledAt', { $multiply: ['$duration', 60000] }] },
               scheduledDate
             ]
           }
-        },
-        {
-          scheduledAt: { $gte: scheduledDate, $lt: endTime }
-        }
-      ]
+        ]
+      }
     });
     
     if (conflict) {
+      console.log('❌ Scheduling conflict detected:', { conflictAt: conflict.scheduledAt });
       return res.status(400).json({ 
         success: false, 
         message: 'Tutor has a conflicting class at this time' 
       });
     }
+    console.log('✅ No scheduling conflicts');
     
     // Create class
     const newClass = await Class.create({
       tutor: tutorId,
-      student: studentId,
+      students: finalStudentIds,
+      student: finalStudentIds[0],
       course: courseId,
       scheduledAt: scheduledDate,
       duration: classDuration,
       topic,
       description,
-      meetingLink,
+      meetingLink: meetingLink || undefined,
       meetingPlatform: meetingPlatform || 'meet',
       isRecurring: isRecurring || false,
       recurrencePattern: isRecurring ? recurrencePattern : undefined,
       status: 'scheduled'
     });
-
-    // Try to create Google Meet link if tutor has Google connected
-    try {
-      if (tutor.googleAuth?.isConnected && tutor.googleAuth?.refreshToken) {
-        // Refresh tokens if needed
-        await refreshGoogleTokens(tutorId);
-        
-        // Set credentials
-        googleService.setCredentials({
-          access_token: tutor.googleAuth.accessToken,
-          refresh_token: tutor.googleAuth.refreshToken,
-          expiry_date: new Date(tutor.googleAuth.tokenExpiry).getTime()
-        });
-
-        // Create Google Calendar event with Meet link
-        const meetingData = await googleService.createMeetingEvent({
-          tutor: { name: tutor.name, email: tutor.email },
-          student: { name: student.name, email: student.email },
-          scheduledAt: scheduledDate,
-          duration: classDuration,
-          topic,
-          description
-        });
-
-        // Update class with Google Meet link and event ID
-        newClass.meetingLink = meetingData.meetingLink;
-        newClass.meetingPlatform = 'meet';
-        newClass.googleEventId = meetingData.eventId;
-        await newClass.save();
-      }
-    } catch (googleError) {
-      console.error('Failed to create Google Meet link:', googleError.message);
-      // Continue without Meet link - class is still created
-    }
     
     // Create notification for tutor
     await Notification.create({
       recipient: tutorId,
       recipientRole: 'tutor',
       title: 'New Class Scheduled',
-      message: `A new class has been scheduled with ${student.name} on ${scheduledDate.toLocaleDateString()}`,
+      message: `A new class has been scheduled with ${students.length} student(s) on ${scheduledDate.toLocaleDateString()}`,
       type: 'class_scheduled',
       relatedClass: newClass._id,
       priority: 'normal'
     });
     
-    // Create notification for student
-    await Notification.create({
-      recipient: studentId,
-      recipientRole: 'student',
-      title: 'Class Scheduled',
-      message: `Your class with ${tutor.name} is scheduled for ${scheduledDate.toLocaleDateString()}`,
-      type: 'class_scheduled',
-      relatedClass: newClass._id,
-      priority: 'normal'
-    });
+    // Create notifications for all students
+    for (const student of students) {
+      await Notification.create({
+        recipient: student._id,
+        recipientRole: 'student',
+        title: 'Class Scheduled',
+        message: `Your class with ${tutor.name} is scheduled for ${scheduledDate.toLocaleDateString()}`,
+        type: 'class_scheduled',
+        relatedClass: newClass._id,
+        priority: 'normal'
+      });
+    }
     
     const populatedClass = await Class.findById(newClass._id)
       .populate('tutor', 'name email subjects')
       .populate('student', 'name email')
+      .populate('students', 'name email')
       .populate('course', 'subject durationMinutes');
     
+    console.log('✅ Class created successfully:', newClass._id);
     res.status(201).json({
       success: true,
       message: 'Class scheduled successfully',
       data: populatedClass
     });
   } catch (error) {
+    console.error('❌ Class creation error:', error.message);
     res.status(500).json({ 
       success: false, 
       message: 'Server error', 

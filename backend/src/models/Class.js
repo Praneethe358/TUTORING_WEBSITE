@@ -11,10 +11,14 @@ const classSchema = new mongoose.Schema({
     required: true,
     index: true 
   },
+  students: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Student',
+    index: true 
+  }],
   student: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Student', 
-    required: true,
+    ref: 'Student',
     index: true 
   },
   course: { 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../components/DashboardLayout';
-import AdminSidebar from '../components/AdminSidebar';
+import AdminDashboardLayout from '../components/AdminDashboardLayout';
 import api from '../lib/api';
+import { colors, typography, spacing, borderRadius, shadows } from '../theme/designSystem';
 
 /**
  * ADMIN ANNOUNCEMENTS MANAGEMENT
@@ -120,261 +120,389 @@ const AdminAnnouncements = () => {
     }
   };
 
-  const getPriorityBadge = (priority) => {
-    const colors = {
-      low: 'bg-gray-100 text-gray-800',
-      medium: 'bg-blue-100 text-blue-800',
-      high: 'bg-orange-100 text-orange-800',
-      urgent: 'bg-red-100 text-red-800'
+  const getPriorityBadgeStyle = (priority) => {
+    const styles = {
+      low: { backgroundColor: '#f3f4f6', color: '#1f2937' },
+      medium: { backgroundColor: '#dbeafe', color: '#1e40af' },
+      high: { backgroundColor: '#fed7aa', color: '#9a3412' },
+      urgent: { backgroundColor: '#fecaca', color: '#991b1b' }
     };
-    return colors[priority] || colors.medium;
+    return {
+      ...styles[priority] || styles.medium,
+      padding: `${spacing.xs} ${spacing.md}`,
+      borderRadius: borderRadius.full,
+      fontSize: typography.fontSize.xs,
+      fontWeight: typography.fontWeight.medium,
+      display: 'inline-block'
+    };
   };
 
-  const getStatusBadge = (status) => {
-    const colors = {
-      draft: 'bg-gray-100 text-gray-800',
-      published: 'bg-green-100 text-green-800',
-      archived: 'bg-slate-100 text-slate-800'
+  const getStatusBadgeStyle = (status) => {
+    const styles = {
+      draft: { backgroundColor: '#f3f4f6', color: '#1f2937' },
+      published: { backgroundColor: '#d1fae5', color: '#065f46' },
+      archived: { backgroundColor: '#f1f5f9', color: '#475569' }
     };
-    return colors[status] || colors.draft;
+    return {
+      ...styles[status] || styles.draft,
+      padding: `${spacing.xs} ${spacing.md}`,
+      borderRadius: borderRadius.full,
+      fontSize: typography.fontSize.xs,
+      fontWeight: typography.fontWeight.medium,
+      display: 'inline-block'
+    };
   };
 
   return (
-    <DashboardLayout sidebar={AdminSidebar}>
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Announcements Management</h1>
-          <p className="text-slate-400 mt-1">Create and manage platform announcements</p>
-        </div>
-        <button
-          onClick={() => {
-            resetForm();
-            setShowForm(!showForm);
-          }}
-          className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium"
-        >
-          {showForm ? 'Cancel' : '+ Create Announcement'}
-        </button>
-      </div>
-
-      {message && (
-        <div className="mb-4 p-4 rounded-lg bg-green-900/30 border border-green-700 text-green-300">
-          {message}
-        </div>
-      )}
-      
-      {error && (
-        <div className="mb-4 p-4 rounded-lg bg-red-900/30 border border-red-700 text-red-300">
-          {error}
-        </div>
-      )}
-
-      {/* Create/Edit Form */}
-      {showForm && (
-        <form onSubmit={createAnnouncement} className="mb-8 p-6 rounded-xl bg-slate-800 border border-slate-700 space-y-4">
-          <h2 className="text-xl font-semibold text-white">
-            {editingId ? 'Edit Announcement' : 'Create New Announcement'}
-          </h2>
-          
+    <AdminDashboardLayout>
+      <div style={{ padding: 'clamp(1rem, 4vw, 3rem)' }}>
+        <div style={{ marginBottom: 'clamp(1.5rem, 4vw, 2rem)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 'clamp(1rem, 2vw, 1.5rem)', alignItems: 'flex-start' }}>
           <div>
-            <label className="block text-sm text-slate-300 mb-2">Title *</label>
-            <input
-              type="text"
-              name="title"
-              value={form.title}
-              onChange={onChange}
-              required
-              placeholder="Announcement title"
-              className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
-            />
+            <h1 style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', fontWeight: typography.fontWeight.bold, color: colors.textPrimary }}>
+              Announcements Management
+            </h1>
+            <p style={{ color: colors.textSecondary, marginTop: spacing.xs, fontSize: 'clamp(0.875rem, 2vw, 1rem)' }}>
+              Create and manage platform announcements
+            </p>
           </div>
+          <button
+            onClick={() => {
+              resetForm();
+              setShowForm(!showForm);
+            }}
+            style={{
+              padding: `clamp(0.5rem, 2vw, ${spacing.md}) clamp(0.75rem, 2vw, ${spacing.lg})`,
+              borderRadius: borderRadius.md,
+              backgroundColor: colors.primary,
+              color: colors.white,
+              fontWeight: typography.fontWeight.medium,
+              border: 'none',
+              cursor: 'pointer',
+              minHeight: '44px',
+              width: '100%',
+              fontSize: 'clamp(0.875rem, 2vw, 1rem)'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4f46e5'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.primary}
+          >
+            {showForm ? 'Cancel' : '+ Create Announcement'}
+          </button>
+        </div>
 
-          <div>
-            <label className="block text-sm text-slate-300 mb-2">Content *</label>
-            <textarea
-              name="content"
-              value={form.content}
-              onChange={onChange}
-              required
-              rows="5"
-              placeholder="Announcement content..."
-              className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
-            />
+        {message && (
+          <div style={{ marginBottom: spacing.lg, padding: spacing.lg, borderRadius: borderRadius.md, backgroundColor: '#d1fae5', border: `1px solid #059669`, color: '#065f46' }}>
+            {message}
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-sm text-slate-300 mb-2">Target Audience</label>
-              <select
-                name="targetRole"
-                value={form.targetRole}
-                onChange={onChange}
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
-              >
-                <option value="all">All Users</option>
-                <option value="student">Students Only</option>
-                <option value="tutor">Tutors Only</option>
-                <option value="admin">Admins Only</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm text-slate-300 mb-2">Priority</label>
-              <select
-                name="priority"
-                value={form.priority}
-                onChange={onChange}
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-                <option value="urgent">Urgent</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm text-slate-300 mb-2">Category</label>
-              <select
-                name="category"
-                value={form.category}
-                onChange={onChange}
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
-              >
-                <option value="general">General</option>
-                <option value="maintenance">Maintenance</option>
-                <option value="feature">New Feature</option>
-                <option value="policy">Policy Update</option>
-                <option value="event">Event</option>
-                <option value="holiday">Holiday</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
+        )}
+        
+        {error && (
+          <div style={{ marginBottom: spacing.lg, padding: spacing.lg, borderRadius: borderRadius.md, backgroundColor: '#fee2e2', border: `1px solid #dc2626`, color: '#991b1b' }}>
+            {error}
           </div>
+        )}
 
-          <div>
-            <label className="block text-sm text-slate-300 mb-2">Expires At (Optional)</label>
-            <input
-              type="datetime-local"
-              name="expiresAt"
-              value={form.expiresAt}
-              onChange={onChange}
-              className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
-            />
-          </div>
-
-          <div className="flex items-center gap-6">
-            <label className="flex items-center gap-2">
+        {/* Create/Edit Form */}
+        {showForm && (
+          <form onSubmit={createAnnouncement} style={{ marginBottom: spacing['3xl'], padding: spacing['2xl'], borderRadius: borderRadius.lg, backgroundColor: colors.white, boxShadow: shadows.md }}>
+            <h2 style={{ fontSize: typography.fontSize.xl, fontWeight: typography.fontWeight.semibold, color: colors.textPrimary, marginBottom: spacing.lg }}>
+              {editingId ? 'Edit Announcement' : 'Create New Announcement'}
+            </h2>
+            
+            <div style={{ marginBottom: spacing.lg }}>
+              <label style={{ display: 'block', fontSize: typography.fontSize.sm, color: colors.textPrimary, marginBottom: spacing.sm }}>Title *</label>
               <input
-                type="checkbox"
-                name="isPinned"
-                checked={form.isPinned}
+                type="text"
+                name="title"
+                value={form.title}
                 onChange={onChange}
-                className="w-4 h-4 text-indigo-600 bg-slate-900 border-slate-700 rounded focus:ring-indigo-500"
+                required
+                placeholder="Announcement title"
+                style={{
+                  width: '100%',
+                  padding: spacing.md,
+                  borderRadius: borderRadius.md,
+                  backgroundColor: colors.white,
+                  border: `1px solid ${colors.gray300}`,
+                  color: colors.textPrimary,
+                  outline: 'none'
+                }}
               />
-              <span className="text-sm text-slate-300">Pin to top</span>
-            </label>
+            </div>
 
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                name="publishNow"
-                checked={form.publishNow}
+            <div style={{ marginBottom: spacing.lg }}>
+              <label style={{ display: 'block', fontSize: typography.fontSize.sm, color: colors.textPrimary, marginBottom: spacing.sm }}>Content *</label>
+              <textarea
+                name="content"
+                value={form.content}
                 onChange={onChange}
-                className="w-4 h-4 text-indigo-600 bg-slate-900 border-slate-700 rounded focus:ring-indigo-500"
+                required
+                rows="5"
+                placeholder="Announcement content..."
+                style={{
+                  width: '100%',
+                  padding: spacing.md,
+                  borderRadius: borderRadius.md,
+                  backgroundColor: colors.white,
+                  border: `1px solid ${colors.gray300}`,
+                  color: colors.textPrimary,
+                  outline: 'none',
+                  resize: 'vertical'
+                }}
               />
-              <span className="text-sm text-slate-300">Publish immediately</span>
-            </label>
-          </div>
+            </div>
 
-          <div className="flex gap-3">
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium"
-            >
-              {editingId ? 'Update' : 'Create'} Announcement
-            </button>
-            <button
-              type="button"
-              onClick={resetForm}
-              className="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white"
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      )}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: spacing.lg, marginBottom: spacing.lg }}>
+              <div>
+                <label style={{ display: 'block', fontSize: typography.fontSize.sm, color: colors.textPrimary, marginBottom: spacing.sm }}>Target Audience</label>
+                <select
+                  name="targetRole"
+                  value={form.targetRole}
+                  onChange={onChange}
+                  style={{
+                    width: '100%',
+                    padding: spacing.md,
+                    borderRadius: borderRadius.md,
+                    backgroundColor: colors.white,
+                    border: `1px solid ${colors.gray300}`,
+                    color: colors.textPrimary,
+                    outline: 'none'
+                  }}
+                >
+                  <option value="all">All Users</option>
+                  <option value="student">Students Only</option>
+                  <option value="tutor">Tutors Only</option>
+                  <option value="admin">Admins Only</option>
+                </select>
+              </div>
 
-      {/* Announcements List */}
-      {loading ? (
-        <div className="text-center py-12 text-slate-400">Loading announcements...</div>
-      ) : announcements.length === 0 ? (
-        <div className="text-center py-12 bg-slate-800 rounded-xl border border-slate-700">
-          <p className="text-slate-400">No announcements yet</p>
-          <p className="text-sm text-slate-500 mt-2">Create your first announcement to get started</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {announcements.map(announcement => (
-            <div
-              key={announcement._id}
-              className="bg-slate-800 rounded-xl p-6 border border-slate-700 hover:border-indigo-500 transition"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-lg font-semibold text-white">
-                      {announcement.isPinned && '📌 '}
-                      {announcement.title}
-                    </h3>
-                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getStatusBadge(announcement.status)}`}>
-                      {announcement.status}
-                    </span>
-                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getPriorityBadge(announcement.priority)}`}>
-                      {announcement.priority}
-                    </span>
-                  </div>
-                  
-                  <p className="text-sm text-slate-300 mb-3">
-                    {announcement.content}
-                  </p>
-                  
-                  <div className="flex items-center gap-4 text-xs text-slate-400">
-                    <span>Target: {announcement.targetRole}</span>
-                    <span>Category: {announcement.category || 'general'}</span>
-                    <span>Views: {announcement.viewCount || 0}</span>
-                    <span>Read by: {announcement.readBy?.length || 0}</span>
-                    {announcement.expiresAt && (
-                      <span>Expires: {new Date(announcement.expiresAt).toLocaleDateString()}</span>
-                    )}
-                  </div>
-                  
-                  <div className="text-xs text-slate-500 mt-2">
-                    Created: {new Date(announcement.createdAt).toLocaleString()}
-                    {announcement.publishedAt && ` • Published: ${new Date(announcement.publishedAt).toLocaleString()}`}
-                  </div>
-                </div>
-                
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => editAnnouncement(announcement)}
-                    className="px-3 py-1.5 rounded-lg bg-blue-900/30 hover:bg-blue-900/50 border border-blue-700 text-blue-300 text-sm"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => deleteAnnouncement(announcement._id)}
-                    className="px-3 py-1.5 rounded-lg bg-red-900/30 hover:bg-red-900/50 border border-red-700 text-red-300 text-sm"
-                  >
-                    Delete
-                  </button>
-                </div>
+              <div>
+                <label style={{ display: 'block', fontSize: typography.fontSize.sm, color: colors.textPrimary, marginBottom: spacing.sm }}>Priority</label>
+                <select
+                  name="priority"
+                  value={form.priority}
+                  onChange={onChange}
+                  style={{
+                    width: '100%',
+                    padding: spacing.md,
+                    borderRadius: borderRadius.md,
+                    backgroundColor: colors.white,
+                    border: `1px solid ${colors.gray300}`,
+                    color: colors.textPrimary,
+                    outline: 'none'
+                  }}
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: typography.fontSize.sm, color: colors.textPrimary, marginBottom: spacing.sm }}>Category</label>
+                <select
+                  name="category"
+                  value={form.category}
+                  onChange={onChange}
+                  style={{
+                    width: '100%',
+                    padding: spacing.md,
+                    borderRadius: borderRadius.md,
+                    backgroundColor: colors.white,
+                    border: `1px solid ${colors.gray300}`,
+                    color: colors.textPrimary,
+                    outline: 'none'
+                  }}
+                >
+                  <option value="general">General</option>
+                  <option value="maintenance">Maintenance</option>
+                  <option value="feature">New Feature</option>
+                  <option value="policy">Policy Update</option>
+                  <option value="event">Event</option>
+                  <option value="holiday">Holiday</option>
+                  <option value="other">Other</option>
+                </select>
               </div>
             </div>
-          ))}
-        </div>
-      )}
-    </DashboardLayout>
+
+            <div style={{ marginBottom: spacing.lg }}>
+              <label style={{ display: 'block', fontSize: typography.fontSize.sm, color: colors.textPrimary, marginBottom: spacing.sm }}>Expires At (Optional)</label>
+              <input
+                type="datetime-local"
+                name="expiresAt"
+                value={form.expiresAt}
+                onChange={onChange}
+                style={{
+                  width: '100%',
+                  padding: spacing.md,
+                  borderRadius: borderRadius.md,
+                  backgroundColor: colors.white,
+                  border: `1px solid ${colors.gray300}`,
+                  color: colors.textPrimary,
+                  outline: 'none'
+                }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: spacing['2xl'], marginBottom: spacing.lg }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: spacing.sm }}>
+                <input
+                  type="checkbox"
+                  name="isPinned"
+                  checked={form.isPinned}
+                  onChange={onChange}
+                  style={{ width: '16px', height: '16px' }}
+                />
+                <span style={{ fontSize: typography.fontSize.sm, color: colors.textPrimary }}>Pin to top</span>
+              </label>
+
+              <label style={{ display: 'flex', alignItems: 'center', gap: spacing.sm }}>
+                <input
+                  type="checkbox"
+                  name="publishNow"
+                  checked={form.publishNow}
+                  onChange={onChange}
+                  style={{ width: '16px', height: '16px' }}
+                />
+                <span style={{ fontSize: typography.fontSize.sm, color: colors.textPrimary }}>Publish immediately</span>
+              </label>
+            </div>
+
+            <div style={{ display: 'flex', gap: spacing.md }}>
+              <button
+                type="submit"
+                style={{
+                  padding: `${spacing.md} ${spacing.lg}`,
+                  borderRadius: borderRadius.md,
+                  backgroundColor: colors.primary,
+                  color: colors.white,
+                  fontWeight: typography.fontWeight.medium,
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4f46e5'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.primary}
+              >
+                {editingId ? 'Update' : 'Create'} Announcement
+              </button>
+              <button
+                type="button"
+                onClick={resetForm}
+                style={{
+                  padding: `${spacing.md} ${spacing.lg}`,
+                  borderRadius: borderRadius.md,
+                  backgroundColor: colors.gray200,
+                  color: colors.textPrimary,
+                  fontWeight: typography.fontWeight.medium,
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.gray300}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.gray200}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Announcements List */}
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: spacing['4xl'], color: colors.textSecondary }}>Loading announcements...</div>
+        ) : announcements.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: spacing['4xl'], backgroundColor: colors.white, borderRadius: borderRadius.lg, boxShadow: shadows.md }}>
+            <p style={{ color: colors.textSecondary }}>No announcements yet</p>
+            <p style={{ fontSize: typography.fontSize.sm, color: colors.textTertiary, marginTop: spacing.sm }}>Create your first announcement to get started</p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.lg }}>
+            {announcements.map(announcement => (
+              <div
+                key={announcement._id}
+                style={{
+                  backgroundColor: colors.white,
+                  borderRadius: borderRadius.lg,
+                  padding: spacing['2xl'],
+                  boxShadow: shadows.md,
+                  border: `1px solid ${colors.gray200}`
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm }}>
+                      <h3 style={{ fontSize: typography.fontSize.lg, fontWeight: typography.fontWeight.semibold, color: colors.textPrimary }}>
+                        {announcement.isPinned && '📌 '}
+                        {announcement.title}
+                      </h3>
+                      <span style={getStatusBadgeStyle(announcement.status)}>
+                        {announcement.status}
+                      </span>
+                      <span style={getPriorityBadgeStyle(announcement.priority)}>
+                        {announcement.priority}
+                      </span>
+                    </div>
+                    
+                    <p style={{ fontSize: typography.fontSize.sm, color: colors.textPrimary, marginBottom: spacing.md }}>
+                      {announcement.content}
+                    </p>
+                    
+                    <div style={{ display: 'flex', alignItems: 'center', gap: spacing.lg, fontSize: typography.fontSize.xs, color: colors.textSecondary }}>
+                      <span>Target: {announcement.targetRole}</span>
+                      <span>Category: {announcement.category || 'general'}</span>
+                      <span>Views: {announcement.viewCount || 0}</span>
+                      <span>Read by: {announcement.readBy?.length || 0}</span>
+                      {announcement.expiresAt && (
+                        <span>Expires: {new Date(announcement.expiresAt).toLocaleDateString()}</span>
+                      )}
+                    </div>
+                    
+                    <div style={{ fontSize: typography.fontSize.xs, color: colors.textTertiary, marginTop: spacing.sm }}>
+                      Created: {new Date(announcement.createdAt).toLocaleString()}
+                      {announcement.publishedAt && ` • Published: ${new Date(announcement.publishedAt).toLocaleString()}`}
+                    </div>
+                  </div>
+                  
+                  <div style={{ display: 'flex', gap: spacing.sm }}>
+                    <button
+                      onClick={() => editAnnouncement(announcement)}
+                      style={{
+                        padding: `${spacing.sm} ${spacing.md}`,
+                        borderRadius: borderRadius.md,
+                        backgroundColor: '#dbeafe',
+                        border: `1px solid #3b82f6`,
+                        color: '#1e40af',
+                        fontSize: typography.fontSize.sm,
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#bfdbfe'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#dbeafe'}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteAnnouncement(announcement._id)}
+                      style={{
+                        padding: `${spacing.sm} ${spacing.md}`,
+                        borderRadius: borderRadius.md,
+                        backgroundColor: '#fee2e2',
+                        border: `1px solid #ef4444`,
+                        color: '#991b1b',
+                        fontSize: typography.fontSize.sm,
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#fecaca'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#fee2e2'}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </AdminDashboardLayout>
   );
 };
 

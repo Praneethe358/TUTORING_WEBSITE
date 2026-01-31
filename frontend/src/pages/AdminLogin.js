@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAdmin } from '../context/AdminContext';
-import FormInput from '../components/FormInput';
+import { CourseraInput, CourseraButton, CourseraAlert } from '../components/CourseraCard';
+import { colors, typography, spacing } from '../theme/designSystem';
 
-const AdminLogin = () => {
+const AdminLogin = ({ inline = false, onLoginSuccess }) => {
   const navigate = useNavigate();
   const { adminLogin } = useAdmin();
   const [form, setForm] = useState({ email: '', password: '' });
@@ -18,6 +19,9 @@ const AdminLogin = () => {
     setLoading(true);
     try {
       await adminLogin(form.email, form.password);
+            if (onLoginSuccess) {
+              onLoginSuccess();
+            }
       navigate('/admin/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
@@ -28,19 +32,50 @@ const AdminLogin = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1 className="text-2xl font-semibold text-center mb-6">Admin Login</h1>
-      {error && <div className="mb-4 text-sm text-red-400">{error}</div>}
-      <FormInput label="Email" name="email" type="email" value={form.email} onChange={onChange} required placeholder="admin@example.com" />
-      <FormInput label="Password" name="password" type="password" value={form.password} onChange={onChange} required placeholder="••••••••" />
-      <button type="submit" disabled={loading} className="w-full py-3 mt-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition disabled:opacity-60">
+      {!inline && (
+        <h1 style={{
+          fontSize: typography.fontSize['2xl'],
+          fontWeight: typography.fontWeight.semibold,
+          textAlign: 'center',
+          marginBottom: spacing.xl,
+          color: colors.textPrimary,
+        }}>
+          Admin Login
+        </h1>
+      )}
+      {error && <CourseraAlert type="error" onClose={() => setError('')}>{error}</CourseraAlert>}
+      <CourseraInput label="Email" name="email" type="email" value={form.email} onChange={onChange} required placeholder="admin@example.com" />
+      <CourseraInput label="Password" name="password" type="password" value={form.password} onChange={onChange} required placeholder="••••••••" />
+      <CourseraButton
+        type="submit"
+        disabled={loading}
+        fullWidth={true}
+        style={{ marginTop: spacing.md }}
+      >
         {loading ? 'Signing in...' : 'Sign In'}
-      </button>
-      <div className="text-sm text-slate-400 mt-4 flex justify-between">
-        <Link className="text-indigo-400" to="/forgot-password">Forgot password?</Link>
-      </div>
-      <div className="text-xs text-slate-400 mt-3 text-center">
-        Student? <Link className="text-indigo-400" to="/login">Go to student login</Link> | Tutor? <Link className="text-indigo-400" to="/tutor/login">Go to tutor login</Link>
-      </div>
+      </CourseraButton>
+      {!inline && (
+        <>
+          <div style={{
+            fontSize: typography.fontSize.sm,
+            color: colors.textSecondary,
+            marginTop: spacing.lg,
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}>
+            <Link to="/forgot-password" style={{ color: colors.accent, textDecoration: 'none' }}>Forgot password?</Link>
+            <span style={{ color: 'transparent', userSelect: 'none' }}>.</span>
+          </div>
+          <div style={{
+            fontSize: typography.fontSize.xs,
+            color: colors.textTertiary,
+            marginTop: spacing.md,
+            textAlign: 'center',
+          }}>
+            Student? <Link to="/login" style={{ color: colors.accent, textDecoration: 'none' }}>Go to student login</Link> | Tutor? <Link to="/tutor/login" style={{ color: colors.accent, textDecoration: 'none' }}>Go to tutor login</Link>
+          </div>
+        </>
+      )}
     </form>
   );
 };

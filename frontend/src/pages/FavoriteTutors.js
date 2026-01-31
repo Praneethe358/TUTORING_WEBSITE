@@ -1,102 +1,310 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import DashboardLayout from '../components/DashboardLayout';
-import StudentSidebar from '../components/StudentSidebar';
-import { CardSkeleton } from '../components/LoadingSkeleton';
-import FavoriteButton from '../components/FavoriteButton';
+import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
+import { colors, spacing, borderRadius, shadows, typography } from '../theme/designSystem';
 
+/**
+ * FAVORITE TUTORS - Student View
+ * 
+ * Display and manage favorite tutors
+ * - View all favorite tutors
+ * - Remove from favorites
+ * - Book a class with favorite tutors
+ */
 const FavoriteTutors = () => {
+  const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadFavorites();
+    fetchFavoriteTutors();
   }, []);
 
-  const loadFavorites = async () => {
+  const fetchFavoriteTutors = async () => {
     try {
       setLoading(true);
-      const res = await api.get('/favorites');
+      const res = await api.get('/student/favorites');
       setFavorites(res.data.favorites || []);
-    } catch (error) {
-      console.error('Failed to load favorites:', error);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to fetch favorites:', err);
+      setError('Failed to load favorite tutors');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRemove = () => {
-    // Reload favorites after removing
-    loadFavorites();
+  const handleRemoveFavorite = async (tutorId) => {
+    try {
+      await api.delete(`/student/favorites/${tutorId}`);
+      setFavorites(favorites.filter(fav => fav._id !== tutorId));
+    } catch (err) {
+      console.error('Failed to remove favorite:', err);
+      setError('Failed to remove favorite');
+    }
+  };
+
+  const handleBookTutor = (tutorId) => {
+    navigate(`/tutors/${tutorId}`);
   };
 
   return (
-    <DashboardLayout sidebar={StudentSidebar}>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">❤️ Favorite Tutors</h1>
-        <p className="text-slate-400 mt-1">Your bookmarked tutors for quick access</p>
+    <div style={{ padding: spacing['2xl'], maxWidth: '1200px', margin: '0 auto' }}>
+      {/* Header */}
+      <div style={{ marginBottom: spacing['2xl'] }}>
+        <h1
+          style={{
+            fontSize: '32px',
+            fontWeight: typography.fontWeight.bold,
+            color: colors.textPrimary,
+            marginBottom: spacing.xs,
+          }}
+        >
+          My Favorite Tutors
+        </h1>
+        <p style={{ color: colors.textSecondary, fontSize: '16px' }}>
+          Manage and book classes with your favorite tutors
+        </p>
       </div>
 
-      {loading ? (
-        <CardSkeleton count={3} />
-      ) : favorites.length === 0 ? (
-        <div className="bg-slate-800 rounded-xl p-12 border border-slate-700 text-center">
-          <p className="text-slate-400 mb-4">No favorite tutors yet</p>
-          <Link
-            to="/tutors"
-            className="inline-block px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white font-medium transition"
+      {/* Error Message */}
+      {error && (
+        <div
+          style={{
+            padding: spacing.lg,
+            marginBottom: spacing.lg,
+            backgroundColor: '#FEE2E2',
+            border: `1px solid #FECACA`,
+            borderRadius: borderRadius.lg,
+            color: '#991B1B',
+            fontSize: '14px',
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      {/* Loading State */}
+      {loading && (
+        <div style={{ textAlign: 'center', padding: spacing['2xl'] }}>
+          <p style={{ color: colors.textSecondary }}>Loading favorite tutors...</p>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && favorites.length === 0 && (
+        <div
+          style={{
+            textAlign: 'center',
+            padding: spacing['3xl'],
+            backgroundColor: colors.white,
+            borderRadius: borderRadius.xl,
+            border: `1px solid ${colors.gray200}`,
+            boxShadow: shadows.md,
+          }}
+        >
+          <div style={{ fontSize: '48px', marginBottom: spacing.lg }}>⭐</div>
+          <h2 style={{ color: colors.textPrimary, fontWeight: typography.fontWeight.semibold, marginBottom: spacing.md }}>
+            No Favorite Tutors Yet
+          </h2>
+          <p style={{ color: colors.textSecondary, marginBottom: spacing.lg }}>
+            Explore our tutors and add them to your favorites
+          </p>
+          <button
+            onClick={() => navigate('/tutors')}
+            style={{
+              padding: `${spacing.md} ${spacing.xl}`,
+              backgroundColor: colors.primary,
+              color: colors.white,
+              border: 'none',
+              borderRadius: borderRadius.lg,
+              fontSize: '14px',
+              fontWeight: typography.fontWeight.semibold,
+              cursor: 'pointer',
+              transition: 'background-color 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = colors.primaryDark || '#1e40af';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = colors.primary;
+            }}
           >
             Browse Tutors
-          </Link>
+          </button>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {favorites.map(({ _id, tutor }) => (
-            <div key={_id} className="bg-slate-800 rounded-xl p-6 border border-slate-700 hover:border-indigo-500 transition">
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  {tutor.avatar ? (
-                    <img
-                      src={`http://localhost:5000${tutor.avatar}`}
-                      alt={tutor.name}
-                      className="w-12 h-12 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-lg">
-                      {tutor.name?.charAt(0) || '?'}
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="text-white font-semibold">{tutor.name}</h3>
-                    <p className="text-sm text-slate-400">{tutor.experienceYears} years exp</p>
-                  </div>
-                </div>
-                <FavoriteButton tutorId={tutor._id} />
-              </div>
+      )}
 
-              <div className="space-y-2 mb-4">
-                <p className="text-sm text-slate-300">
-                  <span className="font-medium">Subjects:</span>{' '}
-                  {tutor.subjects?.join(', ') || 'N/A'}
-                </p>
-                <p className="text-sm text-slate-300">
-                  <span className="font-medium">Qualifications:</span>{' '}
-                  {tutor.qualifications || 'N/A'}
-                </p>
-              </div>
-
-              <Link
-                to={`/tutors/${tutor._id}`}
-                className="block w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white text-center font-medium transition"
+      {/* Favorites Grid */}
+      {!loading && favorites.length > 0 && (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: spacing.lg,
+          }}
+        >
+          {favorites.map(tutor => (
+            <div
+              key={tutor._id}
+              style={{
+                backgroundColor: colors.white,
+                borderRadius: borderRadius.xl,
+                border: `1px solid ${colors.gray200}`,
+                boxShadow: shadows.md,
+                overflow: 'hidden',
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                cursor: 'pointer',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = shadows.lg;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0px)';
+                e.currentTarget.style.boxShadow = shadows.md;
+              }}
+            >
+              {/* Profile Header */}
+              <div
+                style={{
+                  padding: spacing.lg,
+                  backgroundColor: colors.gray100,
+                  borderBottom: `1px solid ${colors.gray200}`,
+                }}
               >
-                View Profile
-              </Link>
+                <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md, marginBottom: spacing.md }}>
+                  <div
+                    style={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: borderRadius.full,
+                      backgroundColor: colors.primary,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: colors.white,
+                      fontSize: '24px',
+                      fontWeight: typography.fontWeight.bold,
+                    }}
+                  >
+                    {tutor.name?.charAt(0).toUpperCase()}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <h3 style={{ color: colors.textPrimary, fontWeight: typography.fontWeight.semibold, marginBottom: spacing.xs }}>
+                      {tutor.name}
+                    </h3>
+                    <p style={{ color: colors.textSecondary, fontSize: '13px' }}>
+                      {tutor.subjects?.join(', ') || 'Multiple Subjects'}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveFavorite(tutor._id)}
+                    style={{
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      fontSize: '20px',
+                      cursor: 'pointer',
+                      padding: 0,
+                    }}
+                    title="Remove from favorites"
+                  >
+                    ⭐
+                  </button>
+                </div>
+              </div>
+
+              {/* Info */}
+              <div style={{ padding: spacing.lg }}>
+                {tutor.qualifications && (
+                  <div style={{ marginBottom: spacing.md }}>
+                    <p style={{ color: colors.textSecondary, fontSize: '12px', fontWeight: typography.fontWeight.semibold, marginBottom: spacing.xs }}>
+                      QUALIFICATIONS
+                    </p>
+                    <p style={{ color: colors.textPrimary, fontSize: '14px' }}>
+                      {Array.isArray(tutor.qualifications) ? tutor.qualifications.join(', ') : tutor.qualifications}
+                    </p>
+                  </div>
+                )}
+
+                {tutor.experienceYears && (
+                  <div style={{ marginBottom: spacing.md }}>
+                    <p style={{ color: colors.textSecondary, fontSize: '12px', fontWeight: typography.fontWeight.semibold, marginBottom: spacing.xs }}>
+                      EXPERIENCE
+                    </p>
+                    <p style={{ color: colors.textPrimary, fontSize: '14px' }}>
+                      {tutor.experienceYears} years
+                    </p>
+                  </div>
+                )}
+
+                {tutor.hourlyRate && (
+                  <div style={{ marginBottom: spacing.lg }}>
+                    <p style={{ color: colors.textSecondary, fontSize: '12px', fontWeight: typography.fontWeight.semibold, marginBottom: spacing.xs }}>
+                      HOURLY RATE
+                    </p>
+                    <p style={{ color: colors.primary, fontSize: '18px', fontWeight: typography.fontWeight.bold }}>
+                      ${tutor.hourlyRate}/hour
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Actions */}
+              <div style={{ padding: spacing.lg, borderTop: `1px solid ${colors.gray200}`, display: 'flex', gap: spacing.md }}>
+                <button
+                  onClick={() => handleBookTutor(tutor._id)}
+                  style={{
+                    flex: 1,
+                    padding: `${spacing.md} ${spacing.lg}`,
+                    backgroundColor: colors.primary,
+                    color: colors.white,
+                    border: 'none',
+                    borderRadius: borderRadius.lg,
+                    fontSize: '14px',
+                    fontWeight: typography.fontWeight.semibold,
+                    cursor: 'pointer',
+                    transition: 'background-color 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = colors.primaryDark || '#1e40af';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = colors.primary;
+                  }}
+                >
+                  Book Class
+                </button>
+                <button
+                  onClick={() => navigate(`/tutors/${tutor._id}`)}
+                  style={{
+                    flex: 1,
+                    padding: `${spacing.md} ${spacing.lg}`,
+                    backgroundColor: colors.white,
+                    color: colors.primary,
+                    border: `1px solid ${colors.primary}`,
+                    borderRadius: borderRadius.lg,
+                    fontSize: '14px',
+                    fontWeight: typography.fontWeight.semibold,
+                    cursor: 'pointer',
+                    transition: 'background-color 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = colors.gray100;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = colors.white;
+                  }}
+                >
+                  View Profile
+                </button>
+              </div>
             </div>
           ))}
         </div>
       )}
-    </DashboardLayout>
+    </div>
   );
 };
 

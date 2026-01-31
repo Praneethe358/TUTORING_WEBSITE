@@ -9,67 +9,53 @@ export const Button = ({
   className = '',
   ...props 
 }) => {
-  const baseStyles = `
-    font-family: ${typography.fontFamily.base};
-    font-weight: ${typography.fontWeight.semibold};
-    border: none;
-    border-radius: ${borderRadius.lg};
-    cursor: pointer;
-    transition: ${transitions.base};
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap;
-    font-size: ${typography.fontSize.sm};
-    gap: ${spacing.md};
-  `;
+  const baseStyles = {
+    fontFamily: typography.fontFamily.base,
+    fontWeight: typography.fontWeight.semibold,
+    border: 'none',
+    borderRadius: borderRadius.lg,
+    cursor: 'pointer',
+    transition: transitions.base,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    whiteSpace: 'nowrap',
+    fontSize: typography.fontSize.sm,
+    gap: spacing.md,
+  };
 
   const sizeStyles = {
-    sm: `padding: ${spacing.sm} ${spacing.lg}; min-height: 32px;`,
-    md: `padding: ${spacing.md} ${spacing.xl}; min-height: 40px;`,
-    lg: `padding: ${spacing.lg} ${spacing['2xl']}; min-height: 48px; font-size: ${typography.fontSize.base};`,
+    sm: { padding: `${spacing.sm} ${spacing.lg}`, minHeight: '32px' },
+    md: { padding: `${spacing.md} ${spacing.xl}`, minHeight: '40px' },
+    lg: { padding: `${spacing.lg} ${spacing['2xl']}`, minHeight: '48px', fontSize: typography.fontSize.base },
   };
 
-  const variantStyles = {
-    primary: `
-      background: ${colors.accent};
-      color: ${colors.white};
-      box-shadow: ${shadows.md};
-      &:hover { background: ${colors.accentDark}; box-shadow: ${shadows.lg}; }
-      &:active { transform: scale(0.98); }
-    `,
-    secondary: `
-      background: ${colors.gray100};
-      color: ${colors.textPrimary};
-      &:hover { background: ${colors.gray200}; }
-    `,
-    ghost: `
-      background: transparent;
-      color: ${colors.accent};
-      &:hover { background: ${colors.gray50}; }
-    `,
-    danger: `
-      background: ${colors.error};
-      color: ${colors.white};
-      &:hover { background: #DC2626; }
-    `,
-  };
+  const variantStyle = {
+    primary: {
+      backgroundColor: colors.accent,
+      color: colors.white,
+      boxShadow: shadows.md,
+    },
+    secondary: {
+      backgroundColor: colors.gray100,
+      color: colors.textPrimary,
+    },
+    ghost: {
+      backgroundColor: 'transparent',
+      color: colors.accent,
+    },
+    danger: {
+      backgroundColor: colors.error,
+      color: colors.white,
+    },
+  }[variant] || {};
 
   return (
     <button
       style={{
-        ...Object.assign({}, 
-          ...baseStyles.split(';').filter(s => s.trim()).map(s => {
-            const [key, value] = s.split(':');
-            return { [key.trim()]: value.trim() };
-          })
-        ),
-        ...Object.assign({}, 
-          ...sizeStyles[size].split(';').filter(s => s.trim()).map(s => {
-            const [key, value] = s.split(':');
-            return { [key.trim()]: value.trim() };
-          })
-        ),
+        ...baseStyles,
+        ...(sizeStyles[size] || sizeStyles.md),
+        ...variantStyle,
       }}
       className={`modern-btn ${className}`}
       {...props}
@@ -81,22 +67,21 @@ export const Button = ({
 
 // ============= MODERN CARD COMPONENT =============
 export const Card = ({ children, className = '', hover = false, ...props }) => {
+  const [isHovered, setIsHovered] = React.useState(false);
+
   return (
     <div
       style={{
         background: colors.white,
         borderRadius: borderRadius.xl,
         padding: spacing['2xl'],
-        boxShadow: shadows.sm,
+        boxShadow: isHovered && hover ? shadows.lg : shadows.sm,
         transition: transitions.base,
-        ...(hover && {
-          cursor: 'pointer',
-          '&:hover': {
-            boxShadow: shadows.lg,
-            transform: 'translateY(-2px)',
-          }
-        })
+        transform: isHovered && hover ? 'translateY(-2px)' : 'none',
+        cursor: hover ? 'pointer' : 'default'
       }}
+      onMouseEnter={() => hover && setIsHovered(true)}
+      onMouseLeave={() => hover && setIsHovered(false)}
       className={`modern-card ${className}`}
       {...props}
     >
@@ -238,7 +223,7 @@ export const Grid = ({ children, cols = 3, gap = 'xl', className = '' }) => (
   </div>
 );
 
-export default {
+const ModernUIExport = {
   Button,
   Card,
   Badge,
@@ -249,3 +234,5 @@ export default {
   Container,
   Grid,
 };
+
+export default ModernUIExport;

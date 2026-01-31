@@ -28,8 +28,13 @@ export const AdminProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await api.post('/admin/logout');
+    try {
+      await api.post('/admin/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
     setAdmin(null);
+    window.location.href = '/';
   };
 
   return (

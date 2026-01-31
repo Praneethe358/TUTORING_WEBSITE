@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../components/DashboardLayout';
-import TutorSidebar from '../components/TutorSidebar';
 import api from '../lib/api';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * TUTOR CLASSES PAGE
  * Create and manage classes
  */
 const TutorClasses = () => {
+  const { user } = useAuth();
   const [classes, setClasses] = useState([]);
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -17,13 +17,14 @@ const TutorClasses = () => {
   const [message, setMessage] = useState('');
   
   const [form, setForm] = useState({
-    studentId: '',
+    studentIds: [],
     courseId: '',
     scheduledAt: '',
     duration: 60,
     topic: '',
     description: '',
-    meetingPlatform: 'meet'
+    meetingPlatform: 'meet',
+    meetingLink: ''
   });
 
   useEffect(() => {
@@ -33,37 +34,56 @@ const TutorClasses = () => {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [classesRes, bookingsRes, coursesRes] = await Promise.all([
-        api.get('/classes'),
-        api.get('/tutor/bookings'), // Get bookings to extract students
-        api.get('/tutor/courses') // Tutor's courses
-      ]);
       
-      setClasses(classesRes.data.data || []);
+      // Fetch core data
+      let classesRes, coursesRes, allStudentsRes;
       
-      // Extract unique students from bookings
-      const bookings = bookingsRes.data.bookings || [];
-      const uniqueStudents = [];
-      const studentIds = new Set();
-      bookings.forEach(booking => {
-        if (booking.student && !studentIds.has(booking.student._id)) {
-          studentIds.add(booking.student._id);
-          uniqueStudents.push(booking.student);
-        }
-      });
-      setStudents(uniqueStudents);
+      try {
+        classesRes = await api.get('/classes');
+      } catch (err) {
+        console.error('Error fetching classes:', err);
+        classesRes = { data: { data: [] } };
+      }
       
-      setCourses(coursesRes.data.courses || []);
+      try {
+        allStudentsRes = await api.get('/tutor/all-students');
+      } catch (err) {
+        console.warn('Could not fetch all students:', err.message);
+        allStudentsRes = { data: { students: [] } };
+      }
+      
+      try {
+        coursesRes = await api.get('/tutor/courses');
+      } catch (err) {
+        console.warn('Could not fetch courses:', err.message);
+        coursesRes = { data: { courses: [] } };
+      }
+      
+      setClasses(classesRes.data?.data || []);
+      
+      // Get all registered students
+      const allStudents = allStudentsRes.data?.students || [];
+      console.log('All students:', allStudents);
+      setStudents(allStudents);
+      setCourses(coursesRes.data?.courses || []);
     } catch (err) {
       console.error('Failed to load data:', err);
-      setError('Failed to load data');
+      setError(err.message || 'Failed to load data');
     } finally {
       setLoading(false);
     }
   };
 
   const onChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, type, options } = e.target;
+    if (type === 'select-multiple') {
+      const selectedIds = Array.from(options)
+        .filter(option => option.selected)
+        .map(option => option.value);
+      setForm({ ...form, [name]: selectedIds });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const createClass = async (e) => {
@@ -71,51 +91,88 @@ const TutorClasses = () => {
     setError('');
     setMessage('');
     
+    // Validate students selected
+    if (!form.studentIds || form.studentIds.length === 0) {
+      setError('Please select at least one student');
+      return;
+    }
+    
+    // Validate required fields
+    if (!form.scheduledAt || !form.topic) {
+      setError('Please fill in all required fields');
+      return;
+    }
+    
     try {
-      const tutorData = JSON.parse(localStorage.getItem('user'));
+      // Validate user is logged in
+      if (!user || !user._id) {
+        setError('User not logged in. Please refresh the page.');
+        return;
+      }
       
       await api.post('/classes', {
-        tutorId: tutorData._id,
-        studentId: form.studentId,
+        tutorId: user._id,
+        studentIds: form.studentIds,
         courseId: form.courseId,
         scheduledAt: new Date(form.scheduledAt).toISOString(),
         duration: Number(form.duration),
         topic: form.topic,
         description: form.description,
-        meetingPlatform: form.meetingPlatform
+        meetingPlatform: form.meetingPlatform,
+        meetingLink: form.meetingLink
       });
       
-      setMessage('Class created successfully! Google Meet link will be auto-generated if connected.');
+      setMessage('Class created successfully!');
       setForm({
-        studentId: '',
+        studentIds: [],
         courseId: '',
         scheduledAt: '',
         duration: 60,
         topic: '',
         description: '',
-        meetingPlatform: 'meet'
+        meetingPlatform: 'meet',
+        meetingLink: ''
       });
       setShowForm(false);
       loadData();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create class');
+      console.error('Class creation error:', err);
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to create class';
+      setError(errorMessage);
     }
   };
 
-  const cancelClass = async (classId) => {
-    if (!window.confirm('Cancel this class?')) return;
+  const deleteClass = async (classId) => {
+    if (!window.confirm('Are you sure you want to delete this class?')) return;
     
     try {
       await api.delete(`/classes/${classId}`);
-      setMessage('Class cancelled');
+      setMessage('Class deleted successfully');
       loadData();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to cancel class');
+      setError(err.response?.data?.message || 'Failed to delete class');
     }
   };
 
+  const editClass = (classItem) => {
+    // Populate form with class data for editing
+    setForm({
+      studentIds: classItem.students?.map(s => s._id || s) || [],
+      courseId: classItem.course?._id || '',
+      scheduledAt: new Date(classItem.scheduledAt).toISOString().slice(0, 16),
+      duration: classItem.duration,
+      topic: classItem.topic,
+      description: classItem.description || '',
+      meetingPlatform: classItem.meetingPlatform || 'meet',
+      meetingLink: classItem.meetingLink || ''
+    });
+    setShowForm(true);
+    // Scroll to form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
-    <DashboardLayout sidebar={TutorSidebar}>
+    <div>
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-white">Classes</h1>
@@ -123,7 +180,7 @@ const TutorClasses = () => {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium"
+          className="px-4 py-2 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white font-semibold shadow-lg shadow-indigo-500/50 transition"
         >
           {showForm ? 'Cancel' : '+ Create Class'}
         </button>
@@ -143,59 +200,94 @@ const TutorClasses = () => {
 
       {/* Create Class Form */}
       {showForm && (
-        <form onSubmit={createClass} className="mb-8 p-6 rounded-xl bg-slate-800 border border-slate-700 space-y-4">
-          <h2 className="text-xl font-semibold text-white">Schedule New Class</h2>
+        <form onSubmit={createClass} className="mb-8 p-6 rounded-xl bg-slate-800 border border-slate-700 space-y-5">
+          <h2 className="text-2xl font-semibold text-white">Schedule New Class</h2>
           
+          {/* Students Selection */}
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Students * (Select multiple)</label>
+            <select
+              name="studentIds"
+              value={form.studentIds}
+              onChange={onChange}
+              multiple
+              required
+              size="5"
+              className="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition"
+            >
+              {students.map(student => (
+                <option key={student._id} value={student._id}>
+                  {student.name} ({student.email})
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-slate-400 mt-1">Hold Ctrl/Cmd to select multiple students</p>
+            
+            {/* Selected Students Display */}
+            {form.studentIds && form.studentIds.length > 0 && (
+              <div className="mt-3 p-3 rounded-lg bg-indigo-900/20 border border-indigo-700/50">
+                <p className="text-xs text-indigo-300 mb-2 font-medium">Selected ({form.studentIds.length}):</p>
+                <div className="flex flex-wrap gap-2">
+                  {form.studentIds.map(studentId => {
+                    const student = students.find(s => s._id === studentId);
+                    return student ? (
+                      <span
+                        key={studentId}
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-600 text-indigo-100 text-xs font-medium"
+                      >
+                        {student.name}
+                        <button
+                          type="button"
+                          onClick={() => setForm({
+                            ...form,
+                            studentIds: form.studentIds.filter(id => id !== studentId)
+                          })}
+                          className="ml-1 hover:text-red-200 transition"
+                        >
+                          ✕
+                        </button>
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Course Selection */}
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Course</label>
+            <select
+              name="courseId"
+              value={form.courseId}
+              onChange={onChange}
+              className="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition"
+            >
+              <option value="">Select course (optional)</option>
+              {courses.filter(c => c.status === 'approved').map(course => (
+                <option key={course._id} value={course._id}>
+                  {course.subject} ({course.durationMinutes} mins)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Date/Time and Duration */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-slate-300 mb-2">Student *</label>
-              <select
-                name="studentId"
-                value={form.studentId}
-                onChange={onChange}
-                required
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
-              >
-                <option value="">Select student</option>
-                {students.map(student => (
-                  <option key={student._id} value={student._id}>
-                    {student.name} ({student.email})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm text-slate-300 mb-2">Course</label>
-              <select
-                name="courseId"
-                value={form.courseId}
-                onChange={onChange}
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
-              >
-                <option value="">Select course (optional)</option>
-                {courses.filter(c => c.status === 'approved').map(course => (
-                  <option key={course._id} value={course._id}>
-                    {course.subject} ({course.durationMinutes} mins)
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm text-slate-300 mb-2">Date & Time *</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Date & Time *</label>
               <input
                 type="datetime-local"
                 name="scheduledAt"
                 value={form.scheduledAt}
                 onChange={onChange}
                 required
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
+                className="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition"
               />
             </div>
 
             <div>
-              <label className="block text-sm text-slate-300 mb-2">Duration (minutes) *</label>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Duration (minutes) *</label>
               <input
                 type="number"
                 name="duration"
@@ -204,13 +296,14 @@ const TutorClasses = () => {
                 required
                 min="15"
                 step="15"
-                className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
+                className="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition"
               />
             </div>
           </div>
 
+          {/* Topic */}
           <div>
-            <label className="block text-sm text-slate-300 mb-2">Topic *</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Topic *</label>
             <input
               type="text"
               name="topic"
@@ -218,51 +311,67 @@ const TutorClasses = () => {
               onChange={onChange}
               required
               placeholder="e.g., Introduction to Calculus"
-              className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
+              className="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition"
             />
           </div>
 
+          {/* Description */}
           <div>
-            <label className="block text-sm text-slate-300 mb-2">Description</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Description</label>
             <textarea
               name="description"
               value={form.description}
               onChange={onChange}
               rows="3"
               placeholder="Additional notes or agenda"
-              className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
+              className="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition"
             />
           </div>
 
-          <div>
-            <label className="block text-sm text-slate-300 mb-2">Meeting Platform</label>
-            <select
-              name="meetingPlatform"
-              value={form.meetingPlatform}
-              onChange={onChange}
-              className="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:outline-none"
-            >
-              <option value="meet">Google Meet (auto-generated)</option>
-              <option value="zoom">Zoom</option>
-              <option value="teams">Microsoft Teams</option>
-              <option value="other">Other</option>
-            </select>
-            <p className="text-xs text-slate-400 mt-1">
-              Google Meet links are auto-created if you've connected your Google account
-            </p>
-          </div>
+          {/* Meeting Platform and Link */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Meeting Platform</label>
+              <select
+                name="meetingPlatform"
+                value={form.meetingPlatform}
+                onChange={onChange}
+                className="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition"
+              >
+                <option value="meet">Google Meet</option>
+                <option value="zoom">Zoom</option>
+                <option value="teams">Microsoft Teams</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
 
-          <div className="flex gap-3">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">Meeting Link</label>
+              <input
+                type="url"
+                name="meetingLink"
+                value={form.meetingLink}
+                onChange={onChange}
+                placeholder="e.g., https://meet.google.com/abc-defg-hij"
+                className="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition"
+              />
+            </div>
+          </div>
+          <p className="text-xs text-slate-400 -mt-3">
+            Enter the meeting link you created. Students will use this to join the class.
+          </p>
+
+          <div className="flex gap-3 pt-2">
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium"
+              className="px-6 py-2.5 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white font-semibold shadow-lg shadow-indigo-500/50 transition"
             >
               Create Class
             </button>
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-white"
+              className="px-6 py-2.5 rounded-lg bg-slate-600 hover:bg-slate-500 text-white font-semibold transition"
             >
               Cancel
             </button>
@@ -311,7 +420,9 @@ const TutorClasses = () => {
                     </div>
                     
                     <p className="text-sm text-slate-400 mt-2">
-                      Student: {classItem.student?.name} • {classItem.student?.email}
+                      Students: {classItem.students && classItem.students.length > 0 
+                        ? classItem.students.map(s => s.name || s).join(', ')
+                        : (classItem.student?.name || 'N/A')}
                     </p>
                     
                     {classItem.course && (
@@ -347,7 +458,7 @@ const TutorClasses = () => {
                           href={classItem.meetingLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm"
+                          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold shadow-lg shadow-emerald-500/30 transition"
                         >
                           🎥 Join Meeting
                         </a>
@@ -356,12 +467,20 @@ const TutorClasses = () => {
                   </div>
                   
                   {!isPast && classItem.status === 'scheduled' && (
-                    <button
-                      onClick={() => cancelClass(classItem._id)}
-                      className="px-3 py-1.5 rounded-lg bg-red-900/30 hover:bg-red-900/50 border border-red-700 text-red-300 text-sm"
-                    >
-                      Cancel
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => editClass(classItem)}
+                        className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg shadow-indigo-500/30 transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteClass(classItem._id)}
+                        className="px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-sm font-semibold shadow-lg shadow-red-500/30 transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -369,7 +488,7 @@ const TutorClasses = () => {
           })}
         </div>
       )}
-    </DashboardLayout>
+    </div>
   );
 };
 

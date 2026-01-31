@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { LoadingSpinner } from '../components/LoadingSkeleton';
 import FavoriteButton from '../components/FavoriteButton';
 import { ShareButton } from '../utils/socialSharing';
-import SessionNotes from '../components/SessionNotes';
 
 const EnhancedTutorProfile = () => {
   const { id } = useParams();
@@ -13,11 +12,7 @@ const EnhancedTutorProfile = () => {
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState({ courseId: '', date: '' });
 
-  useEffect(() => {
-    loadTutorProfile();
-  }, [id]);
-
-  const loadTutorProfile = async () => {
+  const loadTutorProfile = useCallback(async () => {
     try {
       setLoading(true);
       const res = await api.get(`/tutor/public/${id}`);
@@ -29,7 +24,11 @@ const EnhancedTutorProfile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, navigate]);
+
+  useEffect(() => {
+    loadTutorProfile();
+  }, [loadTutorProfile]);
 
   const handleBook = async (e) => {
     e.preventDefault();

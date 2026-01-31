@@ -6,23 +6,33 @@ const {
   getStudents, deleteUser,
   getBookings, cancelBooking,
   getCourses, approveCourse, rejectCourse,
-  getAuditLogs
+  getAuditLogs,
+  getSettings, updateSettings,
+  exportTutorsCSV,
+  exportStudentsCSV,
+  exportEnrollmentsCSV
 } = require('../controllers/adminController');
 const {
   getPlatformAnalytics,
   getTutorAnalytics,
   getStudentAnalytics,
-  getClassTrends
+  getClassTrends,
+  exportAnalyticsReport
 } = require('../controllers/analyticsController');
 const { protectAdmin } = require('../middleware/authMiddleware');
+const { authLimiter } = require('../middleware/rateLimitMiddleware');
 
 const router = express.Router();
 
 // Auth (no protection needed)
-router.post('/login', [
+router.post('/login', authLimiter, [
   body('email').isEmail().withMessage('Valid email required'),
   body('password').notEmpty().withMessage('Password required')
 ], login);
+
+// Public endpoints (no admin auth)
+// Make courses listing publicly accessible (read-only)
+router.get('/courses', getCourses);
 
 // Protected routes
 router.use(protectAdmin);
@@ -56,7 +66,6 @@ router.put('/bookings/:id/cancel', [
 ], cancelBooking);
 
 // Courses
-router.get('/courses', getCourses);
 router.put('/courses/:id/approve', approveCourse);
 router.put('/courses/:id/reject', [
   body('reason').optional()
@@ -64,6 +73,16 @@ router.put('/courses/:id/reject', [
 
 // Audit Logs
 router.get('/audit-logs', getAuditLogs);
+
+// Export CSV
+router.get('/export/tutors', exportTutorsCSV);
+router.get('/export/students', exportStudentsCSV);
+router.get('/export/enrollments', exportEnrollmentsCSV);
+router.get('/export/analytics-report', exportAnalyticsReport);
+
+// Settings
+router.get('/settings', getSettings);
+router.put('/settings', updateSettings);
 
 // Analytics
 router.get('/analytics/platform', getPlatformAnalytics);

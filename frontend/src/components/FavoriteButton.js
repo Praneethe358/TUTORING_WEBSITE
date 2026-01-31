@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../lib/api';
 
 export const FavoriteButton = ({ tutorId, className = '' }) => {
   const [isFavorited, setIsFavorited] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    checkFavorite();
-  }, [tutorId]);
-
-  const checkFavorite = async () => {
+  const checkFavorite = useCallback(async () => {
     try {
       const res = await api.get(`/favorites/check/${tutorId}`);
       setIsFavorited(res.data.isFavorited);
     } catch (error) {
       console.error('Failed to check favorite:', error);
     }
-  };
+  }, [tutorId]);
+
+  useEffect(() => {
+    checkFavorite();
+  }, [checkFavorite]);
 
   const toggleFavorite = async (e) => {
     e.stopPropagation();

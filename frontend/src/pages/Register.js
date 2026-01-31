@@ -1,13 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
-import FormInput from '../components/FormInput';
+import { CourseraInput, CourseraButton, CourseraAlert } from '../components/CourseraCard';
+import { colors, typography, spacing, borderRadius } from '../theme/designSystem';
 
-const Register = () => {
+const Register = ({ inline = false, onLoginSuccess }) => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', confirm: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', course: '', password: '', confirm: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Pre-fill form from sessionStorage if booking data exists
+  useEffect(() => {
+    const bookingData = sessionStorage.getItem('bookingData');
+    if (bookingData) {
+      try {
+        const data = JSON.parse(bookingData);
+        setForm(prev => ({
+          ...prev,
+          name: data.name || '',
+          email: data.email || '',
+          phone: data.phone || ''
+        }));
+        // Clear the booking data after using it
+        sessionStorage.removeItem('bookingData');
+      } catch (err) {
+        console.error('Error parsing booking data:', err);
+      }
+    }
+  }, []);
 
   const onChange = e => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -20,10 +41,14 @@ const Register = () => {
     }
     setLoading(true);
     try {
+            if (onLoginSuccess) {
+              onLoginSuccess();
+            }
       await api.post('/student/register', {
         name: form.name,
         email: form.email,
         phone: form.phone,
+        course: form.course,
         password: form.password
       });
       navigate('/student/dashboard');
@@ -41,32 +66,63 @@ const Register = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1 className="text-2xl font-semibold text-center mb-6">Student Sign Up</h1>
-      {error && <div className="mb-4 p-3 text-sm text-red-400 bg-red-900 bg-opacity-20 rounded">{error}</div>}
-      <FormInput label="Full Name" name="name" value={form.name} onChange={onChange} required placeholder="John Doe" />
-      <FormInput label="Email" name="email" type="email" value={form.email} onChange={onChange} required placeholder="student@example.com" />
-      <FormInput label="Mobile Number" name="phone" value={form.phone} onChange={onChange} required placeholder="1234567890" />
-      <div className="mb-4 p-3 text-xs text-slate-300 bg-slate-800 rounded">
-        <p className="font-semibold mb-2">Password requirements:</p>
-        <ul className="list-disc list-inside space-y-1">
-          <li>At least 8 characters</li>
-          <li>At least 1 uppercase letter (A-Z)</li>
-          <li>At least 1 lowercase letter (a-z)</li>
-          <li>At least 1 number (0-9)</li>
-        </ul>
-      </div>
-      <FormInput label="Password" name="password" type="password" value={form.password} onChange={onChange} required placeholder="••••••••" />
-      <FormInput label="Confirm Password" name="confirm" type="password" value={form.confirm} onChange={onChange} required placeholder="••••••••" />
-      <button
+      {!inline && (
+        <h1 style={{
+          fontSize: typography.fontSize['2xl'],
+          fontWeight: typography.fontWeight.semibold,
+          textAlign: 'center',
+          marginBottom: spacing.xl,
+          color: colors.textPrimary,
+        }}>
+          Student Sign Up
+        </h1>
+      )}
+      {error && <CourseraAlert type="error" onClose={() => setError('')}>{error}</CourseraAlert>}
+      <CourseraInput label="Full Name" name="name" value={form.name} onChange={onChange} required placeholder="John Doe" />
+      <CourseraInput label="Email" name="email" type="email" value={form.email} onChange={onChange} required placeholder="student@example.com" />
+      <CourseraInput label="Mobile Number" name="phone" value={form.phone} onChange={onChange} required placeholder="1234567890" />
+      <CourseraInput label="Course" name="course" value={form.course} onChange={onChange} required placeholder="e.g., Mathematics, Science, English" />
+      {!inline && (
+        <div style={{
+          marginBottom: spacing.lg,
+          padding: spacing.lg,
+          fontSize: typography.fontSize.xs,
+          color: colors.textSecondary,
+          backgroundColor: colors.bgSecondary,
+          borderRadius: borderRadius.md,
+          border: `1px solid ${colors.gray200}`,
+        }}>
+          <p style={{ fontWeight: typography.fontWeight.semibold, marginBottom: spacing.sm, color: colors.textPrimary }}>
+            Password requirements:
+          </p>
+          <ul style={{ paddingLeft: spacing.xl, listStyleType: 'disc' }}>
+            <li style={{ marginBottom: spacing.xs }}>At least 8 characters</li>
+            <li style={{ marginBottom: spacing.xs }}>At least 1 uppercase letter (A-Z)</li>
+            <li style={{ marginBottom: spacing.xs }}>At least 1 lowercase letter (a-z)</li>
+            <li style={{ marginBottom: spacing.xs }}>At least 1 number (0-9)</li>
+          </ul>
+        </div>
+      )}
+      <CourseraInput label="Password" name="password" type="password" value={form.password} onChange={onChange} required placeholder="••••••••" />
+      <CourseraInput label="Confirm Password" name="confirm" type="password" value={form.confirm} onChange={onChange} required placeholder="••••••••" />
+      <CourseraButton
         type="submit"
         disabled={loading}
-        className="w-full py-3 mt-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition disabled:opacity-60"
+        fullWidth={true}
+        style={{ marginTop: spacing.md }}
       >
         {loading ? 'Creating account...' : 'Create Account'}
-      </button>
-      <p className="text-sm text-slate-400 mt-4 text-center">
-        Already have an account? <Link className="text-indigo-400" to="/login">Log in</Link>
-      </p>
+      </CourseraButton>
+      {!inline && (
+        <p style={{
+          fontSize: typography.fontSize.sm,
+          color: colors.textSecondary,
+          marginTop: spacing.lg,
+          textAlign: 'center',
+        }}>
+          Already have an account? <Link to="/login" style={{ color: colors.accent, textDecoration: 'none', fontWeight: typography.fontWeight.semibold }}>Log in</Link>
+        </p>
+      )}
     </form>
   );
 };

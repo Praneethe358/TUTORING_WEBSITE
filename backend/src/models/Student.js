@@ -9,8 +9,17 @@ const studentSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
   avatar: { type: String, default: '' },
   timezone: { type: String, default: 'UTC' },
+  course: { type: String, default: '' },
+  
+  // Email verification
+  isEmailVerified: { type: Boolean, default: false },
+  emailVerificationToken: { type: String },
+  emailVerificationExpires: { type: Date },
+  
+  // Password reset
   resetPasswordToken: { type: String },
   resetPasswordExpires: { type: Date },
+  
   // Google OAuth linkage (login only; requires signup first)
   googleId: { type: String, index: true },
   googleEmail: { type: String, lowercase: true, trim: true }

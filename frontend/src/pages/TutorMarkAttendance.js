@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../components/DashboardLayout';
-import TutorSidebar from '../components/TutorSidebar';
 import api from '../lib/api';
 
 /**
@@ -111,9 +109,9 @@ const TutorMarkAttendance = () => {
   );
 
   return (
-    <DashboardLayout sidebar={TutorSidebar}>
+    <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Mark Attendance</h1>
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-white">Mark Attendance</h1>
         <p className="text-slate-400 mt-1">Record attendance for completed classes</p>
       </div>
 
@@ -278,7 +276,7 @@ const TutorMarkAttendance = () => {
           </div>
         </div>
       )}
-    </DashboardLayout>
+    </div>
   );
 };
 

@@ -36,48 +36,86 @@ const TutorCourses = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100">
-      <div className="max-w-4xl mx-auto px-4 py-10 space-y-6">
-        <h1 className="text-3xl font-semibold">Courses</h1>
-        {message && <div className="text-sm text-emerald-400">{message}</div>}
-        {error && <div className="text-sm text-red-400">{error}</div>}
+    <div>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-white">My Courses</h1>
+          <p className="text-slate-400 mt-1">Create and manage your courses</p>
+        </div>
+        {message && <div className="p-3 rounded-lg bg-emerald-900/30 border border-emerald-700 text-emerald-400">{message}</div>}
+        {error && <div className="p-3 rounded-lg bg-red-900/30 border border-red-700 text-red-400">{error}</div>}
 
-        <form onSubmit={create} className="p-5 rounded-xl bg-slate-800 border border-slate-700 space-y-3">
+        <form onSubmit={create} className="p-6 rounded-xl bg-slate-800 border border-slate-700 space-y-4">
+          <h2 className="text-xl font-semibold text-white">Create New Course</h2>
           <div>
-            <p className="text-sm text-slate-300">Subject</p>
-            <input className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100" name="subject" value={form.subject} onChange={onChange} required />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-
-            </div>
-            <div>
-              <p className="text-sm text-slate-300">Duration (minutes)</p>
-              <input className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100" type="number" name="durationMinutes" value={form.durationMinutes} onChange={onChange} required />
-            </div>
+            <label className="block text-sm text-slate-300 mb-2">Subject</label>
+            <input 
+              className="w-full px-4 py-3 sm:py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[44px]" 
+              name="subject" 
+              value={form.subject} 
+              onChange={onChange} 
+              placeholder="e.g., Mathematics, Physics, English"
+              required 
+            />
           </div>
           <div>
-            <p className="text-sm text-slate-300">Description</p>
-            <textarea className="w-full mt-1 px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100" name="description" value={form.description} onChange={onChange} />
+            <label className="block text-sm text-slate-300 mb-2">Duration (minutes)</label>
+            <input 
+              className="w-full px-4 py-3 sm:py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[44px]" 
+              type="number" 
+              name="durationMinutes" 
+              value={form.durationMinutes} 
+              onChange={onChange} 
+              placeholder="60"
+              required 
+            />
           </div>
-          <button type="submit" className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white">Create Course</button>
+          <div>
+            <label className="block text-sm text-slate-300 mb-2">Description</label>
+            <textarea 
+              className="w-full px-4 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" 
+              name="description" 
+              value={form.description} 
+              onChange={onChange} 
+              rows="3"
+              placeholder="Describe what this course covers..."
+            />
+          </div>
+          <button type="submit" className="px-6 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium transition min-h-[44px]">
+            Create Course
+          </button>
         </form>
 
-        <div className="p-5 rounded-xl bg-slate-800 border border-slate-700 space-y-2">
-          <h2 className="text-lg font-semibold">My Courses</h2>
-          {courses.length === 0 && <p className="text-slate-400 text-sm">No courses yet.</p>}
-          {courses.map(c => (
-            <div key={c._id} className="p-3 rounded-lg bg-slate-900 border border-slate-700 flex justify-between">
-              <div>
-                <p className="font-semibold">{c.subject}</p>
-                <p className="text-sm text-slate-400">{c.description}</p>
-              </div>
-              <div className="text-right">
-
-                <p className="text-xs text-slate-400">{c.durationMinutes} mins • {c.status}</p>
-              </div>
+        <div className="p-6 rounded-xl bg-slate-800 border border-slate-700">
+          <h2 className="text-xl font-semibold text-white mb-4">All Courses</h2>
+          {courses.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-slate-400">No courses yet. Create your first course above.</p>
             </div>
-          ))}
+          ) : (
+            <div className="space-y-3">
+              {courses.map(c => (
+                <div key={c._id} className="p-4 rounded-lg bg-slate-900 border border-slate-700 hover:border-indigo-500 transition">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-white">{c.subject}</h3>
+                      <p className="text-sm text-slate-400 mt-1">{c.description || 'No description provided'}</p>
+                      <div className="flex items-center gap-4 mt-3">
+                        <span className="text-xs text-slate-500">⏱️ {c.durationMinutes} minutes</span>
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          c.status === 'approved' ? 'bg-green-900/30 text-green-400' :
+                          c.status === 'pending' ? 'bg-yellow-900/30 text-yellow-400' :
+                          'bg-red-900/30 text-red-400'
+                        }`}>
+                          {c.status || 'pending'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

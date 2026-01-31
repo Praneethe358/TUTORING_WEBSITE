@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
-import DashboardLayout from '../components/DashboardLayout';
-import TutorSidebar from '../components/TutorSidebar';
 import api from '../lib/api';
 import { useAuth } from '../context/AuthContext';
+import { colors, spacing, typography, borderRadius, shadows } from '../theme/designSystem';
 
 /**
  * TUTOR MESSAGES PAGE
@@ -16,6 +15,7 @@ import { useAuth } from '../context/AuthContext';
 const TutorMessages = () => {
   const { user } = useAuth();
   const [conversations, setConversations] = useState([]);
+  const [students, setStudents] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -25,12 +25,41 @@ const TutorMessages = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const typingTimeout = React.useRef(null);
+  const messagesEndRef = React.useRef(null);
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    const newSocket = io(process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000', { withCredentials: true });
-    newSocket.on('connect', () => { console.log('Connected'); newSocket.emit('user_online', user.id); });
+    const newSocket = io(process.env.REACT_APP_API_URL?.replace('/api', '') || 'http://localhost:5000', {
+      withCredentials: true,
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 10000
+    });
+    newSocket.on('connect', () => {
+      setErrorMsg('');
+      newSocket.emit('user_online', user.id);
+    });
+    newSocket.on('disconnect', (reason) => {
+      if (reason !== 'io client disconnect') {
+        setErrorMsg('Connection lost. Reconnecting...');
+      }
+    });
+    newSocket.on('reconnect', () => {
+      setErrorMsg('');
+      newSocket.emit('user_online', user.id);
+    });
+    newSocket.on('reconnect_failed', () => {
+      setErrorMsg('Unable to reconnect. Please refresh the page.');
+    });
     newSocket.on('users_online', setOnlineUsers);
-    newSocket.on('receive_message', (data) => { setMessages(prev => [...prev, { _id: Math.random(), sender: data.senderId, receiver: user.id, content: data.content, createdAt: data.timestamp, isRead: true, senderType: 'student' }]); });
+    newSocket.on('receive_message', (data) => {
+      // Append message to current thread if viewing, otherwise just update conversations list
+      setMessages(prev => [...prev, { _id: Math.random(), sender: data.senderId, receiver: user.id, content: data.content, createdAt: data.timestamp, isRead: true, senderType: data.senderType || 'student' }]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      setConversations(prev => prev.map(c => c.userId === data.senderId ? { ...c, lastMessage: data.content, lastMessageTime: data.timestamp, unreadCount: (c.unreadCount || 0) + (selectedUser?.userId === data.senderId ? 0 : 1) } : c));
+    });
     newSocket.on('user_typing', () => setIsTyping(true));
     newSocket.on('user_stopped_typing', () => setIsTyping(false));
     setSocket(newSocket);
@@ -38,12 +67,88 @@ const TutorMessages = () => {
   }, [user.id]);
 
   useEffect(() => {
-    api.get('/messages/conversations').then(res => setConversations(res.data.conversations || [])).catch(err => console.error(err)).finally(() => setLoading(false));
+    const load = async () => {
+      try {
+        const [convRes, classRes, courseRes, enrollRes] = await Promise.all([
+          api.get('/messages/conversations'),
+          api.get('/classes'),
+          api.get('/lms/courses?instructor=current'),
+          api.get('/lms/instructor/students')
+        ]);
+        setConversations(convRes.data.conversations || []);
+
+        // Build student list from classes the tutor is teaching
+        const classStudents = Array.isArray(classRes.data?.data) ? classRes.data.data : [];
+        const uniqueStudents = new Map();
+        classStudents.forEach(cls => {
+          if (cls.student?._id) {
+            uniqueStudents.set(cls.student._id.toString(), {
+              userId: cls.student._id,
+              user: { 
+                name: cls.student.name, 
+                email: cls.student.email,
+                avatar: cls.student.avatar || cls.student.profileImage
+              },
+              source: 'student'
+            });
+          }
+        });
+
+        // Add students enrolled in tutor's LMS courses (even if no class scheduled yet)
+        const courses = Array.isArray(courseRes.data?.data) ? courseRes.data.data : [];
+        courses.forEach(course => {
+          (course.enrolledStudents || []).forEach(student => {
+            const id = student._id || student.id;
+            if (id) {
+              uniqueStudents.set(id.toString(), {
+                userId: id,
+                user: { 
+                  name: student.name, 
+                  email: student.email,
+                  avatar: student.avatar || student.profileImage
+                },
+                source: 'enrollment'
+              });
+            }
+          });
+        });
+
+        // Add any enrollment-based students from instructor-students endpoint (covers cases where populate may be missing)
+        const instructorStudents = Array.isArray(enrollRes.data?.data) ? enrollRes.data.data : [];
+        instructorStudents.forEach(s => {
+          if (s.userId) {
+            uniqueStudents.set(s.userId.toString(), {
+              userId: s.userId,
+              user: { 
+                ...s.user,
+                avatar: s.user?.avatar || s.user?.profileImage
+              },
+              source: 'enrollment'
+            });
+          }
+        });
+        setStudents(Array.from(uniqueStudents.values()));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
   }, []);
 
   useEffect(() => {
     if (selectedUser) {
-      api.get(`/messages/conversation/${selectedUser._id || selectedUser.userId}`).then(res => setMessages(res.data.messages || [])).catch(err => console.error(err));
+      api.get(`/messages/conversation/${selectedUser._id || selectedUser.userId}`)
+        .then(res => setMessages(res.data.messages || []))
+        .catch(err => {
+          console.error(err);
+          if (err?.response?.status === 403) {
+            setErrorMsg('You are not authorized to view this conversation.');
+          } else {
+            setErrorMsg('Failed to load messages.');
+          }
+        });
     }
   }, [selectedUser]);
 
@@ -55,9 +160,17 @@ const TutorMessages = () => {
       socket?.emit('send_message', { senderId: user.id, receiverId, content: newMessage, senderType: 'tutor', receiverType: 'student' });
       await api.post('/messages/send', { receiverId, content: newMessage, senderType: 'tutor', receiverType: 'student' });
       setMessages(prev => [...prev, { _id: Math.random(), sender: user.id, receiver: receiverId, content: newMessage, createdAt: new Date(), isRead: false, senderType: 'tutor' }]);
+      setConversations(prev => prev.map(c => c.userId === receiverId ? { ...c, lastMessage: newMessage, lastMessageTime: new Date(), unreadCount: 0 } : c));
       setNewMessage('');
       socket?.emit('stop_typing', { receiverId });
-    } catch (error) { console.error(error); }
+    } catch (error) {
+      console.error(error);
+      if (error?.response?.status === 403) {
+        setErrorMsg('You are not authorized to chat with this student.');
+      } else {
+        setErrorMsg('Failed to send message. Please try again.');
+      }
+    }
   };
 
   const handleTyping = (e) => {
@@ -69,59 +182,155 @@ const TutorMessages = () => {
     }
   };
 
+  // Auto-scroll to latest message
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages.length]);
+
+  const combinedList = React.useMemo(() => {
+    const convIds = new Set(conversations.map(c => c.userId?.toString()));
+    const convEntries = conversations.map(conv => ({
+      userId: conv.userId,
+      user: {
+        ...conv.user,
+        avatar: conv.user?.avatar || conv.user?.profileImage || conv.user?.avatarUrl
+      },
+      lastMessage: conv.lastMessage,
+      lastMessageTime: conv.lastMessageTime,
+      unreadCount: conv.unreadCount,
+      source: 'conversation'
+    }));
+
+    const studentEntries = students
+      .filter(s => !convIds.has((s.userId || '').toString()))
+      .map(s => ({
+        userId: s.userId,
+        user: s.user,
+        source: 'student'
+      }));
+
+    return [...convEntries, ...studentEntries];
+  }, [conversations, students]);
+
+  const filteredList = combinedList.filter(item =>
+    (item.user?.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (item.user?.email || '').toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleSelectUser = (entry) => {
+    setSelectedUser(entry);
+    setMessages([]);
+    setErrorMsg('');
+    setConversations(prev => prev.map(c => c.userId === entry.userId ? { ...c, unreadCount: 0 } : c));
+  };
+
   return (
-    <DashboardLayout sidebar={TutorSidebar}>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Messages</h1>
-        <p className="text-slate-400 mt-1">Chat with your students</p>
-        <p className="text-slate-400 mt-1">Real-time chat with students</p>
+    <div>
+      <div style={{ marginBottom: spacing['2xl'] }}>
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-2">Messages</h1>
+        <p style={{ color: colors.textSecondary, marginTop: spacing.sm }}>Chat with your students</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: spacing.lg, height: 'calc(100vh - 220px)', maxHeight: '700px' }} className="md:grid-cols-[380px_1fr]">
         {/* Conversations List */}
-        <div className="lg:col-span-1 bg-slate-800 rounded-xl border border-slate-700 overflow-y-auto">
-          <div className="p-4 border-b border-slate-700">
+        <div style={{ backgroundColor: colors.white, borderRadius: borderRadius.lg, border: `1px solid ${colors.gray200}`, overflow: 'auto', boxShadow: shadows.sm }}>
+          <div style={{ padding: spacing.lg, borderBottom: `1px solid ${colors.gray200}` }}>
             <input
               type="text"
               placeholder="Search students..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              style={{
+                width: '100%',
+                padding: `${spacing.sm} ${spacing.md}`,
+                backgroundColor: colors.bgSecondary,
+                border: `1px solid ${colors.gray300}`,
+                borderRadius: borderRadius.md,
+                color: colors.text,
+                fontSize: typography.fontSize.sm,
+                outline: 'none',
+              }}
             />
           </div>
           {loading ? (
-            <p className="p-4 text-slate-400">Loading conversations...</p>
-          ) : conversations.length === 0 ? (
-            <p className="p-4 text-slate-400">No conversations yet</p>
+            <p style={{ padding: spacing.lg, color: colors.textSecondary }}>Loading conversations...</p>
+          ) : filteredList.length === 0 ? (
+            <p style={{ padding: spacing.lg, color: colors.textSecondary }}>No students found</p>
           ) : (
-            <div className="divide-y divide-slate-700">
-              {conversations
-                .filter(conv => conv.user?.name?.toLowerCase().includes(searchQuery.toLowerCase()))
-                .map(conv => {
-                const isOnline = onlineUsers.includes(conv.userId);
+            <div>
+              {filteredList.map(entry => {
+                const isOnline = onlineUsers.includes(entry.userId);
                 return (
               <button
-                key={conv.userId}
-                onClick={() => setSelectedUser(conv)}
-                className={`w-full p-4 text-left hover:bg-slate-700/50 transition ${
-                  selectedUser?.userId === conv.userId ? 'bg-slate-700' : ''
-                }`}
+                key={entry.userId}
+                onClick={() => handleSelectUser(entry)}
+                style={{
+                  width: '100%',
+                  padding: spacing.md,
+                  textAlign: 'left',
+                  backgroundColor: selectedUser?.userId === entry.userId ? colors.accentLight : colors.white,
+                  border: 'none',
+                  borderBottom: `1px solid ${colors.gray200}`,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  borderLeft: selectedUser?.userId === entry.userId ? `3px solid ${colors.accent}` : '3px solid transparent',
+                }}
+                onMouseOver={(e) => {
+                  if (selectedUser?.userId !== entry.userId) {
+                    e.currentTarget.style.backgroundColor = colors.bgSecondary;
+                  }
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = selectedUser?.userId === entry.userId ? colors.accentLight : colors.white;
+                }}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-white">{conv.user?.name}</h3>
-                    <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-slate-600'}`} />
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: spacing.md }}>
+                  <div style={{ position: 'relative', flexShrink: 0 }}>
+                    <div style={{
+                      width: '48px',
+                      height: '48px',
+                      borderRadius: '50%',
+                      backgroundColor: colors.gray300,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      border: `2px solid ${colors.gray200}`
+                    }}>
+                      {entry.user?.avatar ? (
+                        <img 
+                          src={entry.user.avatar.startsWith('http') ? entry.user.avatar : `${process.env.REACT_APP_API_URL?.replace('/api', '')}${entry.user.avatar}`} 
+                          alt="avatar" 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                          onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = `<span style="fontSize: 18px; fontWeight: bold; color: ${colors.text}">${entry.user?.name?.charAt(0).toUpperCase()}</span>`; }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: '18px', fontWeight: 'bold', color: colors.text }}>
+                          {entry.user?.name?.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    {isOnline && (
+                      <span style={{ position: 'absolute', bottom: '0', right: '0', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: colors.success, border: `2px solid ${colors.white}` }} />
+                    )}
                   </div>
-                  {conv.unreadCount > 0 && (
-                    <span className="w-5 h-5 bg-indigo-600 rounded-full text-xs text-white flex items-center justify-center">
-                      {conv.unreadCount}
-                    </span>
-                  )}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <h3 style={{ fontWeight: typography.fontWeight.semibold, color: colors.text, fontSize: typography.fontSize.sm, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{entry.user?.name}</h3>
+                      {entry.unreadCount > 0 && (
+                        <span style={{ minWidth: '20px', height: '20px', backgroundColor: colors.accent, borderRadius: '50%', fontSize: '11px', color: colors.white, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 6px', fontWeight: 'bold' }}>
+                          {entry.unreadCount}
+                        </span>
+                      )}
+                    </div>
+                    <p style={{ fontSize: typography.fontSize.xs, color: colors.textSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', marginBottom: '2px' }}>{entry.lastMessage || 'Start a new conversation'}</p>
+                    {entry.lastMessageTime && (
+                      <p style={{ fontSize: '11px', color: colors.textSecondary }}>
+                        {new Date(entry.lastMessageTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                <p className="text-sm text-slate-400 truncate">{conv.lastMessage}</p>
-                <p className="text-xs text-slate-500 mt-1">
-                  {new Date(conv.lastMessageTime).toLocaleDateString()}
-                </p>
               </button>
                 );
               })}
@@ -130,62 +339,185 @@ const TutorMessages = () => {
         </div>
 
         {/* Chat Area */}
-        <div className="lg:col-span-2 bg-slate-800 rounded-xl border border-slate-700 flex flex-col">
+        <div style={{ backgroundColor: colors.white, borderRadius: borderRadius.lg, border: `1px solid ${colors.gray200}`, display: 'flex', flexDirection: 'column', boxShadow: shadows.sm }}>
           {selectedUser ? (
             <>
               {/* Chat Header */}
-              <div className="p-4 border-b border-slate-700">
-                <h2 className="text-lg font-semibold text-white">{selectedUser.user?.name}</h2>
-                <p className="text-sm text-slate-400">{onlineUsers.includes(selectedUser.userId) ? 'Online' : 'Offline'}</p>
+              <div style={{ padding: spacing.lg, borderBottom: `1px solid ${colors.gray200}` }}>
+                <h2 style={{ fontSize: typography.fontSize.lg, fontWeight: typography.fontWeight.semibold, color: colors.text }}>{selectedUser.user?.name}</h2>
+                <p style={{ fontSize: typography.fontSize.sm, color: colors.textSecondary }}>{onlineUsers.includes(selectedUser.userId) ? 'Online' : 'Offline'}</p>
               </div>
 
               {/* Messages */}
-              <div className="flex-1 p-4 overflow-y-auto space-y-3">
+              <div style={{ flex: 1, padding: spacing.lg, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: spacing.md }}>
+                {errorMsg && (
+                  <div style={{ padding: spacing.sm, backgroundColor: '#fee2e2', border: `1px solid #fca5a5`, color: '#991b1b', borderRadius: borderRadius.md }}>
+                    {errorMsg}
+                  </div>
+                )}
                 {messages.length === 0 ? (
-                  <p className="text-center text-slate-400 text-sm">No messages yet. Start the conversation!</p>
+                  <p style={{ textAlign: 'center', color: colors.textSecondary, fontSize: typography.fontSize.sm }}>No messages yet. Start the conversation!</p>
                 ) : (
                   messages.map(msg => (
-                    <div key={msg._id} className={`flex ${msg.senderType === 'tutor' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-xs px-4 py-2 rounded-lg ${msg.senderType === 'tutor' ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-100'}`}>
-                        <p className="text-sm">{msg.content}</p>
-                        <p className="text-xs opacity-70 mt-1">{new Date(msg.createdAt).toLocaleTimeString()}</p>
+                    <div key={msg._id} style={{ display: 'flex', justifyContent: msg.senderType === 'tutor' ? 'flex-end' : 'flex-start', alignItems: 'flex-end', gap: spacing.sm }}>
+                      {msg.senderType !== 'tutor' && (
+                        <div style={{
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '50%',
+                          backgroundColor: colors.gray300,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          overflow: 'hidden',
+                          flexShrink: 0,
+                          border: `2px solid ${colors.gray200}`
+                        }}>
+                          {selectedUser?.user?.avatar ? (
+                            <img 
+                              src={selectedUser.user.avatar.startsWith('http') ? selectedUser.user.avatar : `${process.env.REACT_APP_API_URL?.replace('/api', '')}${selectedUser.user.avatar}`} 
+                              alt="avatar" 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                              onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = `<span style="fontSize: ${typography.fontSize.lg}; fontWeight: bold; color: ${colors.text}">${selectedUser?.user?.name?.charAt(0).toUpperCase()}</span>`; }}
+                            />
+                          ) : (
+                            <span style={{ fontSize: typography.fontSize.lg, fontWeight: 'bold', color: colors.text }}>
+                              {selectedUser?.user?.name?.charAt(0).toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      <div style={{
+                        maxWidth: '70%',
+                        padding: `${spacing.sm} ${spacing.md}`,
+                        borderRadius: borderRadius.md,
+                        backgroundColor: msg.senderType === 'tutor' ? colors.accent : colors.bgSecondary,
+                        color: msg.senderType === 'tutor' ? colors.white : colors.text,
+                        boxShadow: shadows.sm,
+                        wordWrap: 'break-word'
+                      }}>
+                        {msg.senderType !== 'tutor' && (
+                          <p style={{ fontSize: typography.fontSize.xs, fontWeight: 'semibold', marginBottom: spacing.xs, opacity: 0.8 }}>
+                            {selectedUser?.user?.name}
+                          </p>
+                        )}
+                        <p style={{ fontSize: typography.fontSize.sm, lineHeight: '1.5' }}>{msg.content}</p>
+                        <p style={{ fontSize: typography.fontSize.xs, opacity: 0.7, marginTop: spacing.xs, textAlign: 'right' }}>
+                          {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
                       </div>
+                      {msg.senderType === 'tutor' && (
+                        <div style={{
+                          width: '36px',
+                          height: '36px',
+                          borderRadius: '50%',
+                          backgroundColor: colors.gray300,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          overflow: 'hidden',
+                          flexShrink: 0,
+                          border: `2px solid ${colors.gray200}`
+                        }}>
+                          {user?.profileImage || user?.avatar ? (
+                            <img 
+                              src={(user?.profileImage || user?.avatar)?.startsWith('http') ? (user?.profileImage || user?.avatar) : `${process.env.REACT_APP_API_URL?.replace('/api', '')}${user?.profileImage || user?.avatar}`} 
+                              alt="avatar" 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                              onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = `<span style="fontSize: ${typography.fontSize.lg}; fontWeight: bold; color: ${colors.text}">${user?.name?.charAt(0).toUpperCase()}</span>`; }}
+                            />
+                          ) : (
+                            <span style={{ fontSize: typography.fontSize.lg, fontWeight: 'bold', color: colors.text }}>
+                              {user?.name?.charAt(0).toUpperCase()}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))
                 )}
                 {isTyping && (
-                  <div className="flex justify-start">
-                    <div className="px-4 py-2 rounded-lg bg-slate-700 text-slate-100">
-                      <p className="text-sm text-slate-400 italic">Student is typing...</p>
+                  <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', gap: spacing.sm }}>
+                    <div style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      backgroundColor: colors.gray300,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                      border: `2px solid ${colors.gray200}`
+                    }}>
+                      {selectedUser?.user?.avatar ? (
+                        <img 
+                          src={selectedUser.user.avatar.startsWith('http') ? selectedUser.user.avatar : `${process.env.REACT_APP_API_URL?.replace('/api', '')}${selectedUser.user.avatar}`} 
+                          alt="avatar" 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                          onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = `<span style="fontSize: ${typography.fontSize.lg}; fontWeight: bold; color: ${colors.text}">${selectedUser?.user?.name?.charAt(0).toUpperCase()}</span>`; }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: typography.fontSize.lg, fontWeight: 'bold', color: colors.text }}>
+                          {selectedUser?.user?.name?.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ padding: `${spacing.sm} ${spacing.md}`, borderRadius: borderRadius.md, backgroundColor: colors.bgSecondary, boxShadow: shadows.sm }}>
+                      <p style={{ fontSize: typography.fontSize.sm, color: colors.textSecondary, fontStyle: 'italic' }}>Typing...</p>
                     </div>
                   </div>
                 )}
+                <div ref={messagesEndRef} />
               </div>
 
               {/* Input */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-slate-700">
-                <div className="flex gap-2">
+              <form onSubmit={handleSendMessage} style={{ padding: spacing.lg, borderTop: `1px solid ${colors.gray200}` }}>
+                <div style={{ display: 'flex', gap: spacing.sm }}>
                   <input
                     type="text"
                     value={newMessage}
                     onChange={handleTyping}
                     placeholder="Type a message..."
-                    className="flex-1 px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    style={{
+                      flex: 1,
+                      padding: `${spacing.sm} ${spacing.md}`,
+                      backgroundColor: colors.bgSecondary,
+                      border: `1px solid ${colors.gray300}`,
+                      borderRadius: borderRadius.md,
+                      color: colors.text,
+                      fontSize: typography.fontSize.sm,
+                      outline: 'none',
+                    }}
                   />
-                  <button type="submit" disabled={!newMessage.trim()} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-white font-medium transition disabled:opacity-50">
+                  <button
+                    type="submit"
+                    disabled={!newMessage.trim()}
+                    style={{
+                      padding: `${spacing.sm} ${spacing.lg}`,
+                      backgroundColor: colors.accent,
+                      color: colors.white,
+                      fontWeight: typography.fontWeight.medium,
+                      borderRadius: borderRadius.md,
+                      border: 'none',
+                      cursor: !newMessage.trim() ? 'not-allowed' : 'pointer',
+                      opacity: !newMessage.trim() ? 0.5 : 1,
+                      transition: 'opacity 0.2s',
+                    }}
+                  >
                     Send
                   </button>
                 </div>
               </form>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-slate-400">
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: colors.textSecondary }}>
               Select a student to start chatting
             </div>
           )}
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 

@@ -5,6 +5,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const http = require('http');
 const socketIO = require('socket.io');
+const enforceHTTPS = require('./src/middleware/httpsMiddleware');
 const studentRoutes = require('./src/routes/studentRoutes');
 const tutorRoutes = require('./src/routes/tutorRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
@@ -15,19 +16,35 @@ const availabilityRoutes = require('./src/routes/availabilityRoutes');
 const attendanceRoutes = require('./src/routes/attendanceRoutes');
 const announcementRoutes = require('./src/routes/announcementRoutes');
 const notificationRoutes = require('./src/routes/notificationRoutes');
-const googleRoutes = require('./src/routes/googleRoutes');
 const favoriteRoutes = require('./src/routes/favoriteRoutes');
 const sessionNoteRoutes = require('./src/routes/sessionNoteRoutes');
 const avatarRoutes = require('./src/routes/avatarRoutes');
+const uploadRoutes = require('./src/routes/uploadRoutes');
+const lmsRoutes = require('./src/routes/lmsRoutes'); // LMS routes for course management
+const studentLmsRoutes = require('./src/routes/studentLmsRoutes'); // Student LMS routes
+const adminLmsRoutes = require('./src/routes/adminLmsRoutes'); // Admin LMS routes
+const searchRoutes = require('./src/routes/searchRoutes');
+const contactRoutes = require('./src/routes/contact'); // Contact form routes
+const emailVerificationRoutes = require('./src/routes/emailVerificationRoutes'); // Email verification routes
 const errorHandler = require('./src/middleware/errorHandler');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const server = http.createServer(app);
 
+// Basic rate limiting for auth and sensitive endpoints
+const authLimiter = rateLimit({
+  windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000),
+  max: Number(process.env.RATE_LIMIT_MAX || 10),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many requests, please try again later.' }
+});
+
 // Socket.io setup
 const io = socketIO(server, {
   cors: {
-    origin: ['http://localhost:3000', 'http://localhost:3001', process.env.CLIENT_URL || 'http://localhost:3000'],
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', process.env.CLIENT_URL || 'http://localhost:3000'],
     credentials: true
   }
 });
@@ -81,14 +98,28 @@ io.on('connection', (socket) => {
   });
 });
 
+// Middleware
+app.use(enforceHTTPS); // HTTPS enforcement in production
+
 // Allow localhost variants for development
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', process.env.CLIENT_URL || 'http://localhost:3000'],
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', process.env.CLIENT_URL || 'http://localhost:3000'],
   credentials: true
 }));
 
 app.use(express.json());
 app.use(cookieParser());
+
+// Auth & sensitive endpoints rate limiting
+app.use('/api/student/login', authLimiter);
+app.use('/api/student/register', authLimiter);
+app.use('/api/student/forgot-password', authLimiter);
+app.use('/api/student/reset-password', authLimiter);
+app.use('/api/tutor/login', authLimiter);
+app.use('/api/tutor/register', authLimiter);
+app.use('/api/tutor/forgot-password', authLimiter);
+app.use('/api/tutor/reset-password', authLimiter);
+app.use('/api/admin/login', authLimiter);
 
 app.use('/uploads', express.static('uploads'));
 
@@ -98,7 +129,6 @@ app.get('/api/health', (_req, res) => {
 
 app.use('/api/student', studentRoutes);
 app.use('/api/tutor', tutorRoutes);
-app.use('/api/tutor/google', googleRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/materials', materialRoutes);
@@ -110,6 +140,13 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/session-notes', sessionNoteRoutes);
 app.use('/api/avatar', avatarRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/lms', lmsRoutes); // LMS API routes
+app.use('/api/lms/student', studentLmsRoutes); // Student LMS routes
+app.use('/api/lms/admin', adminLmsRoutes); // Admin LMS routes
+app.use('/api/search', searchRoutes);
+app.use('/api/contact', contactRoutes); // Contact form routes
+app.use('/api/email-verification', emailVerificationRoutes); // Email verification routes
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;

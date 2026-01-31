@@ -18,22 +18,21 @@ const tutorSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: false },
   profileImage: { type: String },
   avatar: { type: String, default: '' },
+  cvPath: { type: String }, // NEW: Path to uploaded CV file
   timezone: { type: String, default: 'UTC' },
   availability: [availabilitySchema],
   approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
   approvedAt: { type: Date },
   rejectionReason: { type: String },
-  resetPasswordToken: { type: String },
-  resetPasswordExpires: { type: Date },
   
-  // Google Calendar Integration
-  googleAuth: {
-    accessToken: { type: String },
-    refreshToken: { type: String },
-    tokenExpiry: { type: Date },
-    isConnected: { type: Boolean, default: false },
-    connectedAt: { type: Date }
-  }
+  // Email verification
+  isEmailVerified: { type: Boolean, default: false },
+  emailVerificationToken: { type: String },
+  emailVerificationExpires: { type: Date },
+  
+  // Password reset
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Tutor', tutorSchema);

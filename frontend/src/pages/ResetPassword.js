@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
-import FormInput from '../components/FormInput';
+import { CourseraInput, CourseraButton, CourseraAlert } from '../components/CourseraCard';
+import { colors, typography, spacing } from '../theme/designSystem';
 
 const ResetPassword = () => {
   const [params] = useSearchParams();
@@ -38,20 +39,34 @@ const ResetPassword = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1 className="text-2xl font-semibold text-center mb-6">Reset Password</h1>
-      {message && <div className="mb-4 text-sm text-emerald-400">{message}</div>}
-      {error && <div className="mb-4 text-sm text-red-400">{error}</div>}
-      <FormInput label="New Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" />
-      <FormInput label="Confirm Password" type="password" value={confirm} onChange={e => setConfirm(e.target.value)} required placeholder="••••••••" />
-      <button
+      <h1 style={{
+        fontSize: typography.fontSize['2xl'],
+        fontWeight: typography.fontWeight.semibold,
+        textAlign: 'center',
+        marginBottom: spacing.xl,
+        color: colors.textPrimary,
+      }}>
+        Reset Password
+      </h1>
+      {message && <CourseraAlert type="success">{message}</CourseraAlert>}
+      {error && <CourseraAlert type="error" onClose={() => setError('')}>{error}</CourseraAlert>}
+      <CourseraInput label="New Password" type="password" name="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" />
+      <CourseraInput label="Confirm Password" type="password" name="confirm" value={confirm} onChange={e => setConfirm(e.target.value)} required placeholder="••••••••" />
+      <CourseraButton
         type="submit"
         disabled={loading}
-        className="w-full py-3 mt-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition disabled:opacity-60"
+        fullWidth={true}
+        style={{ marginTop: spacing.md }}
       >
         {loading ? 'Resetting...' : 'Reset Password'}
-      </button>
-      <p className="text-sm text-slate-400 mt-4 text-center">
-        Back to <Link className="text-indigo-400" to="/login">Login</Link>
+      </CourseraButton>
+      <p style={{
+        fontSize: typography.fontSize.sm,
+        color: colors.textSecondary,
+        marginTop: spacing.lg,
+        textAlign: 'center',
+      }}>
+        Back to <Link to="/login" style={{ color: colors.accent, textDecoration: 'none', fontWeight: typography.fontWeight.semibold }}>Login</Link>
       </p>
     </form>
   );

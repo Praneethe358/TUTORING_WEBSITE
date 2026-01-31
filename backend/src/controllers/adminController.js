@@ -5,8 +5,11 @@ const Tutor = require('../models/Tutor');
 const Student = require('../models/Student');
 const Booking = require('../models/Booking');
 const Course = require('../models/Course');
+const CourseEnrollment = require('../models/CourseEnrollment');
 const AuditLog = require('../models/AuditLog');
+const Settings = require('../models/Settings');
 const { signToken } = require('../utils/token');
+const { sendTutorStatusEmail } = require('../utils/email');
 
 function handleValidation(req, res) {
   const errors = validationResult(req);
@@ -60,7 +63,7 @@ exports.login = async (req, res, next) => {
     
     const token = signToken(admin);
     setAuthCookie(res, token);
-    res.json({ message: 'Login successful', redirect: '/admin/dashboard' });
+    res.json({ message: 'Login successful', redirect: '/admin/dashboard', token });
   } catch (err) { next(err); }
 };
 
@@ -121,6 +124,70 @@ exports.getTutors = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// EXPORT TUTORS CSV
+exports.exportTutorsCSV = async (req, res, next) => {
+  try {
+    const { status, search } = req.query;
+
+    const filter = {};
+    if (status) filter.status = status;
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const tutors = await Tutor.find(filter)
+      .select('name email phone status subjects experienceYears qualifications createdAt approvedAt isActive timezone')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const headers = [
+      'Name',
+      'Email',
+      'Phone',
+      'Status',
+      'Active',
+      'Subjects',
+      'Experience (years)',
+      'Qualifications',
+      'Timezone',
+      'Applied At',
+      'Approved At'
+    ];
+
+    const escapeCsv = (val) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const rows = tutors.map((tutor) => [
+      escapeCsv(tutor.name || ''),
+      escapeCsv(tutor.email || ''),
+      escapeCsv(tutor.phone || ''),
+      escapeCsv(tutor.status || ''),
+      escapeCsv(tutor.isActive ? 'Yes' : 'No'),
+      escapeCsv(Array.isArray(tutor.subjects) ? tutor.subjects.join(', ') : ''),
+      escapeCsv(tutor.experienceYears ?? ''),
+      escapeCsv(tutor.qualifications || ''),
+      escapeCsv(tutor.timezone || ''),
+      escapeCsv(tutor.createdAt ? tutor.createdAt.toISOString() : ''),
+      escapeCsv(tutor.approvedAt ? tutor.approvedAt.toISOString() : '')
+    ]);
+
+    const csv = [headers.map(escapeCsv).join(','), ...rows.map((r) => r.join(','))].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="tutors_${new Date().toISOString().split('T')[0]}.csv"`);
+    res.send(csv);
+  } catch (err) {
+    console.error('Export tutors CSV error:', err);
+    next(err);
+  }
+};
+
 exports.approveTutor = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -135,6 +202,12 @@ exports.approveTutor = async (req, res, next) => {
     await tutor.save();
 
     await logAction(req.user._id, 'approve_tutor', 'Tutor', id, tutor.email, {}, req);
+
+    try {
+      await sendTutorStatusEmail(tutor.email, tutor.name, 'approved');
+    } catch (emailErr) {
+      console.error('Failed to send tutor approval email:', emailErr.message || emailErr);
+    }
 
     res.json({ message: 'Tutor approved', tutor });
   } catch (err) { next(err); }
@@ -154,6 +227,12 @@ exports.rejectTutor = async (req, res, next) => {
 
     await logAction(req.user._id, 'reject_tutor', 'Tutor', id, tutor.email, { reason }, req);
 
+    try {
+      await sendTutorStatusEmail(tutor.email, tutor.name, 'rejected', reason);
+    } catch (emailErr) {
+      console.error('Failed to send tutor rejection email:', emailErr.message || emailErr);
+    }
+
     res.json({ message: 'Tutor rejected', tutor });
   } catch (err) { next(err); }
 };
@@ -172,6 +251,12 @@ exports.blockTutor = async (req, res, next) => {
 
     await logAction(req.user._id, 'block_tutor', 'Tutor', id, tutor.email, { reason }, req);
 
+    try {
+      await sendTutorStatusEmail(tutor.email, tutor.name, 'blocked', reason);
+    } catch (emailErr) {
+      console.error('Failed to send tutor block email:', emailErr.message || emailErr);
+    }
+
     res.json({ message: 'Tutor blocked', tutor });
   } catch (err) { next(err); }
 };
@@ -180,12 +265,15 @@ exports.blockTutor = async (req, res, next) => {
 exports.getStudents = async (req, res, next) => {
   try {
     const { search, page = 1, limit = 10 } = req.query;
+    const { status } = req.query; // Added status filter
     const filter = {};
     
     if (search) filter.$or = [
       { name: { $regex: search, $options: 'i' } },
       { email: { $regex: search, $options: 'i' } }
     ];
+    if (status === 'active') filter.isActive = true; // Filter for active students
+    if (status === 'inactive') filter.isActive = false; // Filter for inactive students
 
     const skip = (page - 1) * limit;
     const students = await Student.find(filter)
@@ -328,4 +416,145 @@ exports.getAuditLogs = async (req, res, next) => {
 
     res.json({ logs, total, page: parseInt(page), pages: Math.ceil(total / limit) });
   } catch (err) { next(err); }
+};
+
+// Settings
+exports.getSettings = async (req, res, next) => {
+  try {
+    let settings = await Settings.findOne();
+    
+    if (!settings) {
+      settings = await Settings.create({});
+    }
+
+    res.json({ settings });
+  } catch (err) { next(err); }
+};
+
+exports.updateSettings = async (req, res, next) => {
+  try {
+    if (handleValidation(req, res)) return;
+
+    const { settings } = req.body;
+
+    let existingSettings = await Settings.findOne();
+    if (!existingSettings) {
+      existingSettings = await Settings.create(settings);
+    } else {
+      Object.assign(existingSettings, settings);
+      existingSettings.updatedBy = req.user.id;
+      await existingSettings.save();
+    }
+
+    // Log the action
+    await logAction(req.user.id, 'UPDATE_SETTINGS', 'Settings', existingSettings._id, 'System', 'Settings updated', req);
+
+    res.json({ message: 'Settings updated successfully', settings: existingSettings });
+  } catch (err) { next(err); }
+};
+
+// EXPORT ENROLLMENTS CSV
+exports.exportEnrollmentsCSV = async (req, res, next) => {
+  try {
+    const { status, search, courseId } = req.query;
+
+    const query = {};
+    if (status) query.status = status;
+    if (courseId) query.courseId = courseId;
+
+    const enrollments = await CourseEnrollment.find(query)
+      .populate({ path: 'studentId', select: 'name email' })
+      .populate({ path: 'courseId', select: 'title category level' })
+      .sort({ enrolledAt: -1 })
+      .lean();
+
+    const filtered = enrollments.filter((enr) => {
+      if (!search) return true;
+      const haystack = `${enr.studentId?.name || ''} ${enr.studentId?.email || ''} ${enr.courseId?.title || ''}`.toLowerCase();
+      return haystack.includes(search.toLowerCase());
+    });
+
+    const headers = ['Student Name', 'Student Email', 'Course', 'Category', 'Level', 'Status', 'Progress %', 'Enrolled At'];
+
+    const escapeCsv = (val) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const rows = filtered.map((enr) => [
+      escapeCsv(enr.studentId?.name || ''),
+      escapeCsv(enr.studentId?.email || ''),
+      escapeCsv(enr.courseId?.title || ''),
+      escapeCsv(enr.courseId?.category || ''),
+      escapeCsv(enr.courseId?.level || ''),
+      escapeCsv(enr.status || ''),
+      escapeCsv(enr.progress ?? 0),
+      escapeCsv(enr.enrolledAt ? enr.enrolledAt.toISOString() : '')
+    ]);
+
+    const csv = [headers.map(escapeCsv).join(','), ...rows.map((r) => r.join(','))].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="enrollments_${new Date().toISOString().split('T')[0]}.csv"`);
+    res.send(csv);
+  } catch (err) {
+    console.error('Export enrollments CSV error:', err);
+    next(err);
+  }
+};
+
+// EXPORT STUDENTS CSV
+exports.exportStudentsCSV = async (req, res, next) => {
+  try {
+    const { status, search } = req.query;
+
+    const filter = {};
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } }
+      ];
+    }
+    if (status === 'active') filter.isActive = true; // Filter for active students
+    if (status === 'inactive') filter.isActive = false; // Filter for inactive students
+
+    const students = await Student.find(filter)
+      .select('name email phone isActive timezone createdAt')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const headers = [
+      'Name',
+      'Email',
+      'Phone',
+      'Active',
+      'Timezone',
+      'Joined'
+    ];
+
+    const escapeCsv = (val) => {
+      if (val === null || val === undefined) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const rows = students.map((student) => [
+      escapeCsv(student.name || ''),
+      escapeCsv(student.email || ''),
+      escapeCsv(student.phone || ''),
+      escapeCsv(student.isActive ? 'Active' : 'Inactive'),
+      escapeCsv(student.timezone || ''),
+      escapeCsv(student.createdAt ? student.createdAt.toISOString().split('T')[0] : '')
+    ]);
+
+    const csv = [headers.map(escapeCsv).join(','), ...rows.map((r) => r.join(','))].join('\n');
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="students_${new Date().toISOString().split('T')[0]}.csv"`);
+    res.send(csv);
+  } catch (err) {
+    console.error('Export students CSV error:', err);
+    next(err);
+  }
 };

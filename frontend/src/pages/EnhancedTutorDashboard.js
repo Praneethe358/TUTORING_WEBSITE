@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../components/DashboardLayout';
-import TutorSidebar from '../components/TutorSidebar';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
+import { Card, StatCard, Badge, EmptyState } from '../components/ModernComponents';
 
 /**
  * TUTOR DASHBOARD - ENHANCED
@@ -16,13 +16,19 @@ import api from '../lib/api';
 const EnhancedTutorDashboard = () => {
   const { user } = useAuth();
   const [stats, setStats] = useState({
-    totalEarnings: 0,
-    thisMonth: 0,
+    totalClasses: 0,
+    thisMonthClasses: 0,
     totalStudents: 0,
     upcomingClasses: 0
   });
   const [upcomingBookings, setUpcomingBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const avatarUrl = useMemo(() => {
+    const raw = user?.profileImage || user?.avatar;
+    if (!raw) return null;
+    return raw.startsWith('http') ? raw : `http://localhost:5000${raw}`;
+  }, [user?.profileImage, user?.avatar]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -30,27 +36,67 @@ const EnhancedTutorDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch bookings from existing endpoint
-      const res = await api.get('/tutor/bookings');
-      const bookings = res.data.bookings || [];
+      // Fetch real data from multiple endpoints
+      const [classesRes] = await Promise.all([
+        api.get('/classes'),
+        api.get('/tutor/all-students')
+      ]);
+
+      const classes = classesRes.data?.data || [];
 
       // Calculate stats
       const now = new Date();
-      const upcoming = bookings.filter(b => new Date(b.date) > now);
-      const completed = bookings.filter(b => b.status === 'completed');
-      const totalClasses = completed.length;
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      
+      // Total classes (all scheduled/completed/ongoing classes)
+      const totalClasses = classes.filter(c => 
+        ['scheduled', 'completed', 'ongoing'].includes(c.status)
+      ).length;
 
-      // Get unique students
-      const uniqueStudents = new Set(bookings.map(b => b.student?._id).filter(Boolean));
+      // Classes this month
+      const thisMonthClasses = classes.filter(c => {
+        const classDate = new Date(c.scheduledAt);
+        return classDate >= startOfMonth && 
+               classDate <= now &&
+               ['scheduled', 'completed', 'ongoing'].includes(c.status);
+      }).length;
+
+      // Upcoming classes (future scheduled/ongoing)
+      const upcomingClasses = classes.filter(c => {
+        const classDate = new Date(c.scheduledAt);
+        return classDate > now && ['scheduled', 'ongoing'].includes(c.status);
+      }).length;
+
+      // Get unique students from classes
+      const uniqueStudentIds = new Set();
+      classes.forEach(cls => {
+        if (cls.student?._id) {
+          uniqueStudentIds.add(cls.student._id.toString());
+        }
+        if (cls.students && Array.isArray(cls.students)) {
+          cls.students.forEach(s => {
+            if (s._id) uniqueStudentIds.add(s._id.toString());
+          });
+        }
+      });
 
       setStats({
         totalClasses,
-        thisMonthClasses: totalClasses * 0.4, // Placeholder calculation
-        totalStudents: uniqueStudents.size,
-        upcomingClasses: upcoming.length
+        thisMonthClasses,
+        totalStudents: uniqueStudentIds.size,
+        upcomingClasses
       });
 
-      setUpcomingBookings(upcoming.slice(0, 5));
+      // Get upcoming classes for list display
+      const upcoming = classes
+        .filter(c => {
+          const classDate = new Date(c.scheduledAt);
+          return classDate > now && ['scheduled', 'ongoing'].includes(c.status);
+        })
+        .sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt))
+        .slice(0, 5);
+
+      setUpcomingBookings(upcoming);
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
     } finally {
@@ -59,128 +105,181 @@ const EnhancedTutorDashboard = () => {
   };
 
   return (
-    <DashboardLayout sidebar={TutorSidebar}>
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Welcome back, {user?.name}!</h1>
-        <p className="text-slate-400 mt-1">Your teaching dashboard</p>
-        {user?.status === 'pending' && (
-          <div className="mt-3 p-3 bg-yellow-900/30 border border-yellow-700 rounded-lg text-yellow-300 text-sm">
-            ⚠️ Your account is pending admin approval
-          </div>
-        )}
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard
-          title="Total Classes"
-          value={stats.totalClasses}
-          icon="📚"
-          color="bg-green-600"
-        />
-        <StatCard
-          title="This Month"
-          value={stats.thisMonthClasses}
-          icon="📈"
-          color="bg-blue-600"
-        />
-        <StatCard
-          title="Total Students"
-          value={stats.totalStudents}
-          icon="🎓"
-          color="bg-purple-600"
-        />
-        <StatCard
-          title="Upcoming Classes"
-          value={stats.upcomingClasses}
-          icon="📅"
-          color="bg-orange-600"
-        />
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <ActionCard
-          title="Manage Availability"
-          description="Set your teaching schedule"
-          icon="📅"
-          link="/tutor/availability"
-        />
-        <ActionCard
-          title="My Courses"
-          description="View and edit your courses"
-          icon="📚"
-          link="/tutor/courses"
-        />
-        <ActionCard
-          title="Upload Materials"
-          description="Share study resources"
-          icon="📤"
-          link="/tutor/materials"
-        />
-      </div>
-
-      {/* Upcoming Classes */}
-      <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-        <h2 className="text-xl font-semibold text-white mb-4">Upcoming Classes</h2>
-        {loading ? (
-          <p className="text-slate-400">Loading...</p>
-        ) : upcomingBookings.length === 0 ? (
-          <p className="text-slate-400">No upcoming classes scheduled.</p>
-        ) : (
-          <div className="space-y-3">
-            {upcomingBookings.map(booking => (
-              <div
-                key={booking._id}
-                className="flex items-center justify-between p-4 bg-slate-900 rounded-lg border border-slate-700"
-              >
-                <div>
-                  <h3 className="font-semibold text-white">{booking.student?.name}</h3>
-                  <p className="text-sm text-slate-400">
-                    {booking.course?.subject} • {new Date(booking.date).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm text-slate-400">{new Date(booking.date).toLocaleTimeString()}</p>
-                  <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-900 text-green-300 mt-1">
-                    {booking.status}
-                  </span>
-                </div>
+    <div className="space-y-6">
+      {/* Header with Welcome Message */}
+      <div className="mb-6 md:mb-8 bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
+        <div className="flex items-center gap-4 md:gap-6">
+          <div className="flex-shrink-0">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={user?.name}
+                className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-indigo-100 shadow-md"
+              />
+            ) : (
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-md">
+                <span className="text-2xl md:text-3xl font-bold text-white">
+                  {user?.name?.[0]?.toUpperCase() || 'T'}
+                </span>
               </div>
-            ))}
+            )}
           </div>
-        )}
+          <div className="flex-1">
+            <h1 className="text-lg sm:text-xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">
+              Welcome back, {user?.name?.split(' ')[0]}!
+            </h1>
+            <p className="text-xs sm:text-sm md:text-base text-gray-500 leading-relaxed">
+              Track your teaching progress and upcoming sessions
+            </p>
+            {user?.status === 'pending' && (
+              <div className="mt-3">
+                <Badge variant="warning">⚠️ Pending admin approval</Badge>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </DashboardLayout>
-  );
-};
 
-// Reusable Stat Card Component
-const StatCard = ({ title, value, icon, color }) => (
-  <div className="bg-slate-800 rounded-xl p-6 border border-slate-700">
-    <div className="flex items-center justify-between mb-3">
-      <div className={`w-12 h-12 ${color} rounded-lg flex items-center justify-center text-2xl`}>
-        {icon}
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 mb-4 md:mb-8">
+        <StatCard
+          icon="📚"
+          label="Total Classes"
+          value={stats.totalClasses}
+          change={`${stats.thisMonthClasses} this month`}
+          trend="up"
+        />
+        <StatCard
+          icon="📈"
+          label="This Month"
+          value={stats.thisMonthClasses}
+          change="Keep it up"
+          trend="up"
+        />
+        <StatCard
+          icon="🎓"
+          label="Students"
+          value={stats.totalStudents}
+          change="Active learners"
+          trend="neutral"
+        />
+        <StatCard
+          icon="📅"
+          label="Upcoming"
+          value={stats.upcomingClasses}
+          change="Next sessions"
+          trend="neutral"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Content */}
+        <div className="lg:col-span-2 space-y-6">
+          <Card hover={false} className="cursor-default">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-black">🗓️ Upcoming Classes</h2>
+              <Link to="/tutor/schedule">
+                <Badge variant="primary" className="cursor-pointer hover:bg-indigo-700">
+                  View All
+                </Badge>
+              </Link>
+            </div>
+
+            {loading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-20 bg-gray-200 rounded-lg animate-pulse" />
+                ))}
+              </div>
+            ) : upcomingBookings.length === 0 ? (
+              <EmptyState
+                icon="📭"
+                title="No upcoming classes"
+                description="You have no classes scheduled yet"
+              />
+            ) : (
+              <div className="space-y-4">
+                {upcomingBookings.map((cls) => (
+                  <div
+                    key={cls._id}
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex gap-4 flex-1">
+                      <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-xl flex-shrink-0">
+                        {cls.course?.subject === 'Math' ? '🔢' : cls.course?.subject === 'English' ? '📖' : '📚'}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-black">
+                          {cls.topic || cls.course?.subject || 'Class'}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {cls.students?.length > 0
+                            ? cls.students.map((s) => s.name).join(', ')
+                            : cls.student?.name || 'Student'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-left sm:text-right text-sm text-gray-500">
+                      <p>{new Date(cls.scheduledAt).toLocaleDateString()}</p>
+                      <p>{new Date(cls.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                      <Badge variant="secondary" className="mt-2 inline-block">
+                        {cls.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="space-y-6">
+          <Card hover={false} className="cursor-default">
+            <h3 className="text-lg font-semibold text-black mb-4">⚡ Quick Actions</h3>
+            <div className="space-y-3">
+              <Link
+                to="/tutor/lms/courses"
+                className="flex items-center justify-between w-full px-4 py-3 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition min-h-[44px]"
+              >
+                <span className="flex items-center gap-2 text-gray-800">
+                  🎓 LMS Courses
+                </span>
+                <span className="text-indigo-600">→</span>
+              </Link>
+              <Link
+                to="/tutor/availability"
+                className="flex items-center justify-between w-full px-4 py-3 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition min-h-[44px]"
+              >
+                <span className="flex items-center gap-2 text-gray-800">
+                  📅 Availability
+                </span>
+                <span className="text-indigo-600">→</span>
+              </Link>
+              <Link
+                to="/tutor/schedule"
+                className="flex items-center justify-between w-full px-4 py-3 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition min-h-[44px]"
+              >
+                <span className="flex items-center gap-2 text-gray-800">
+                  🗓️ Class Schedule
+                </span>
+                <span className="text-indigo-600">→</span>
+              </Link>
+              <Link
+                to="/tutor/materials"
+                className="flex items-center justify-between w-full px-4 py-3 rounded-lg border border-gray-200 hover:border-indigo-300 hover:bg-indigo-50 transition min-h-[44px]"
+              >
+                <span className="flex items-center gap-2 text-gray-800">
+                  📤 Upload Materials
+                </span>
+                <span className="text-indigo-600">→</span>
+              </Link>
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
-    <h3 className="text-slate-400 text-sm font-medium">{title}</h3>
-    <p className="text-3xl font-bold text-white mt-2">{value}</p>
-  </div>
-);
-
-// Action Card Component
-const ActionCard = ({ title, description, icon, link }) => (
-  <a
-    href={link}
-    className="block p-6 bg-slate-800 rounded-xl border border-slate-700 hover:border-indigo-500 transition group"
-  >
-    <div className="text-4xl mb-3">{icon}</div>
-    <h3 className="text-lg font-semibold text-white group-hover:text-indigo-400 transition">
-      {title}
-    </h3>
-    <p className="text-sm text-slate-400 mt-1">{description}</p>
-  </a>
-);
+  );
+};
 
 export default EnhancedTutorDashboard;

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import FormInput from '../components/FormInput';
+import { CourseraInput, CourseraButton, CourseraAlert } from '../components/CourseraCard';
+import { colors, typography, spacing } from '../theme/designSystem';
 
-const Login = () => {
+const Login = ({ inline = false, onLoginSuccess }) => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
@@ -18,6 +19,9 @@ const Login = () => {
     setLoading(true);
     try {
       await login(form.email, form.password);
+            if (onLoginSuccess) {
+              onLoginSuccess();
+            }
       navigate('/student/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
@@ -28,24 +32,50 @@ const Login = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1 className="text-2xl font-semibold text-center mb-6">Student Login</h1>
-      {error && <div className="mb-4 p-3 text-sm text-red-400 bg-red-900 bg-opacity-20 rounded">{error}</div>}
-      <FormInput label="Email" name="email" type="email" value={form.email} onChange={onChange} required placeholder="student@example.com" />
-      <FormInput label="Password" name="password" type="password" value={form.password} onChange={onChange} required placeholder="••••••••" />
-      <button
+      {!inline && (
+        <h1 style={{
+          fontSize: typography.fontSize['2xl'],
+          fontWeight: typography.fontWeight.semibold,
+          textAlign: 'center',
+          marginBottom: spacing.xl,
+          color: colors.textPrimary,
+        }}>
+          Student Login
+        </h1>
+      )}
+      {error && <CourseraAlert type="error" onClose={() => setError('')}>{error}</CourseraAlert>}
+      <CourseraInput label="Email" name="email" type="email" value={form.email} onChange={onChange} required placeholder="student@example.com" />
+      <CourseraInput label="Password" name="password" type="password" value={form.password} onChange={onChange} required placeholder="••••••••" />
+      <CourseraButton
         type="submit"
         disabled={loading}
-        className="w-full py-3 mt-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition disabled:opacity-60"
+        fullWidth={true}
+        style={{ marginTop: spacing.md }}
       >
         {loading ? 'Signing in...' : 'Sign In'}
-      </button>
-      <div className="text-sm text-slate-400 mt-4 flex justify-between">
-        <Link className="text-indigo-400" to="/forgot-password">Forgot password?</Link>
-        <Link className="text-indigo-400" to="/register">Create account</Link>
-      </div>
-      <div className="text-xs text-slate-400 mt-3 text-center">
-        Tutor? <Link className="text-indigo-400" to="/tutor/login">Go to tutor login</Link> | Admin? <Link className="text-indigo-400" to="/admin/login">Go to admin login</Link>
-      </div>
+      </CourseraButton>
+      {!inline && (
+        <>
+          <div style={{
+            fontSize: typography.fontSize.sm,
+            color: colors.textSecondary,
+            marginTop: spacing.lg,
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}>
+            <Link to="/forgot-password" style={{ color: colors.accent, textDecoration: 'none' }}>Forgot password?</Link>
+            <Link to="/register" style={{ color: colors.accent, textDecoration: 'none' }}>Create account</Link>
+          </div>
+          <div style={{
+            fontSize: typography.fontSize.xs,
+            color: colors.textTertiary,
+            marginTop: spacing.md,
+            textAlign: 'center',
+          }}>
+            Tutor? <Link to="/tutor/login" style={{ color: colors.accent, textDecoration: 'none' }}>Go to tutor login</Link> | Admin? <Link to="/admin/login" style={{ color: colors.accent, textDecoration: 'none' }}>Go to admin login</Link>
+          </div>
+        </>
+      )}
     </form>
   );
 };

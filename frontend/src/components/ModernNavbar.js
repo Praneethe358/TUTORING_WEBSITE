@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { Button, Container } from './ModernUI';
+import Logo from './Logo';
 import { colors, typography, spacing, shadows } from '../theme/designSystem';
 
 const Navbar = () => {
@@ -28,7 +29,6 @@ const Navbar = () => {
     { name: 'Bookings', path: '/student/bookings' },
   ] : role === 'tutor' ? [
     { name: 'Dashboard', path: '/tutor/dashboard' },
-    { name: 'My Students', path: '/tutor/students' },
     { name: 'Classes', path: '/tutor/manage-classes' },
     { name: 'Earnings', path: '/tutor/earnings' },
   ] : [];
@@ -53,20 +53,8 @@ const Navbar = () => {
           padding: `${spacing.lg} 0`,
         }}>
           {/* Logo */}
-          <div 
-            onClick={() => navigate('/')}
-            style={{
-              fontSize: typography.fontSize['2xl'],
-              fontWeight: typography.fontWeight.bold,
-              cursor: 'pointer',
-              background: `linear-gradient(135deg, ${colors.accent} 0%, ${colors.accentDark} 100%)`,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              letterSpacing: '-0.5px',
-            }}
-          >
-            LearnHub
+          <div onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+            <Logo size={64} withText={true} />
           </div>
 
           {/* Desktop Nav Links */}
@@ -74,7 +62,6 @@ const Navbar = () => {
             display: 'flex',
             gap: spacing['2xl'],
             alignItems: 'center',
-            '@media (max-width: 768px)': { display: 'none' }
           }}>
             {navLinks.map((link) => (
               <a
@@ -122,17 +109,31 @@ const Navbar = () => {
             {user ? (
               <>
                 {/* Profile/Notifications - Desktop */}
-                <div style={{ display: 'flex', gap: spacing.md, '@media (max-width: 768px)': { display: 'none' } }}>
+                <div style={{ display: 'flex', gap: spacing.md }}>
                   <button
                     onClick={() => navigate(role === 'student' ? '/student/profile' : '/tutor/profile')}
                     style={{
-                      background: 'transparent',
-                      border: 'none',
-                      fontSize: '20px',
+                      background: user.avatar 
+                        ? `url(http://localhost:5000${user.avatar}) center/cover no-repeat` 
+                        : `linear-gradient(135deg, ${colors.accent} 0%, ${colors.accentDark} 100%)`,
+                      border: `2px solid ${colors.gray200}`,
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
                       cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: colors.white,
+                      fontSize: typography.fontSize.sm,
+                      fontWeight: typography.fontWeight.semibold,
+                      transition: 'transform 0.2s ease',
                     }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    title={user.name}
                   >
-                    👤
+                    {!user.avatar && user.name?.charAt(0).toUpperCase()}
                   </button>
                   <button
                     onClick={logout}
@@ -149,7 +150,7 @@ const Navbar = () => {
                 </div>
               </>
             ) : (
-              <div style={{ display: 'flex', gap: spacing.md, '@media (max-width: 768px)': { display: 'none' } }}>
+              <div style={{ display: 'flex', gap: spacing.md }}>
                 <Button variant="ghost" size="sm" onClick={() => navigate('/login')}>
                   Sign In
                 </Button>
@@ -168,7 +169,6 @@ const Navbar = () => {
                 border: 'none',
                 fontSize: '24px',
                 cursor: 'pointer',
-                '@media (max-width: 768px)': { display: 'block' }
               }}
             >
               ☰
@@ -183,7 +183,6 @@ const Navbar = () => {
             flexDirection: 'column',
             gap: spacing.lg,
             paddingBottom: spacing.xl,
-            '@media (max-width: 768px)': { display: 'flex' }
           }}>
             {navLinks.map((link) => (
               <a

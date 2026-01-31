@@ -11,7 +11,8 @@ const Notification = require('../models/Notification');
 exports.getNotifications = async (req, res) => {
   try {
     const userId = req.user.id || req.user._id;
-    const { isRead, type, limit = 50 } = req.query;
+    const { isRead, type, page = 1, limit = 50 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
     
     let query = {
       recipient: userId,
@@ -26,16 +27,26 @@ exports.getNotifications = async (req, res) => {
       query.type = type;
     }
     
-    const notifications = await Notification.find(query)
-      .populate('relatedClass', 'topic scheduledAt')
-      .populate('relatedUser', 'name email')
-      .sort({ createdAt: -1 })
-      .limit(parseInt(limit));
+    const [notifications, total] = await Promise.all([
+      Notification.find(query)
+        .populate('relatedClass', 'topic scheduledAt')
+        .populate('relatedUser', 'name email')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit)),
+      Notification.countDocuments(query)
+    ]);
     
     res.json({
       success: true,
       count: notifications.length,
-      data: notifications
+      data: notifications,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / parseInt(limit))
+      }
     });
   } catch (error) {
     res.status(500).json({ 

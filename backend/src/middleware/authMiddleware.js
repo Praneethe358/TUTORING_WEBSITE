@@ -29,9 +29,29 @@ async function protectAny(req, res, next) {
     if (!user) return res.status(403).json({ message: 'Access denied' });
     req.user = user;
     req.authRole = decoded.role;
+    req.userId = decoded.id; // expose token id for downstream use
     next();
   } catch (err) {
     return res.status(401).json({ message: 'Invalid token' });
+  }
+}
+
+// Optional auth: decode token if present, otherwise continue without error
+async function optionalAuth(req, _res, next) {
+  try {
+    const token = extractToken(req);
+    if (!token) return next();
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await resolveUser(decoded);
+    if (user) {
+      req.user = user;
+      req.authRole = decoded.role;
+      req.userId = decoded.id;
+    }
+    return next();
+  } catch (_err) {
+    // ignore errors and proceed unauthenticated
+    return next();
   }
 }
 
@@ -51,4 +71,4 @@ const protectAdmin = [protectAny, (req, res, next) => {
   next();
 }];
 
-module.exports = { protectAny, protectStudent, protectTutor, protectAdmin };
+module.exports = { protectAny, optionalAuth, protectStudent, protectTutor, protectAdmin };

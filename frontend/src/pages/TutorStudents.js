@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import DashboardLayout from '../components/DashboardLayout';
-import TutorSidebar from '../components/TutorSidebar';
 import api from '../lib/api';
 
 /**
@@ -52,7 +50,7 @@ const TutorStudents = () => {
   };
 
   return (
-    <DashboardLayout sidebar={TutorSidebar}>
+    <div>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white">My Students</h1>
         <p className="text-slate-400 mt-1">Students who booked your classes</p>
@@ -104,7 +102,7 @@ const TutorStudents = () => {
           ))}
         </div>
       )}
-    </DashboardLayout>
+    </div>
   );
 };
 

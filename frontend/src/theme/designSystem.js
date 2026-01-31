@@ -2,48 +2,55 @@
 // Color palette, typography, spacing, animations
 
 export const colors = {
-  // Primary
-  primary: '#0F172A',      // Dark blue (primary brand)
-  primaryLight: '#1E293B', // Lighter dark blue
+  // Primary - Deep Purple (Parent-Trust Theme - BYJU'S Inspired)
+  primary: '#5B2D8B',      // Deep Purple - headers, navbar, primary elements
+  primaryLight: '#8E6BBF', // Soft Lavender - secondary interactive elements
+  primaryLighter: '#D4C5E8', // Very light purple - hover states
   
-  // Accent
-  accent: '#3B82F6',       // Vibrant blue
-  accentLight: '#60A5FA',  // Light blue
-  accentDark: '#1D4ED8',   // Dark blue
+  // Accent - Premium Gold (CTA buttons)
+  accent: '#FFB703',       // Premium Gold - primary actions, CTAs
+  accentLight: '#FFC830',  // Lighter gold - hover states
+  accentDark: '#E0A302',   // Darker gold - active states
   
-  // Neutral
+  // Secondary - Soft Lavender (cards, sections)
+  secondary: '#8E6BBF',    // Soft Lavender - secondary elements
+  secondaryLight: '#D4C5E8',
+  secondaryDark: '#6B4E8E',
+  
+  // Neutral & Section Background
   white: '#FFFFFF',
-  gray50: '#F9FAFB',
-  gray100: '#F3F4F6',
-  gray200: '#E5E7EB',
-  gray300: '#D1D5DB',
-  gray400: '#9CA3AF',
-  gray500: '#6B7280',
-  gray600: '#4B5563',
-  gray700: '#374151',
-  gray800: '#1F2937',
-  gray900: '#111827',
+  sectionBg: '#F6F2FA',    // Light Purple Section Background
+  gray50: '#F9F8FB',       // Very light - almost white with purple tint
+  gray100: '#F6F2FA',      // Section background
+  gray200: '#E9E0F6',
+  gray300: '#D9CEEA',
+  gray400: '#C7C9E2',
+  gray500: '#A8A0BF',
+  gray600: '#8E86A6',
+  gray700: '#6B6D7A',
+  gray800: '#4A4D5C',
+  gray900: '#1F2937',      // Dark gray - text primary
   
   // Status
   success: '#10B981',
   warning: '#F59E0B',
   error: '#EF4444',
-  info: '#3B82F6',
+  info: '#5B2D8B',         // Using primary purple
   
   // Backgrounds
   bgPrimary: '#FFFFFF',
-  bgSecondary: '#F9FAFB',
-  bgTertiary: '#F3F4F6',
+  bgSecondary: '#F6F2FA',  // Light Purple Section Background
+  bgTertiary: '#F9F8FB',   // Very light purple
   
   // Text
-  textPrimary: '#111827',
-  textSecondary: '#4B5563',
+  textPrimary: '#1F2937',  // Dark Gray
+  textSecondary: '#6B6D7A',
   textTertiary: '#9CA3AF',
   
-  // Shadows & Overlays
-  shadow: 'rgba(0, 0, 0, 0.08)',
-  shadowMd: 'rgba(0, 0, 0, 0.12)',
-  shadowLg: 'rgba(0, 0, 0, 0.15)',
+  // Shadows & Overlays (Purple-tinted)
+  shadow: 'rgba(91, 45, 139, 0.08)',      // Purple-based shadow
+  shadowMd: 'rgba(91, 45, 139, 0.12)',
+  shadowLg: 'rgba(91, 45, 139, 0.16)',
 };
 
 export const typography = {

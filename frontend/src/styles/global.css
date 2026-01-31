@@ -1,23 +1,23 @@
-  /* Modern Tutoring Platform - Global Styles */
+  /* Modern Tutoring Platform - Global Styles - Parent-Trust Academic Theme */
 
 :root {
-  /* Primary Colors */
-  --color-primary-50: #f0f4ff;
-  --color-primary-500: #5b7eff;
-  --color-primary-600: #4a63e0;
-  --color-primary-700: #3d4fc4;
+  /* Primary Colors - Royal Indigo */
+  --color-primary-50: #f0f1fb;
+  --color-primary-500: #2C2F7E;
+  --color-primary-600: #24264F;
+  --color-primary-700: #1C1E40;
 
-  /* Secondary Colors */
-  --color-secondary-500: #8b5cf6;
-  --color-secondary-600: #7c3aed;
+  /* Secondary Colors - Lavender Gray */
+  --color-secondary-500: #C7C9E2;
+  --color-secondary-600: #9FA1D0;
 
-  /* Accent Colors */
-  --color-accent-500: #22c55e;
+  /* Accent Colors - Muted Gold */
+  --color-accent-500: #D4AF37;
 
   /* Semantic */
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
 
   /* Spacing */
   --spacing-xs: 4px;
@@ -38,15 +38,16 @@ html {
 }
 
 body {
-  background-color: #fafbfc;
-  color: #1f2937;
+  background-color: #F4F5F7;
+  color: #1A1A1A;
   font-family: var(--font-sans);
 }
 
 body.dark {
-  background-color: #0f172a;
-  color: #f1f5f9;
+  background-color: #1A1A1A;
+  color: #F4F5F7;
 }
+
 
 /* Smooth Transitions */
 * {

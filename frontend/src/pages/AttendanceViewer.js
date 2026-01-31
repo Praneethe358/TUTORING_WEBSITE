@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../lib/api';
-import { Card } from '../components/ModernComponents';
+import StudentDashboardLayout from '../components/StudentDashboardLayout';
+import { Card } from '../components/ModernUI';
 
 const AttendanceViewer = () => {
   const [attendance, setAttendance] = useState([]);
@@ -11,6 +12,7 @@ const AttendanceViewer = () => {
   useEffect(() => {
     fetchAttendance();
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAttendance = async () => {
@@ -89,17 +91,18 @@ const AttendanceViewer = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <StudentDashboardLayout>
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <h1 className="text-3xl font-bold text-gray-900">Attendance Record</h1>
+      <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Attendance Record</h1>
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
             <div className="text-center">
-              <p className="text-sm text-green-600 font-medium mb-1">Attendance Rate</p>
-              <p className="text-3xl font-bold text-green-900">
+              <p className="text-xs sm:text-sm text-green-600 font-medium mb-1">Attendance Rate</p>
+              <p className="text-2xl sm:text-3xl font-bold text-green-900">
                 {stats.attendancePercentage ? `${stats.attendancePercentage.toFixed(1)}%` : 'N/A'}
               </p>
               <p className="text-xs text-green-600 mt-1">
@@ -109,8 +112,8 @@ const AttendanceViewer = () => {
           </Card>
           <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
             <div className="text-center">
-              <p className="text-sm text-blue-600 font-medium mb-1">Avg Performance</p>
-              <p className="text-3xl font-bold text-blue-900">
+              <p className="text-xs sm:text-sm text-blue-600 font-medium mb-1">Avg Performance</p>
+              <p className="text-2xl sm:text-3xl font-bold text-blue-900">
                 {stats.averageRatings?.overall ? stats.averageRatings.overall.toFixed(1) : 'N/A'}/5
               </p>
               <div className="flex justify-center mt-1">
@@ -369,6 +372,7 @@ const AttendanceViewer = () => {
         </div>
       )}
     </div>
+    </StudentDashboardLayout>
   );
 };
 

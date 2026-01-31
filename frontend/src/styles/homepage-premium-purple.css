@@ -1,0 +1,371 @@
+/**
+ * Premium Royal Purple Education Theme - Home Page Only
+ * Deep Royal Purple (#5B2D8B) + Soft Lavender (#9F85C7) + Warm Gold (#FFB703)
+ * Chunky, bold design with premium education appeal
+ */
+
+.homepage-premium-purple {
+  --hp-primary: #5B2D8B;           /* Deep Royal Purple - headers, primary buttons */
+  --hp-secondary: #9F85C7;          /* Soft Lavender - secondary, hover states */
+  --hp-accent: #FFB703;             /* Warm Gold - CTAs, strong actions */
+  --hp-accent-light: #FFC830;       /* Light Gold - hover state */
+  --hp-accent-dark: #E0A302;        /* Dark Gold - active state */
+  --hp-background: #1F1F3D;         /* Deep Navy - page background */
+  --hp-card-bg: #FAF9FD;            /* Soft Pearl Lavender - cards */
+  --hp-text-primary: #1F2937;       /* Dark Gray - primary text */
+  --hp-text-muted: #6B7280;         /* Medium Gray - muted text */
+  --hp-border: #E9D5FF;             /* Light purple - borders */
+  --hp-shadow: rgba(91, 45, 139, 0.08);     /* Purple shadow - subtle */
+  --hp-shadow-md: rgba(91, 45, 139, 0.12);  /* Purple shadow - medium */
+  --hp-shadow-lg: rgba(91, 45, 139, 0.16);  /* Purple shadow - large */
+}
+
+/* ===========================
+   PAGE ROOT BACKGROUND
+   =========================== */
+.homepage-premium-purple {
+  background-color: var(--hp-background) !important;
+  color: var(--hp-text-primary) !important;
+}
+
+/* ===========================
+   HEADER / NAVBAR STYLING
+   =========================== */
+.homepage-premium-purple header {
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-bottom-color: #E9D5FF !important;
+  box-shadow: 0 2px 12px rgba(91, 45, 139, 0.08) !important;
+}
+
+.homepage-premium-purple nav a,
+.homepage-premium-purple nav button,
+.homepage-premium-purple header a,
+.homepage-premium-purple header button {
+  color: var(--hp-primary) !important;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.homepage-premium-purple nav a:hover,
+.homepage-premium-purple nav button:hover,
+.homepage-premium-purple header a:hover,
+.homepage-premium-purple header button:hover {
+  color: var(--hp-accent) !important;
+  background-color: rgba(255, 183, 3, 0.08) !important;
+  border-radius: 8px;
+}
+
+/* ===========================
+   HERO & SECTION BACKGROUNDS
+   =========================== */
+.homepage-premium-purple section {
+  color: var(--hp-text-primary) !important;
+}
+
+.homepage-premium-purple #hero {
+  background: linear-gradient(135deg, var(--hp-background) 0%, var(--hp-card-bg) 70%) !important;
+}
+
+.homepage-premium-purple #why,
+.homepage-premium-purple #tutors {
+  background-color: #FFFFFF !important;
+}
+
+.homepage-premium-purple #parents {
+  background-color: var(--hp-background) !important;
+}
+
+/* ===========================
+   HEADLINES & TEXT
+   =========================== */
+.homepage-premium-purple h1,
+.homepage-premium-purple h2,
+.homepage-premium-purple h3 {
+  color: var(--hp-primary) !important;
+}
+
+.homepage-premium-purple p {
+  color: var(--hp-text-primary) !important;
+}
+
+/* ===========================
+   CARDS & SURFACES
+   =========================== */
+.homepage-premium-purple [style*='background: brand.white'],
+.homepage-premium-purple div[style*="background: 'white'"],
+.homepage-premium-purple div[style*='border: `2px solid ${brand.border}`'] {
+  background-color: var(--hp-card-bg) !important;
+  border-color: #E9D5FF !important;
+  box-shadow: 0 4px 12px var(--hp-shadow) !important;
+  transition: all 0.3s ease;
+}
+
+.homepage-premium-purple div[style*='border: `2px solid ${brand.border}`']:hover {
+  box-shadow: 0 8px 24px var(--hp-shadow-lg) !important;
+  border-color: var(--hp-secondary) !important;
+  transform: translateY(-2px);
+}
+
+/* ===========================
+   FEATURE CARDS - LIGHT LAVENDER BG
+   =========================== */
+.homepage-premium-purple div[style*='lightBlue'] {
+  background-color: #F3EDFF !important;
+  border-color: #E9D5FF !important;
+  box-shadow: 0 4px 12px var(--hp-shadow) !important;
+  transition: all 0.3s ease;
+}
+
+.homepage-premium-purple div[style*='lightBlue']:hover {
+  box-shadow: 0 8px 24px var(--hp-shadow-lg) !important;
+  background-color: var(--hp-card-bg) !important;
+  transform: translateY(-4px);
+  border-color: var(--hp-secondary) !important;
+}
+
+/* ===========================
+   PRIMARY BUTTONS (Deep Purple)
+   =========================== */
+.homepage-premium-purple button[style*='brand.blue'],
+.homepage-premium-purple button[style*='primary'] {
+  background-color: var(--hp-primary) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  transition: all 0.2s ease;
+  font-weight: 700;
+  min-height: 44px;
+}
+
+.homepage-premium-purple button[style*='brand.blue']:hover,
+.homepage-premium-purple button[style*='primary']:hover {
+  background-color: #4A2271 !important;
+  box-shadow: 0 8px 20px rgba(91, 45, 139, 0.25) !important;
+  transform: translateY(-2px);
+}
+
+.homepage-premium-purple button[style*='brand.blue']:active,
+.homepage-premium-purple button[style*='primary']:active {
+  background-color: #3A1857 !important;
+  transform: translateY(0);
+}
+
+/* ===========================
+   CTA / ACCENT BUTTONS (Warm Gold)
+   =========================== */
+.homepage-premium-purple button[style*='brand.gold'],
+.homepage-premium-purple button[style*='secondary'] {
+  background-color: var(--hp-accent) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  transition: all 0.2s ease;
+  font-weight: 700;
+  min-height: 44px;
+}
+
+.homepage-premium-purple button[style*='brand.gold']:hover,
+.homepage-premium-purple button[style*='secondary']:hover {
+  background-color: var(--hp-accent-light) !important;
+  box-shadow: 0 8px 20px rgba(255, 183, 3, 0.25) !important;
+  transform: translateY(-2px);
+}
+
+.homepage-premium-purple button[style*='brand.gold']:active,
+.homepage-premium-purple button[style*='secondary']:active {
+  background-color: var(--hp-accent-dark) !important;
+  transform: translateY(0);
+}
+
+/* ===========================
+   FORM INPUTS
+   =========================== */
+.homepage-premium-purple input,
+.homepage-premium-purple textarea,
+.homepage-premium-purple select {
+  border-color: #E9D5FF !important;
+  background-color: #FFFFFF !important;
+  color: var(--hp-text-primary) !important;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.homepage-premium-purple input:focus,
+.homepage-premium-purple textarea:focus,
+.homepage-premium-purple select:focus {
+  border-color: var(--hp-primary) !important;
+  box-shadow: inset 0 0 0 2px rgba(91, 45, 139, 0.05),
+              0 0 0 3px rgba(91, 45, 139, 0.15) !important;
+  outline: none;
+}
+
+.homepage-premium-purple input::placeholder,
+.homepage-premium-purple textarea::placeholder {
+  color: var(--hp-text-muted);
+}
+
+/* ===========================
+   LINKS & NAVIGATION
+   =========================== */
+.homepage-premium-purple a {
+  color: var(--hp-primary) !important;
+  transition: color 0.2s ease;
+}
+
+.homepage-premium-purple a:hover {
+  color: var(--hp-accent) !important;
+  text-decoration: underline;
+}
+
+.homepage-premium-purple a:active {
+  color: #3A1857 !important;
+}
+
+/* ===========================
+   FOOTER
+   =========================== */
+.homepage-premium-purple footer {
+  background: linear-gradient(135deg, var(--hp-primary) 0%, #3A1857 100%) !important;
+  color: #FFFFFF !important;
+}
+
+.homepage-premium-purple footer a {
+  color: var(--hp-accent) !important;
+  transition: color 0.2s ease;
+}
+
+.homepage-premium-purple footer a:hover {
+  color: var(--hp-accent-light) !important;
+}
+
+/* ===========================
+   DECORATIVE ELEMENTS
+   =========================== */
+.homepage-premium-purple div[style*='background: brand.gold'] {
+  background-color: var(--hp-accent) !important;
+  opacity: 0.15;
+}
+
+.homepage-premium-purple div[style*='background: brand.blue'] {
+  background-color: var(--hp-primary) !important;
+}
+
+/* ===========================
+   TEXT COLOR OVERRIDES
+   =========================== */
+.homepage-premium-purple span[style*='brand.navy'],
+.homepage-premium-purple span[style*='brand.blue'],
+.homepage-premium-purple div[style*='brand.navy'] {
+  color: var(--hp-primary) !important;
+}
+
+.homepage-premium-purple span[style*='brand.muted'],
+.homepage-premium-purple p[style*='brand.muted'],
+.homepage-premium-purple div[style*='brand.muted'] {
+  color: var(--hp-text-muted) !important;
+}
+
+.homepage-premium-purple span[style*='brand.text'] {
+  color: var(--hp-text-primary) !important;
+}
+
+/* ===========================
+   BADGES & STATUS
+   =========================== */
+.homepage-premium-purple .badge,
+.homepage-premium-purple [style*='badge'] {
+  background-color: #E9D5FF !important;
+  color: var(--hp-primary) !important;
+}
+
+.homepage-premium-purple div[style*='success'] {
+  background-color: #DBEAFE !important;
+  color: #1E40AF !important;
+  border-color: #BFDBFE !important;
+}
+
+.homepage-premium-purple div[style*='error'] {
+  background-color: #FEE2E2 !important;
+  color: #DC2626 !important;
+  border-color: #FECACA !important;
+}
+
+/* ===========================
+   PROGRESS BARS & INDICATORS
+   =========================== */
+.homepage-premium-purple [role='progressbar'],
+.homepage-premium-purple .progress {
+  background-color: #E9D5FF !important;
+}
+
+.homepage-premium-purple [role='progressbar'] > div,
+.homepage-premium-purple .progress > div {
+  background-color: var(--hp-secondary) !important;
+}
+
+/* ===========================
+   FOCUS & ACCESSIBILITY
+   =========================== */
+.homepage-premium-purple button:focus-visible,
+.homepage-premium-purple a:focus-visible,
+.homepage-premium-purple input:focus-visible {
+  outline: 3px solid var(--hp-primary) !important;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ===========================
+   TRANSITIONS & ANIMATIONS
+   =========================== */
+.homepage-premium-purple * {
+  transition-property: background-color, border-color, color, box-shadow, transform;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+/* ===========================
+   TABLE STYLING
+   =========================== */
+.homepage-premium-purple table {
+  background-color: var(--hp-card-bg) !important;
+}
+
+.homepage-premium-purple thead {
+  background-color: var(--hp-primary) !important;
+  color: #FFFFFF !important;
+}
+
+.homepage-premium-purple tbody tr:nth-child(even) {
+  background-color: #FAFBFE !important;
+}
+
+.homepage-premium-purple tbody tr:hover {
+  background-color: #F3EDFF !important;
+}
+
+.homepage-premium-purple th,
+.homepage-premium-purple td {
+  border-color: #E9D5FF !important;
+}
+
+/* ===========================
+   DIVIDERS & BORDERS
+   =========================== */
+.homepage-premium-purple hr,
+.homepage-premium-purple .divider {
+  border-color: #E9D5FF !important;
+}
+
+/* ===========================
+   RATING STARS
+   =========================== */
+.homepage-premium-purple .star,
+.homepage-premium-purple [style*='color: brand.gold'] {
+  color: var(--hp-accent) !important;
+}
+
+/* ===========================
+   SECTION SPACING
+   =========================== */
+.homepage-premium-purple [style*='space-y'],
+.homepage-premium-purple main {
+  background-color: var(--hp-background) !important;
+}

@@ -8,13 +8,23 @@ const messageSchema = new mongoose.Schema(
   {
     sender: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Student',
-      required: true
+      required: true,
+      refPath: 'senderModel'
     },
     receiver: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Student',
-      required: true
+      required: true,
+      refPath: 'receiverModel'
+    },
+    senderModel: {
+      type: String,
+      enum: ['Student', 'Tutor'],
+      default: 'Student'
+    },
+    receiverModel: {
+      type: String,
+      enum: ['Student', 'Tutor'],
+      default: 'Student'
     },
     senderType: {
       type: String,
@@ -45,5 +55,6 @@ const messageSchema = new mongoose.Schema(
 // Index for faster queries
 messageSchema.index({ sender: 1, receiver: 1, createdAt: -1 });
 messageSchema.index({ receiver: 1, isRead: 1 });
+messageSchema.index({ senderModel: 1, receiverModel: 1 });
 
 module.exports = mongoose.model('Message', messageSchema);

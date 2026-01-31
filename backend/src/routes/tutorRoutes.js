@@ -4,9 +4,11 @@ const {
   register, login, logout, profile, updateProfile, changePassword,
   updateAvailability, createCourse, myCourses, upcomingBookings,
   listApprovedTutors, getTutorProfile, bookTutor, studentBookings,
-  forgotPassword, resetPassword
+  forgotPassword, resetPassword, getAllStudents, uploadProfileImage
 } = require('../controllers/tutorController');
 const { protectTutor, protectStudent } = require('../middleware/authMiddleware');
+const { upload, cvUpload } = require('../middleware/uploadMiddleware');
+const { authLimiter, registerLimiter, passwordResetLimiter } = require('../middleware/rateLimitMiddleware');
 
 const router = express.Router();
 
@@ -16,7 +18,7 @@ const passwordValidator = body('password')
   .matches(/[a-z]/).withMessage('Include lowercase')
   .matches(/[0-9]/).withMessage('Include number');
 
-router.post('/register', [
+router.post('/register', registerLimiter, cvUpload.single('cv'), [
   body('name').notEmpty(),
   body('email').isEmail(),
   body('phone').notEmpty(),
@@ -26,22 +28,24 @@ router.post('/register', [
   body('experienceYears').isNumeric()
 ], register);
 
-router.post('/login', [
+router.post('/login', authLimiter, [
   body('email').isEmail(),
   body('password').notEmpty()
 ], login);
 
-router.post('/forgot-password', [body('email').isEmail()], forgotPassword);
-router.post('/reset-password', [body('token').notEmpty(), passwordValidator], resetPassword);
+router.post('/forgot-password', passwordResetLimiter, [body('email').isEmail()], forgotPassword);
+router.post('/reset-password', passwordResetLimiter, [body('token').notEmpty(), passwordValidator], resetPassword);
 
 router.get('/profile', protectTutor, profile);
 router.put('/profile', protectTutor, updateProfile);
+router.post('/upload-profile-image', protectTutor, upload.single('profileImage'), uploadProfileImage);
 router.post('/change-password', protectTutor, changePassword);
 router.post('/availability', protectTutor, updateAvailability);
 
 router.post('/courses', protectTutor, createCourse);
 router.get('/courses', protectTutor, myCourses);
 router.get('/bookings', protectTutor, upcomingBookings);
+router.get('/all-students', protectTutor, getAllStudents);
 
 // student-facing tutor interactions
 router.get('/public', listApprovedTutors);

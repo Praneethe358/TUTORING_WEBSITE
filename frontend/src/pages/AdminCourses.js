@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import api from '../lib/api';
-import AdminSidebar from '../components/AdminSidebar';
+import AdminDashboardLayout from '../components/AdminDashboardLayout';
+import { colors, typography, spacing, borderRadius, shadows } from '../theme/designSystem';
 
 const AdminCourses = () => {
   const [courses, setCourses] = useState([]);
@@ -10,30 +11,37 @@ const AdminCourses = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [reason, setReason] = useState('');
   const [action, setAction] = useState('');
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadCourses();
-  }, [filter, page]);
-
-  const loadCourses = async () => {
+  const loadCourses = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
       const res = await api.get('/admin/courses', {
         params: { status: filter || undefined, page, limit: 10 }
       });
-      setCourses(res.data.courses);
+      setCourses(res.data.courses || []);
     } catch (err) {
-      console.error(err);
+      console.error('Failed to load courses:', err);
+      setError(err.response?.data?.message || 'Failed to load courses');
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, page]);
+
+  useEffect(() => {
+    loadCourses();
+  }, [loadCourses]);
 
   const handleAction = async (courseId, act, msg = '') => {
     try {
       if (act === 'approve') {
         await api.put(`/admin/courses/${courseId}/approve`);
       } else if (act === 'reject') {
+        if (!msg.trim()) {
+          alert('Please provide a rejection reason');
+          return;
+        }
         await api.put(`/admin/courses/${courseId}/reject`, { reason: msg });
       }
       loadCourses();
@@ -41,94 +49,294 @@ const AdminCourses = () => {
       setReason('');
       setAction('');
     } catch (err) {
-      alert('Action failed: ' + err.response?.data?.message);
+      alert('Action failed: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const getStatusBadgeStyle = (status) => {
+    switch(status) {
+      case 'approved':
+        return { backgroundColor: colors.success, color: colors.white };
+      case 'pending':
+        return { backgroundColor: colors.warning, color: colors.white };
+      case 'rejected':
+        return { backgroundColor: colors.error, color: colors.white };
+      default:
+        return { backgroundColor: colors.gray300, color: colors.textPrimary };
     }
   };
 
   return (
-    <div className="flex bg-slate-900 text-white min-h-screen">
-      <AdminSidebar />
-      <div className="flex-1 ml-64 p-8">
-        <h1 className="text-4xl font-bold mb-8">Course Moderation</h1>
+    <AdminDashboardLayout>
+      <div style={{ padding: 'clamp(1rem, 4vw, 3rem)' }}>
+        <div style={{ marginBottom: 'clamp(1.5rem, 4vw, 2rem)' }}>
+          <h1 style={{ 
+            fontSize: 'clamp(1.5rem, 5vw, 2rem)', 
+            fontWeight: typography.fontWeight.bold,
+            color: colors.textPrimary,
+            marginBottom: spacing.sm
+          }}>
+            Course Moderation
+          </h1>
+          <p style={{ color: colors.textSecondary, fontSize: typography.fontSize.base }}>
+            Review and approve courses submitted by tutors
+          </p>
+        </div>
 
-        <div className="mb-6">
+        <div style={{ marginBottom: spacing.xl }}>
+          <label style={{ display: 'block', marginBottom: spacing.sm, fontWeight: typography.fontWeight.medium, color: colors.textPrimary }}>
+            Filter by Status
+          </label>
           <select
             value={filter}
             onChange={(e) => { setFilter(e.target.value); setPage(1); }}
-            className="px-4 py-2 rounded bg-slate-800 border border-slate-600"
+            style={{
+              padding: `${spacing.sm} ${spacing.lg}`,
+              borderRadius: borderRadius.md,
+              backgroundColor: colors.white,
+              border: `1px solid ${colors.gray300}`,
+              color: colors.textPrimary,
+              fontSize: typography.fontSize.base,
+              cursor: 'pointer'
+            }}
           >
-            <option value="">All</option>
-            <option value="pending">Pending</option>
+            <option value="">All Courses</option>
+            <option value="pending">Pending Review</option>
             <option value="approved">Approved</option>
             <option value="rejected">Rejected</option>
           </select>
         </div>
 
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-slate-800">
-                <tr>
-                  <th className="px-4 py-2">Subject</th>
-                  <th className="px-4 py-2">Tutor</th>
+        {error && (
+          <div style={{
+            padding: spacing.lg,
+            backgroundColor: '#fee2e2',
+            border: `1px solid #fca5a5`,
+            borderRadius: borderRadius.lg,
+            marginBottom: spacing.lg,
+            color: '#991b1b'
+          }}>
+            {error}
+          </div>
+        )}
 
-                  <th className="px-4 py-2">Status</th>
-                  <th className="px-4 py-2">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {courses.map(course => (
-                  <tr key={course._id} className="border-b border-slate-700">
-                    <td className="px-4 py-2">{course.subject}</td>
-                    <td className="px-4 py-2">{course.tutor?.name}</td>
-
-                    <td className="px-4 py-2">
-                      <span className={`px-3 py-1 rounded text-sm font-semibold ${
-                        course.status === 'approved' ? 'bg-green-600' :
-                        course.status === 'pending' ? 'bg-yellow-600' :
-                        'bg-red-600'
-                      }`}>
-                        {course.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2">
-                      {course.status === 'pending' && (
-                        <>
-                          <button onClick={() => handleAction(course._id, 'approve')} className="bg-green-600 hover:bg-green-500 px-3 py-1 rounded mr-2">Approve</button>
-                          <button onClick={() => { setSelectedCourse(course._id); setAction('reject'); }} className="bg-red-600 hover:bg-red-500 px-3 py-1 rounded">Reject</button>
-                        </>
-                      )}
-                    </td>
+        <div style={{
+          backgroundColor: colors.white,
+          borderRadius: borderRadius.xl,
+          boxShadow: shadows.sm,
+          overflow: 'hidden'
+        }}>
+          {loading ? (
+            <div style={{ padding: spacing['3xl'], textAlign: 'center', color: colors.textSecondary }}>
+              Loading courses...
+            </div>
+          ) : courses.length === 0 ? (
+            <div style={{ padding: spacing['3xl'], textAlign: 'center', color: colors.textSecondary }}>
+              No courses found
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ backgroundColor: colors.gray100, borderBottom: `2px solid ${colors.gray200}` }}>
+                    <th style={{ padding: spacing.lg, textAlign: 'left', fontWeight: typography.fontWeight.semibold, color: colors.textPrimary }}>Subject</th>
+                    <th style={{ padding: spacing.lg, textAlign: 'left', fontWeight: typography.fontWeight.semibold, color: colors.textPrimary }}>Tutor</th>
+                    <th style={{ padding: spacing.lg, textAlign: 'left', fontWeight: typography.fontWeight.semibold, color: colors.textPrimary }}>Duration</th>
+                    <th style={{ padding: spacing.lg, textAlign: 'left', fontWeight: typography.fontWeight.semibold, color: colors.textPrimary }}>Status</th>
+                    <th style={{ padding: spacing.lg, textAlign: 'left', fontWeight: typography.fontWeight.semibold, color: colors.textPrimary }}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {courses.map((course, idx) => (
+                    <tr key={course._id} style={{ 
+                      borderBottom: `1px solid ${colors.gray200}`,
+                      backgroundColor: idx % 2 === 0 ? colors.white : colors.gray50
+                    }}>
+                      <td style={{ padding: spacing.lg, color: colors.textPrimary, fontWeight: typography.fontWeight.medium }}>
+                        {course.subject}
+                        {course.description && (
+                          <div style={{ fontSize: typography.fontSize.sm, color: colors.textSecondary, marginTop: spacing.xs }}>
+                            {course.description.substring(0, 60)}{course.description.length > 60 ? '...' : ''}
+                          </div>
+                        )}
+                      </td>
+                      <td style={{ padding: spacing.lg, color: colors.textSecondary }}>{course.tutor?.name || 'N/A'}</td>
+                      <td style={{ padding: spacing.lg, color: colors.textSecondary }}>{course.durationMinutes ? `${course.durationMinutes} min` : 'N/A'}</td>
+                      <td style={{ padding: spacing.lg }}>
+                        <span style={{
+                          padding: `${spacing.xs} ${spacing.md}`,
+                          borderRadius: borderRadius.full,
+                          fontSize: typography.fontSize.xs,
+                          fontWeight: typography.fontWeight.semibold,
+                          textTransform: 'capitalize',
+                          ...getStatusBadgeStyle(course.status)
+                        }}>
+                          {course.status}
+                        </span>
+                      </td>
+                      <td style={{ padding: spacing.lg }}>
+                        {course.status === 'pending' && (
+                          <div style={{ display: 'flex', gap: spacing.sm }}>
+                            <button 
+                              onClick={() => handleAction(course._id, 'approve')} 
+                              style={{
+                                padding: `${spacing.sm} ${spacing.md}`,
+                                backgroundColor: colors.success,
+                                color: colors.white,
+                                border: 'none',
+                                borderRadius: borderRadius.md,
+                                fontWeight: typography.fontWeight.medium,
+                                cursor: 'pointer',
+                                fontSize: typography.fontSize.sm
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#059669'}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.success}
+                            >
+                              Approve
+                            </button>
+                            <button 
+                              onClick={() => { setSelectedCourse(course._id); setAction('reject'); }} 
+                              style={{
+                                padding: `${spacing.sm} ${spacing.md}`,
+                                backgroundColor: colors.error,
+                                color: colors.white,
+                                border: 'none',
+                                borderRadius: borderRadius.md,
+                                fontWeight: typography.fontWeight.medium,
+                                cursor: 'pointer',
+                                fontSize: typography.fontSize.sm
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.error}
+                            >
+                              Reject
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {courses.length > 0 && (
+          <div style={{ display: 'flex', justifyContent: 'center', gap: spacing.md, marginTop: spacing.xl }}>
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              style={{
+                padding: `${spacing.sm} ${spacing.lg}`,
+                backgroundColor: page === 1 ? colors.gray200 : colors.accent,
+                color: page === 1 ? colors.textTertiary : colors.white,
+                border: 'none',
+                borderRadius: borderRadius.md,
+                fontWeight: typography.fontWeight.medium,
+                cursor: page === 1 ? 'not-allowed' : 'pointer'
+              }}
+            >
+              Previous
+            </button>
+            <span style={{ padding: spacing.sm, color: colors.textSecondary }}>Page {page}</span>
+            <button
+              onClick={() => setPage(p => p + 1)}
+              disabled={courses.length < 10}
+              style={{
+                padding: `${spacing.sm} ${spacing.lg}`,
+                backgroundColor: courses.length < 10 ? colors.gray200 : colors.accent,
+                color: courses.length < 10 ? colors.textTertiary : colors.white,
+                border: 'none',
+                borderRadius: borderRadius.md,
+                fontWeight: typography.fontWeight.medium,
+                cursor: courses.length < 10 ? 'not-allowed' : 'pointer'
+              }}
+            >
+              Next
+            </button>
           </div>
         )}
 
         {selectedCourse && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-slate-800 p-6 rounded-lg max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4">Reject Course</h2>
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 50
+          }}>
+            <div style={{
+              backgroundColor: colors.white,
+              padding: spacing['2xl'],
+              borderRadius: borderRadius.xl,
+              maxWidth: '500px',
+              width: '90%',
+              boxShadow: shadows.lg
+            }}>
+              <h2 style={{ 
+                fontSize: typography.fontSize.xl, 
+                fontWeight: typography.fontWeight.bold,
+                color: colors.textPrimary,
+                marginBottom: spacing.lg
+              }}>
+                Reject Course
+              </h2>
+              <p style={{ color: colors.textSecondary, marginBottom: spacing.md, fontSize: typography.fontSize.sm }}>
+                Please provide a reason for rejecting this course. This will be sent to the tutor.
+              </p>
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 placeholder="Enter rejection reason..."
-                className="w-full px-4 py-2 rounded bg-slate-700 border border-slate-600 mb-4"
-                rows="4"
+                style={{
+                  width: '100%',
+                  padding: spacing.md,
+                  borderRadius: borderRadius.md,
+                  backgroundColor: colors.white,
+                  border: `1px solid ${colors.gray300}`,
+                  marginBottom: spacing.lg,
+                  minHeight: '100px',
+                  fontSize: typography.fontSize.base,
+                  color: colors.textPrimary,
+                  resize: 'vertical'
+                }}
+                rows={4}
               />
-              <div className="flex gap-2">
+              <div style={{ display: 'flex', gap: spacing.md }}>
                 <button
                   onClick={() => handleAction(selectedCourse, action, reason)}
-                  className="flex-1 bg-red-600 hover:bg-red-500 px-4 py-2 rounded"
+                  style={{
+                    flex: 1,
+                    padding: `${spacing.md} ${spacing.lg}`,
+                    backgroundColor: colors.error,
+                    color: colors.white,
+                    border: 'none',
+                    borderRadius: borderRadius.md,
+                    fontWeight: typography.fontWeight.semibold,
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.error}
                 >
-                  Reject
+                  Confirm Rejection
                 </button>
                 <button
                   onClick={() => { setSelectedCourse(null); setAction(''); setReason(''); }}
-                  className="flex-1 bg-slate-600 hover:bg-slate-500 px-4 py-2 rounded"
+                  style={{
+                    flex: 1,
+                    padding: `${spacing.md} ${spacing.lg}`,
+                    backgroundColor: colors.gray200,
+                    color: colors.textPrimary,
+                    border: 'none',
+                    borderRadius: borderRadius.md,
+                    fontWeight: typography.fontWeight.semibold,
+                    cursor: 'pointer'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.gray300}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.gray200}
                 >
                   Cancel
                 </button>
@@ -137,7 +345,7 @@ const AdminCourses = () => {
           </div>
         )}
       </div>
-    </div>
+    </AdminDashboardLayout>
   );
 };
 

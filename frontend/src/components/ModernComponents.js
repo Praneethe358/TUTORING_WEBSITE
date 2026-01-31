@@ -16,7 +16,7 @@ export const Card = ({
     <div
       className={`
         bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-700
-        ${noPadding ? '' : 'p-6'}
+        ${noPadding ? '' : 'p-3 md:p-6'}
         ${hover ? 'hover:shadow-lg cursor-pointer' : ''}
         ${TRANSITIONS.base}
         ${className}
@@ -103,20 +103,21 @@ export const StatCard = ({
 
   return (
     <Card className={`relative overflow-hidden ${className}`}>
-      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-full -mr-12 -mt-12 opacity-30" />
+      <div className="absolute top-0 right-0 w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-full -mr-8 md:-mr-12 -mt-8 md:-mt-12 opacity-30" />
       
       <div className="relative z-10">
-        <div className="flex items-center justify-between mb-4">
-          <span className="text-3xl">{icon}</span>
+        <div className="flex items-center justify-between mb-2 md:mb-4">
+          <span className="text-xl md:text-3xl">{icon}</span>
           {trend && (
-            <span className={`text-sm font-semibold ${trendColor[trend]}`}>
-              {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'} {change}
+            <span className={`text-xs md:text-sm font-semibold ${trendColor[trend]}`}>
+              {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'} 
+              <span className="hidden md:inline"> {change}</span>
             </span>
           )}
         </div>
         
-        <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">{label}</p>
-        <p className="text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
+        <p className="text-gray-600 text-xs md:text-sm mb-1">{label}</p>
+        <p className="text-xl md:text-3xl font-bold text-black">{value}</p>
       </div>
     </Card>
   );

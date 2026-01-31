@@ -1,0 +1,214 @@
+.admin-theme {
+  background-color: #F4F5F7;
+  color: #1A1A1A;
+}
+
+/* Lighten legacy slate backgrounds to the light gray/white palette */
+.admin-theme .bg-slate-900,
+.admin-theme .bg-slate-800,
+.admin-theme .bg-slate-700,
+.admin-theme [class*="bg-slate-9"],
+.admin-theme [class*="bg-slate-8"],
+.admin-theme [class*="bg-slate-7"] {
+  background-color: #FFFFFF !important;
+  color: #1A1A1A !important;
+}
+
+/* Borders and dividers */
+.admin-theme .border-slate-900,
+.admin-theme .border-slate-800,
+.admin-theme .border-slate-700,
+.admin-theme .border-slate-600,
+.admin-theme .divide-slate-700 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #C7C9E2 !important;
+}
+
+/* Text colors */
+.admin-theme .text-slate-100,
+.admin-theme .text-slate-200,
+.admin-theme .text-slate-300,
+.admin-theme .text-white {
+  color: #1A1A1A !important;
+}
+
+.admin-theme .text-slate-400 { color: #6B6D7A !important; }
+.admin-theme .text-slate-500 { color: #A3A4AE !important; }
+
+/* Gray text colors */
+.admin-theme .text-gray-900,
+.admin-theme .text-gray-800,
+.admin-theme .text-gray-700 {
+  color: #1A1A1A !important;
+}
+
+.admin-theme .text-gray-600,
+.admin-theme .text-gray-500 {
+  color: #6B6D7A !important;
+}
+
+.admin-theme .text-gray-400,
+.admin-theme .text-gray-300 {
+  color: #A3A4AE !important;
+}
+
+/* Primary/Accent replacements for indigo/blue variants - Updated to Gold */
+.admin-theme .bg-indigo-600,
+.admin-theme .bg-blue-600,
+.admin-theme .bg-purple-600,
+.admin-theme .bg-orange-600 {
+  background-color: #D4AF37 !important;
+  color: #1A1A1A !important;
+  border-color: #B89A1F !important;
+}
+
+.admin-theme .hover\:bg-indigo-500:hover,
+.admin-theme .hover\:bg-blue-500:hover,
+.admin-theme .hover\:bg-purple-500:hover,
+.admin-theme .hover\:bg-orange-500:hover {
+  background-color: #B89A1F !important;
+}
+
+.admin-theme .hover\:bg-indigo-700:hover,
+.admin-theme .hover\:bg-blue-700:hover {
+  background-color: #A68719 !important;
+}
+
+/* Badges and pills */
+.admin-theme .bg-blue-900,
+.admin-theme .bg-indigo-900 {
+  background-color: #2C2F7E !important;
+  color: #FFFFFF !important;
+}
+
+.admin-theme .text-blue-300,
+.admin-theme .text-blue-400,
+.admin-theme .text-indigo-400 { 
+  color: #D4AF37 !important; 
+}
+
+.admin-theme .text-blue-600,
+.admin-theme .text-indigo-600 {
+  color: #B89A1F !important;
+}
+
+.admin-theme .hover\:text-blue-700:hover,
+.admin-theme .hover\:text-indigo-300:hover {
+  color: #A68719 !important;
+}
+
+/* Hover slate accents */
+.admin-theme .hover\:bg-slate-700:hover,
+.admin-theme .hover\:bg-slate-800:hover,
+.admin-theme .hover\:bg-slate-900:hover,
+.admin-theme .hover\:bg-slate-700\/50:hover,
+.admin-theme .hover\:bg-slate-700\/30:hover {
+  background-color: #EEEFF2 !important;
+}
+
+/* Gray backgrounds */
+.admin-theme .bg-gray-50 {
+  background-color: #F4F5F7 !important;
+}
+
+.admin-theme .bg-gray-100 {
+  background-color: #EEEFF2 !important;
+}
+
+.admin-theme .bg-gray-200 {
+  background-color: #C7C9E2 !important;
+}
+
+/* Tables */
+.admin-theme thead.bg-slate-900,
+.admin-theme thead.bg-slate-800,
+.admin-theme thead.bg-gray-100,
+.admin-theme thead.bg-gray-50 {
+  background-color: #F4F5F7 !important;
+}
+
+/* Inputs on dark slate */
+.admin-theme input.bg-slate-900,
+.admin-theme textarea.bg-slate-900,
+.admin-theme select.bg-slate-900,
+.admin-theme input,
+.admin-theme textarea,
+.admin-theme select {
+  background-color: #FFFFFF !important;
+  color: #1A1A1A !important;
+  border-color: #C7C9E2 !important;
+}
+
+/* Chat/message panels that used slate tints */
+.admin-theme .bg-slate-700,
+.admin-theme .bg-slate-700\/50,
+.admin-theme .bg-slate-700\/30 {
+  background-color: #F4F5F7 !important;
+  color: #1A1A1A !important;
+}
+
+/* Status colors - Success */
+.admin-theme .bg-green-600,
+.admin-theme .bg-green-700 {
+  background-color: #10b981 !important;
+  color: #FFFFFF !important;
+}
+
+.admin-theme .hover\:bg-green-700:hover,
+.admin-theme .hover\:bg-green-500:hover {
+  background-color: #059669 !important;
+}
+
+.admin-theme .bg-green-900 { 
+  background-color: #E5F4EC !important; 
+  color: #14532D !important; 
+}
+
+.admin-theme .text-green-600 {
+  color: #059669 !important;
+}
+
+/* Status colors - Warning */
+.admin-theme .bg-yellow-900,
+.admin-theme .bg-orange-900 { 
+  background-color: #FCEED5 !important; 
+  color: #8A6B2F !important; 
+}
+
+/* Status colors - Error */
+.admin-theme .bg-red-600 {
+  background-color: #ef4444 !important;
+  color: #FFFFFF !important;
+}
+
+.admin-theme .hover\:bg-red-700:hover {
+  background-color: #dc2626 !important;
+}
+
+.admin-theme .bg-red-900 { 
+  background-color: #FDE7E7 !important; 
+  color: #8C1C1C !important; 
+}
+
+.admin-theme .text-red-300 {
+  color: #ef4444 !important;
+}
+
+/* Loading spinner colors */
+.admin-theme .border-b-2.border-blue-600 {
+  border-bottom-color: #C2956B !important;
+}
+
+/* Card gradients */
+.admin-theme .bg-gradient-to-r {
+  background: #FFFFFF !important;
+}
+
+/* Purple/violet colors */
+.admin-theme .text-purple-600 {
+  color: #9333ea !important;
+}
+
+/* Orange colors */
+.admin-theme .text-orange-600 {
+  color: #ea580c !important;
+}

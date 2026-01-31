@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../components/DashboardLayout';
-import TutorSidebar from '../components/TutorSidebar';
 import api from '../lib/api';
 
 /**
@@ -12,51 +10,55 @@ import api from '../lib/api';
  * - Class details modal
  */
 const TutorSchedule = () => {
-  const [bookings, setBookings] = useState([]);
+  const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('upcoming'); // 'upcoming' | 'past' | 'all'
 
   useEffect(() => {
-    fetchBookings();
+    fetchClasses();
   }, []);
 
-  const fetchBookings = async () => {
+  const fetchClasses = async () => {
     try {
-      const res = await api.get('/tutor/bookings');
-      setBookings(res.data.bookings || []);
+      const res = await api.get('/classes');
+      setClasses(res.data.data || []);
     } catch (error) {
-      console.error('Failed to fetch bookings:', error);
+      console.error('Failed to fetch classes:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const filterBookings = () => {
+  const filterClasses = () => {
     const now = new Date();
     if (filter === 'upcoming') {
-      return bookings.filter(b => new Date(b.date) > now).sort((a, b) => new Date(a.date) - new Date(b.date));
+      return classes
+        .filter(c => new Date(c.scheduledAt) > now)
+        .sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt));
     } else if (filter === 'past') {
-      return bookings.filter(b => new Date(b.date) <= now).sort((a, b) => new Date(b.date) - new Date(a.date));
+      return classes
+        .filter(c => new Date(c.scheduledAt) <= now)
+        .sort((a, b) => new Date(b.scheduledAt) - new Date(a.scheduledAt));
     }
-    return bookings.sort((a, b) => new Date(a.date) - new Date(b.date));
+    return classes.sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt));
   };
 
-  const filteredBookings = filterBookings();
+  const filteredClasses = filterClasses();
 
   return (
-    <DashboardLayout sidebar={TutorSidebar}>
+    <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Class Schedule</h1>
+        <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-white">Class Schedule</h1>
         <p className="text-slate-400 mt-1">View all your scheduled classes</p>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-6 overflow-x-auto pb-2 sm:pb-0">
         {['upcoming', 'past', 'all'].map(tab => (
           <button
             key={tab}
             onClick={() => setFilter(tab)}
-            className={`px-4 py-2 rounded-lg font-medium transition ${
+            className={`px-4 py-2 rounded-lg font-medium transition whitespace-nowrap min-h-[44px] ${
               filter === tab
                 ? 'bg-indigo-600 text-white'
                 : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
@@ -67,22 +69,22 @@ const TutorSchedule = () => {
         ))}
       </div>
 
-      {/* Bookings List */}
+      {/* Classes List */}
       {loading ? (
         <p className="text-slate-400">Loading schedule...</p>
-      ) : filteredBookings.length === 0 ? (
+      ) : filteredClasses.length === 0 ? (
         <div className="bg-slate-800 rounded-xl p-12 border border-slate-700 text-center">
           <p className="text-slate-400">No classes found for this filter.</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredBookings.map(booking => {
-            const bookingDate = new Date(booking.date);
-            const isPast = bookingDate < new Date();
+          {filteredClasses.map(cls => {
+            const classDate = new Date(cls.scheduledAt);
+            const isPast = classDate < new Date();
 
             return (
               <div
-                key={booking._id}
+                key={cls._id}
                 className={`bg-slate-800 rounded-xl p-6 border transition ${
                   isPast ? 'border-slate-700 opacity-75' : 'border-slate-700 hover:border-indigo-500'
                 }`}
@@ -90,30 +92,32 @@ const TutorSchedule = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-white">
-                      {booking.course?.subject || 'Class'}
+                      {cls.topic || cls.course?.subject || 'Class'}
                     </h3>
                     <p className="text-sm text-slate-400 mt-1">
-                      Student: {booking.student?.name} • {booking.student?.email}
+                      Students: {cls.students?.length > 0
+                        ? cls.students.map(s => s.name || s.email).join(', ')
+                        : cls.student?.name || 'N/A'}
                     </p>
                     <div className="flex items-center gap-4 mt-2">
                       <span className="text-sm text-slate-400">
-                        📅 {bookingDate.toLocaleDateString()}
+                        📅 {classDate.toLocaleDateString()}
                       </span>
                       <span className="text-sm text-slate-400">
-                        🕐 {bookingDate.toLocaleTimeString()}
+                        🕐 {classDate.toLocaleTimeString()}
                       </span>
                       <span className="text-sm text-slate-400">
-                        ⏱️ {booking.course?.durationMinutes || 60} mins
+                        ⏱️ {cls.duration || cls.course?.durationMinutes || 60} mins
                       </span>
                     </div>
                   </div>
                   <div className="text-right">
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                      booking.status === 'completed' ? 'bg-green-900 text-green-300' :
-                      booking.status === 'cancelled' ? 'bg-red-900 text-red-300' :
+                      cls.status === 'completed' ? 'bg-green-900 text-green-300' :
+                      cls.status === 'cancelled' ? 'bg-red-900 text-red-300' :
                       'bg-blue-900 text-blue-300'
                     }`}>
-                      {booking.status}
+                      {cls.status}
                     </span>
                   </div>
                 </div>
@@ -122,7 +126,7 @@ const TutorSchedule = () => {
           })}
         </div>
       )}
-    </DashboardLayout>
+    </div>
   );
 };
 

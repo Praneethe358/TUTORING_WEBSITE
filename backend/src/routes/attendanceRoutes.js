@@ -17,8 +17,8 @@ router.get('/', protectAny, attendanceController.getAttendance);
 // @route   GET /api/attendance/stats
 // @desc    Get attendance statistics
 // @access  Private
-router.get('/stats/:studentId', attendanceController.getAttendanceStats);
-router.get('/stats', attendanceController.getAttendanceStats);
+router.get('/stats/:studentId', protectAny, attendanceController.getAttendanceStats);
+router.get('/stats', protectAny, attendanceController.getAttendanceStats);
 
 // @route   GET /api/attendance/:id
 // @desc    Get single attendance record

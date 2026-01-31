@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import api from '../lib/api';
 import { Link } from 'react-router-dom';
-import FormInput from '../components/FormInput';
+import { CourseraInput, CourseraButton, CourseraAlert } from '../components/CourseraCard';
+import { colors, typography, spacing } from '../theme/designSystem';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -26,19 +27,33 @@ const ForgotPassword = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1 className="text-2xl font-semibold text-center mb-6">Forgot Password</h1>
-      {message && <div className="mb-4 text-sm text-emerald-400">{message}</div>}
-      {error && <div className="mb-4 text-sm text-red-400">{error}</div>}
-      <FormInput label="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="student@example.com" />
-      <button
+      <h1 style={{
+        fontSize: typography.fontSize['2xl'],
+        fontWeight: typography.fontWeight.semibold,
+        textAlign: 'center',
+        marginBottom: spacing.xl,
+        color: colors.textPrimary,
+      }}>
+        Forgot Password
+      </h1>
+      {message && <CourseraAlert type="success">{message}</CourseraAlert>}
+      {error && <CourseraAlert type="error" onClose={() => setError('')}>{error}</CourseraAlert>}
+      <CourseraInput label="Email" type="email" name="email" value={email} onChange={e => setEmail(e.target.value)} required placeholder="student@example.com" />
+      <CourseraButton
         type="submit"
         disabled={loading}
-        className="w-full py-3 mt-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition disabled:opacity-60"
+        fullWidth={true}
+        style={{ marginTop: spacing.md }}
       >
         {loading ? 'Sending...' : 'Send reset link'}
-      </button>
-      <p className="text-sm text-slate-400 mt-4 text-center">
-        Back to <Link className="text-indigo-400" to="/login">Login</Link>
+      </CourseraButton>
+      <p style={{
+        fontSize: typography.fontSize.sm,
+        color: colors.textSecondary,
+        marginTop: spacing.lg,
+        textAlign: 'center',
+      }}>
+        Back to <Link to="/login" style={{ color: colors.accent, textDecoration: 'none', fontWeight: typography.fontWeight.semibold }}>Login</Link>
       </p>
     </form>
   );

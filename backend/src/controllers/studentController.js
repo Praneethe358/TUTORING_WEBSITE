@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const { validationResult } = require('express-validator');
 const Student = require('../models/Student');
 const { signToken } = require('../utils/token');
-const { sendResetEmail } = require('../utils/email');
+const { sendResetEmail, sendVerificationEmail } = require('../utils/email');
 
 function handleValidation(req, res) {
   const errors = validationResult(req);
@@ -26,16 +26,45 @@ function setAuthCookie(res, token) {
 exports.register = async (req, res, next) => {
   try {
     if (handleValidation(req, res)) return;
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, course, password } = req.body;
 
     const existing = await Student.findOne({ email });
     if (existing) return res.status(400).json({ message: 'Email already registered' });
 
     const hashed = await bcrypt.hash(password, 10);
-    const student = await Student.create({ name, email, phone, password: hashed, role: 'student' });
+    
+    // Generate email verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+
+    const student = await Student.create({ 
+      name, 
+      email, 
+      phone, 
+      course, 
+      password: hashed, 
+      role: 'student',
+      emailVerificationToken: verificationToken,
+      emailVerificationExpires: verificationExpires,
+      isEmailVerified: false
+    });
+
+    // Send verification email
+    try {
+      await sendVerificationEmail(email, verificationToken, name);
+    } catch (emailError) {
+      // Don't fail registration if email fails
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to send verification email:', emailError);
+      }
+    }
+
     const token = signToken(student);
     setAuthCookie(res, token);
-    res.status(201).json({ message: 'Registration successful', student: { id: student._id, name, email, phone, role: student.role } });
+    res.status(201).json({ 
+      message: 'Registration successful. Please check your email to verify your account.', 
+      student: { id: student._id, name, email, phone, course, role: student.role, isEmailVerified: false }
+    });
   } catch (err) { next(err); }
 };
 
@@ -49,7 +78,7 @@ exports.login = async (req, res, next) => {
     if (!match) return res.status(400).json({ message: 'Invalid credentials' });
     const token = signToken(student);
     setAuthCookie(res, token);
-    res.json({ message: 'Login successful', redirect: '/student/dashboard' });
+    res.json({ message: 'Login successful', redirect: '/student/dashboard', token });
   } catch (err) { next(err); }
 };
 

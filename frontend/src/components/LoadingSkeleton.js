@@ -79,10 +79,12 @@ export const PageLoader = () => (
   </div>
 );
 
-export default {
+const LoadingSkeleton = {
   CardSkeleton,
   TableSkeleton,
   ListSkeleton,
   LoadingSpinner,
   PageLoader
 };
+
+export default LoadingSkeleton;
