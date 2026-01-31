@@ -11,44 +11,41 @@ import Logo from './Logo';
 const DashboardLayout = ({ sidebar: Sidebar, children, themeClass = '' }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  return (
+    <div
+      className={themeClass}
+      style={{
+        display: 'flex',
+        height: '100vh',
+        backgroundColor: colors.bgSecondary,
+        fontFamily: typography.fontFamily.base,
+        overflow: 'hidden',
+      }}
+    >
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
         <div
-          className="dashboard-header"
-          style={
-            {
-              position: 'sticky',
-              top: 0,
-              zIndex: 40,
-              backgroundColor: colors.white,
-              boxShadow: shadows.md,
-              borderBottom: `1px solid ${colors.gray200}`,
-              backdropFilter: 'blur(8px)',
-            }
-          }
-        >
-          <div
-            className="dashboard-header-inner"
-            style={
-              {
-                maxWidth: '1200px',
-                margin: '0 auto',
-                padding: `${spacing.md} ${spacing.lg}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: spacing.md,
-              }
-            }
-          >
-            <div className="dashboard-header-brand" style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 45,
+          }}
+          className="block md:hidden"
+        />
+      )}
+
+      {/* Sidebar - Desktop (always visible) */}
       <div className="hidden md:block" style={{ width: 260, flexShrink: 0 }}>
         <Sidebar />
       </div>
 
       {/* Sidebar - Mobile (toggleable) */}
-      <div 
+      <div
         className="block md:hidden"
-        style={{ 
-          width: 260, 
+        style={{
+          width: 260,
           position: 'fixed',
           left: 0,
           top: 0,
@@ -65,6 +62,7 @@ const DashboardLayout = ({ sidebar: Sidebar, children, themeClass = '' }) => {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }} className="w-full">
         {/* Top Header */}
         <div
+          className="dashboard-header"
           style={{
             position: 'sticky',
             top: 0,
@@ -76,6 +74,7 @@ const DashboardLayout = ({ sidebar: Sidebar, children, themeClass = '' }) => {
           }}
         >
           <div
+            className="dashboard-header-inner"
             style={{
               maxWidth: '1200px',
               margin: '0 auto',
@@ -83,9 +82,10 @@ const DashboardLayout = ({ sidebar: Sidebar, children, themeClass = '' }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
+              gap: spacing.md,
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
+            <div className="dashboard-header-brand" style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
               {/* Hamburger Menu - Mobile Only */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
