@@ -1,10 +1,10 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Logo from './Logo';
 import { colors, typography, spacing, borderRadius, shadows } from '../theme/designSystem';
 
 /**
  * STUDENT SIDEBAR COMPONENT
+ * 
  * Left sidebar navigation for student dashboard
  * - Shows active route highlighting
  * - Includes logout button
@@ -45,8 +45,9 @@ const StudentSidebar = () => {
 
   return (
     <div
-      className="student-sidebar w-full md:w-[260px] h-full md:h-screen overflow-y-auto overflow-x-hidden"
       style={{
+        width: '260px',
+        height: '100vh',
         backgroundColor: colors.white,
         borderRight: `1px solid ${colors.gray200}`,
         padding: spacing['2xl'],
@@ -54,30 +55,46 @@ const StudentSidebar = () => {
         flexDirection: 'column',
         gap: spacing.lg,
         boxShadow: shadows.sm,
-        position: 'relative',
+        position: 'sticky',
+        top: 0,
+        overflowY: 'auto',
+        overflowX: 'hidden',
       }}
     >
-      {/* Header with brand logo */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.xs }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: spacing.sm }}>
-          <Logo size={28} withText={false} />
-          <span style={{ fontSize: typography.fontSize.md, fontWeight: typography.fontWeight.bold, color: colors.textPrimary }}>HOPE</span>
-        </div>
-        <p style={{ fontSize: typography.fontSize.xs, color: colors.textSecondary }}>Student Portal · Learning Dashboard</p>
+      {/* Header */}
+      <div>
+        <h1
+          style={{
+            fontSize: typography.fontSize['2xl'],
+            fontWeight: typography.fontWeight.bold,
+            color: colors.accent,
+            marginBottom: spacing.xs,
+          }}
+        >
+          Student Portal
+        </h1>
+        <p style={{ fontSize: typography.fontSize.xs, color: colors.textSecondary }}>Learning Dashboard</p>
       </div>
       
       {/* Navigation Menu */}
-      <nav className="flex-1 flex flex-col gap-1 overflow-y-auto overflow-x-hidden">
+      <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: spacing.xs, overflowY: 'auto', overflowX: 'hidden' }}>
         {menuItems.map((item, idx) => {
           // Handle dividers
           if (item.divider) {
             return (
               <div
                 key={`divider-${idx}`}
-                className="flex items-center gap-3 px-3 py-2 text-xs font-semibold mt-2 mb-2 border-t"
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: spacing.md,
+                  padding: `${spacing.md} ${spacing.lg}`,
+                  fontSize: typography.fontSize.xs,
+                  fontWeight: typography.fontWeight.semibold,
                   color: colors.textSecondary,
-                  borderColor: colors.gray200,
+                  marginTop: spacing.sm,
+                  borderTop: `1px solid ${colors.gray200}`,
+                  marginBottom: spacing.sm,
                 }}
               >
                 {item.label}
@@ -92,13 +109,17 @@ const StudentSidebar = () => {
             <Link
               key={item.path}
               to={item.path}
-              preventScrollReset={true}
-              className="flex items-center gap-3 px-3 py-3 md:py-2 rounded-lg transition-all min-h-[44px] md:min-h-0"
               style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: spacing.md,
+                padding: `${spacing.md} ${spacing.lg}`,
+                borderRadius: borderRadius.md,
                 textDecoration: 'none',
                 backgroundColor: active ? colors.accent : 'transparent',
                 color: active ? colors.white : colors.textSecondary,
                 fontWeight: typography.fontWeight.medium,
+                transition: 'all 0.2s ease',
               }}
               onMouseEnter={(e) => {
                 if (!active) {
@@ -113,8 +134,8 @@ const StudentSidebar = () => {
                 }
               }}
             >
-              <span className="text-lg md:text-base flex-shrink-0">{item.icon}</span>
-              <span className="text-sm">{item.label}</span>
+              <span style={{ fontSize: typography.fontSize.lg }}>{item.icon}</span>
+              <span style={{ fontSize: typography.fontSize.sm }}>{item.label}</span>
             </Link>
           );
         })}
@@ -123,12 +144,21 @@ const StudentSidebar = () => {
       {/* Logout Button */}
       <button
         onClick={handleLogout}
-        className="mt-auto w-full flex items-center justify-center gap-2 py-3 md:py-2 rounded-lg font-semibold transition-all min-h-[48px] md:min-h-0"
         style={{
+          marginTop: 'auto',
+          width: '100%',
           backgroundColor: colors.error,
           color: colors.white,
           border: 'none',
+          padding: `${spacing.md} ${spacing.lg}`,
+          borderRadius: borderRadius.md,
+          fontWeight: typography.fontWeight.semibold,
           cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: spacing.sm,
+          transition: 'all 0.2s ease',
         }}
         onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#dc2626'; }}
         onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = colors.error; }}
