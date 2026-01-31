@@ -4,6 +4,7 @@ import StudentDashboardLayout from '../components/StudentDashboardLayout';
 import { useAuth } from '../context/AuthContext';
 import api from '../lib/api';
 import { Card, StatCard, Badge, EmptyState } from '../components/ModernComponents';
+import { colors, spacing, typography, borderRadius } from '../theme/designSystem';
 
 /**
  * STUDENT LMS DASHBOARD
