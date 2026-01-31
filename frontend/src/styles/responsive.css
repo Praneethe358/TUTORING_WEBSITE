@@ -50,10 +50,7 @@
     margin-bottom: 12px !important;
   }
   
-  /* Flex to Column */
-  .flex, [class*="flex"] {
-    flex-direction: column !important;
-  }
+  /* Avoid forcing all flex elements into columns on mobile */
   
   /* Buttons */
   button {
@@ -86,6 +83,11 @@
     width: 100% !important;
     position: relative !important;
     height: auto !important;
+  }
+
+  /* Student sidebar specific */
+  .student-sidebar {
+    padding: 16px !important;
   }
   
   /* Dashboard Layout */

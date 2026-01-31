@@ -45,7 +45,7 @@ const StudentSidebar = () => {
 
   return (
     <div
-      className="w-full md:w-[260px] h-screen overflow-y-auto overflow-x-hidden"
+      className="student-sidebar w-full md:w-[260px] h-full md:h-screen overflow-y-auto overflow-x-hidden"
       style={{
         backgroundColor: colors.white,
         borderRight: `1px solid ${colors.gray200}`,
@@ -54,9 +54,7 @@ const StudentSidebar = () => {
         flexDirection: 'column',
         gap: spacing.lg,
         boxShadow: shadows.sm,
-        position: 'fixed',
-        top: 0,
-        left: 0,
+        position: 'relative',
       }}
     >
       {/* Header with brand logo */}
