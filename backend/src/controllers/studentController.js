@@ -46,7 +46,7 @@ exports.register = async (req, res, next) => {
       role: 'student',
       emailVerificationToken: verificationToken,
       emailVerificationExpires: verificationExpires,
-      isEmailVerified: false
+      isEmailVerified: process.env.NODE_ENV === 'production' ? true : false // Auto-verify in production
     });
 
     // Send verification email
