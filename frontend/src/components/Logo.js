@@ -6,7 +6,7 @@ import hopeLogo from '../pages/TUTORIALLOGO.jpeg';
 
 const Logo = ({ size = 300, withText = false }) => {
   return (
-    <div className="flex items-center gap-2 sm:gap-3">
+    <div className="logo-root flex items-start gap-2 sm:gap-3">
       <img
         src={hopeLogo}
         alt="HOPE"
@@ -15,15 +15,16 @@ const Logo = ({ size = 300, withText = false }) => {
       />
 
       {withText && (
-        <span
-          className="logo-text text-xs sm:text-sm md:text-lg font-bold leading-tight"
+        <div
+          className="logo-text text-xs sm:text-sm md:text-lg font-bold leading-tight text-left"
           style={{
             letterSpacing: '-0.2px',
             color: colors.textPrimary,
+            maxWidth: '200px',
           }}
         >
           HOPE ONLINE TUTION - Saving Time , Inspiring Mind
-        </span>
+        </div>
       )}
     </div>
   );

@@ -74,7 +74,7 @@ const StudentSettings = () => {
         return;
       }
       await api.post('/student/change-password', {
-        currentPassword: passwordForm.currentPassword,
+        oldPassword: passwordForm.currentPassword,
         newPassword: passwordForm.newPassword
       });
       alert('Password changed successfully');
@@ -261,10 +261,10 @@ const StudentSettings = () => {
 
 // Reusable Toggle Component
 const SettingToggle = ({ label, description, checked, onChange }) => (
-  <div className="flex items-center justify-between py-4 sm:py-3 border-b border-gray-100 last:border-0 gap-4">
+  <div className="flex items-center justify-between py-3 sm:py-3 border-b border-gray-100 last:border-0 gap-2 sm:gap-4">
     <div className="flex-1 min-w-0">
       <p className="text-black font-medium text-sm sm:text-base">{label}</p>
-      <p className="text-xs sm:text-sm text-gray-500 mt-0.5">{description}</p>
+      <p className="text-xs text-gray-500 mt-0.5">{description}</p>
     </div>
     <button
       type="button"
@@ -276,15 +276,15 @@ const SettingToggle = ({ label, description, checked, onChange }) => (
         e.stopPropagation();
         onChange();
       }}
-      className={`relative inline-flex h-8 w-14 sm:h-7 sm:w-12 items-center rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex-shrink-0 ${
+      className={`relative inline-flex h-6 w-11 sm:h-7 sm:w-12 items-center rounded-full transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 flex-shrink-0 ${
         checked 
           ? 'bg-indigo-600 hover:bg-indigo-700 shadow-md' 
           : 'bg-gray-300 hover:bg-gray-400'
       }`}
     >
       <span
-        className={`inline-block h-6 w-6 sm:h-5 sm:w-5 transform rounded-full bg-white shadow-lg transition-transform duration-300 ease-in-out ${
-          checked ? 'translate-x-7 sm:translate-x-6' : 'translate-x-1 sm:translate-x-0.5'
+        className={`inline-block h-5 w-5 sm:h-5 sm:w-5 transform rounded-full bg-white shadow-lg transition-transform duration-300 ease-in-out ${
+          checked ? 'translate-x-5 sm:translate-x-6' : 'translate-x-0.5 sm:translate-x-0.5'
         }`}
       />
     </button>
