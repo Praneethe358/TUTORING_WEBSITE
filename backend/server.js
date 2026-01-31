@@ -123,6 +123,10 @@ app.use('/api/admin/login', authLimiter);
 
 app.use('/uploads', express.static('uploads'));
 
+app.get('/', (_req, res) => {
+  res.send('Backend is running. Use /api/health for status.');
+});
+
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
