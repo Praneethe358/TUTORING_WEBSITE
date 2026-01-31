@@ -62,8 +62,8 @@ exports.register = async (req, res, next) => {
     const token = signToken(student);
     setAuthCookie(res, token);
     res.status(201).json({ 
-      message: 'Registration successful. Please check your email to verify your account.', 
-      student: { id: student._id, name, email, phone, course, role: student.role, isEmailVerified: false }
+      message: 'Registration successful. You can now login.', 
+      student: { id: student._id, name, email, phone, course, role: student.role, isEmailVerified: true }
     });
   } catch (err) { next(err); }
 };
