@@ -108,9 +108,7 @@ io.on('connection', (socket) => {
 });
 
 // Middleware
-app.use(enforceHTTPS); // HTTPS enforcement in production
-
-// CORS - allow frontend access
+// CORS must come BEFORE HTTPS redirect to handle preflight properly
 const corsOptions = {
   origin: [
     'http://localhost:3000', 
@@ -125,6 +123,8 @@ const corsOptions = {
   optionsSuccessStatus: 200
 };
 app.use(cors(corsOptions));
+
+app.use(enforceHTTPS); // HTTPS enforcement in production
 
 app.use(express.json());
 app.use(cookieParser());
