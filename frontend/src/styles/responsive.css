@@ -103,24 +103,18 @@
   /* Dashboard Header */
   .dashboard-header-inner {
     padding: 8px 12px !important;
-    gap: 4px !important;
+    gap: 8px !important;
   }
 
   .dashboard-header-brand {
     flex: 1 !important;
     min-width: 0 !important;
     justify-content: flex-start !important;
-    gap: 4px !important;
+    gap: 8px !important;
   }
 
   .dashboard-header-brand button {
     padding: 4px !important;
-    min-width: auto !important;
-  }
-
-  .dashboard-header-brand button svg {
-    width: 18px !important;
-    height: 18px !important;
   }
 
   .dashboard-header-actions {
