@@ -117,26 +117,26 @@ const StudentDashboard = () => {
   return (
     <StudentDashboardLayout>
       {/* Header with Welcome Message */}
-      <div className="student-dashboard-header mb-6 md:mb-8 bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
-        <div className="flex items-center gap-4 md:gap-6">
+      <div className="student-dashboard-header mb-4 md:mb-8 bg-white rounded-lg md:rounded-xl shadow-sm border border-gray-100 p-4 md:p-8">
+        <div className="flex items-center gap-3 md:gap-6">
           <div className="flex-shrink-0">
             {user?.avatar ? (
               <img
                 src={user.avatar.startsWith('http') ? user.avatar : `http://localhost:5000${user.avatar}`}
                 alt={user.name}
-                className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-indigo-100 shadow-md"
+                className="w-12 h-12 md:w-20 md:h-20 rounded-full object-cover border-2 border-indigo-100 shadow-md"
               />
             ) : (
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-md">
-                <span className="text-2xl md:text-3xl font-bold text-white">{user?.name?.[0]?.toUpperCase() || 'S'}</span>
+              <div className="w-12 h-12 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-md">
+                <span className="text-xl md:text-3xl font-bold text-white">{user?.name?.[0]?.toUpperCase() || 'S'}</span>
               </div>
             )}
           </div>
-          <div className="flex-1">
-            <h1 className="text-lg sm:text-xl md:text-3xl font-bold text-gray-900 mb-1 md:mb-2">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-base sm:text-lg md:text-3xl font-bold text-gray-900 mb-0.5 md:mb-2 truncate">
               Welcome back, {user?.name?.split(' ')[0]}!
             </h1>
-            <p className="text-xs sm:text-sm md:text-base text-gray-500 leading-relaxed">
+            <p className="text-xs md:text-base text-gray-500 leading-tight md:leading-relaxed">
               Track your progress and stay on top of your learning journey
             </p>
           </div>
@@ -144,7 +144,7 @@ const StudentDashboard = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="student-stats-grid grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 mb-4 md:mb-8">
+      <div className="student-stats-grid grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-8">
         <StatCard
           icon="📚"
           label="Total Classes"
@@ -175,17 +175,17 @@ const StudentDashboard = () => {
         />
       </div>
 
-      <div className="student-main-grid grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="student-main-grid grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Main Content - 2 columns */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 md:space-y-6">
           {/* Upcoming Classes */}
           <Card>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-black">
+            <div className="flex items-center justify-between mb-4 md:mb-6">
+              <h2 className="text-base md:text-xl font-bold text-black">
                 📅 Upcoming Sessions
               </h2>
               <Link to="/student/classes">
-                <Badge variant="primary" className="cursor-pointer hover:bg-indigo-700">
+                <Badge variant="primary" className="cursor-pointer hover:bg-indigo-700 text-xs md:text-sm">
                   View All
                 </Badge>
               </Link>
@@ -208,25 +208,25 @@ const StudentDashboard = () => {
                 {upcomingBookings.map(booking => (
                   <div
                     key={booking._id}
-                    className="flex items-start justify-between p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+                    className="flex items-start justify-between p-3 md:p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                   >
-                    <div className="flex gap-4 flex-1">
-                      <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-xl flex-shrink-0">
+                    <div className="flex gap-2 md:gap-4 flex-1 min-w-0">
+                      <div className="w-10 h-10 md:w-12 md:h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-lg md:text-xl flex-shrink-0">
                         {booking.course?.subject === 'Math' ? '🔢' : booking.course?.subject === 'English' ? '📖' : '📚'}
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-black">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-black text-sm md:text-base truncate">
                           {booking.course?.subject || 'Class'}
                         </h3>
-                        <p className="text-sm text-black">
+                        <p className="text-xs md:text-sm text-black truncate">
                           with {booking.tutor?.name}
                         </p>
-                        <p className="text-sm text-black mt-1">
+                        <p className="text-xs md:text-sm text-black mt-0.5 md:mt-1">
                           {new Date(booking.date).toLocaleDateString()} at {new Date(booking.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
                     </div>
-                    <Badge variant="success" className="ml-2">
+                    <Badge variant="success" className="ml-2 text-xs shrink-0">
                       {booking.status}
                     </Badge>
                   </div>
@@ -237,12 +237,12 @@ const StudentDashboard = () => {
 
           {/* Recent Assignments */}
           <Card>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-black">
+            <div className="flex items-center justify-between mb-4 md:mb-6">
+              <h2 className="text-base md:text-xl font-bold text-black">
                 📝 Recent Assignments
               </h2>
               <Link to="/student/assignments">
-                <Badge variant="primary" className="cursor-pointer hover:bg-indigo-700">
+                <Badge variant="primary" className="cursor-pointer hover:bg-indigo-700 text-xs md:text-sm">
                   View All
                 </Badge>
               </Link>
@@ -259,19 +259,19 @@ const StudentDashboard = () => {
                 {recentAssignments.map(assignment => (
                   <div
                     key={assignment._id}
-                    className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                    className="flex items-start justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
                   >
-                    <div>
-                      <h3 className="font-medium text-black">{assignment.title}</h3>
-                      <p className="text-sm text-black">{assignment.courseName}</p>
-                      <p className="text-xs text-black mt-1">
+                    <div className="flex-1 min-w-0 pr-2">
+                      <h3 className="font-medium text-black text-sm md:text-base truncate">{assignment.title}</h3>
+                      <p className="text-xs md:text-sm text-black truncate">{assignment.courseName}</p>
+                      <p className="text-xs text-black mt-0.5 md:mt-1">
                         Due: {new Date(assignment.deadline).toLocaleDateString()}
                       </p>
                     </div>
                     {assignment.submission ? (
-                      <Badge variant="success">Submitted</Badge>
+                      <Badge variant="success" size="sm" className="shrink-0">Submitted</Badge>
                     ) : (
-                      <Badge variant="warning">Pending</Badge>
+                      <Badge variant="warning" size="sm" className="shrink-0">Pending</Badge>
                     )}
                   </div>
                 ))}
@@ -281,34 +281,34 @@ const StudentDashboard = () => {
         </div>
 
         {/* Quick Actions Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           <Card>
-            <h3 className="text-lg font-semibold text-black mb-4">
+            <h3 className="text-base md:text-lg font-semibold text-black mb-3 md:mb-4">
               ⚡ Quick Actions
             </h3>
-            <div className="space-y-3">
+            <div className="space-y-2 md:space-y-3">
               <Link to="/student/tutors-availability">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full text-sm md:text-base py-2.5 md:py-3">
                   👨‍🏫 Browse Tutors
                 </Button>
               </Link>
               <Link to="/student/booking">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full text-sm md:text-base py-2.5 md:py-3">
                   📅 Book Session
                 </Button>
               </Link>
               <Link to="/student/messages">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full text-sm md:text-base py-2.5 md:py-3">
                   💬 Messages
                 </Button>
               </Link>
               <Link to="/student/materials">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full text-sm md:text-base py-2.5 md:py-3">
                   📚 My Materials
                 </Button>
               </Link>
               <Link to="/student/grades">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full text-sm md:text-base py-2.5 md:py-3">
                   🎓 View Grades
                 </Button>
               </Link>
@@ -317,21 +317,21 @@ const StudentDashboard = () => {
 
           {/* Upcoming Quizzes */}
           <Card>
-            <h3 className="text-lg font-semibold text-black mb-4">
+            <h3 className="text-base md:text-lg font-semibold text-black mb-3 md:mb-4">
               📋 Upcoming Quizzes
             </h3>
             {upcomingQuizzes.length === 0 ? (
-              <p className="text-sm text-black">No upcoming quizzes</p>
+              <p className="text-xs md:text-sm text-black">No upcoming quizzes</p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2 md:space-y-3">
                 {upcomingQuizzes.map(quiz => (
                   <div
                     key={quiz._id}
-                    className="p-3 border border-gray-200 rounded-lg"
+                    className="p-2.5 md:p-3 border border-gray-200 rounded-lg"
                   >
-                    <h4 className="font-medium text-black text-sm">{quiz.title}</h4>
-                    <p className="text-xs text-black">{quiz.courseName}</p>
-                    <p className="text-xs text-black mt-1">
+                    <h4 className="font-medium text-black text-xs md:text-sm truncate">{quiz.title}</h4>
+                    <p className="text-xs text-black truncate">{quiz.courseName}</p>
+                    <p className="text-xs text-black mt-0.5 md:mt-1">
                       {quiz.timeLimit} min • {quiz.totalPoints} pts
                     </p>
                   </div>
@@ -342,20 +342,20 @@ const StudentDashboard = () => {
 
           {/* Progress Card */}
           <Card>
-            <h3 className="text-sm font-semibold text-black mb-4">
+            <h3 className="text-base md:text-lg font-semibold text-black mb-3 md:mb-4">
               📊 Learning Progress
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-black">Classes Completed</span>
-                  <span className="text-sm font-semibold text-black">
+                <div className="flex items-center justify-between mb-1.5 md:mb-2">
+                  <span className="text-xs md:text-sm text-black">Classes Completed</span>
+                  <span className="text-xs md:text-sm font-semibold text-black">
                     {stats.completedClasses}/{stats.totalClasses}
                   </span>
                 </div>
                 <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-indigo-600 to-purple-600"
+                    className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-500"
                     style={{
                       width: `${stats.totalClasses > 0 ? (stats.completedClasses / stats.totalClasses) * 100 : 0}%`,
                     }}
@@ -363,15 +363,15 @@ const StudentDashboard = () => {
                 </div>
               </div>
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-black">Study Hours</span>
-                  <span className="text-sm font-semibold text-black">
+                <div className="flex items-center justify-between mb-1.5 md:mb-2">
+                  <span className="text-xs md:text-sm text-black">Study Hours</span>
+                  <span className="text-xs md:text-sm font-semibold text-black">
                     {stats.totalHours.toFixed(1)}h / 50h
                   </span>
                 </div>
                 <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-green-600 to-blue-600"
+                    className="h-full bg-gradient-to-r from-green-600 to-blue-600 transition-all duration-500"
                     style={{
                       width: `${Math.min((stats.totalHours / 50) * 100, 100)}%`,
                     }}

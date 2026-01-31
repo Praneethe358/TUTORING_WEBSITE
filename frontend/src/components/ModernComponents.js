@@ -106,18 +106,22 @@ export const StatCard = ({
       <div className="absolute top-0 right-0 w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-full -mr-8 md:-mr-12 -mt-8 md:-mt-12 opacity-30" />
       
       <div className="relative z-10">
-        <div className="flex items-center justify-between mb-2 md:mb-4">
-          <span className="text-xl md:text-3xl">{icon}</span>
+        <div className="flex items-center justify-between mb-1 md:mb-4">
+          <span className="text-2xl md:text-3xl">{icon}</span>
           {trend && (
-            <span className={`text-xs md:text-sm font-semibold ${trendColor[trend]}`}>
-              {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'} 
-              <span className="hidden md:inline"> {change}</span>
+            <span className={`text-xs font-semibold ${trendColor[trend]}`}>
+              {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
             </span>
           )}
         </div>
         
-        <p className="text-gray-600 text-xs md:text-sm mb-1">{label}</p>
-        <p className="text-xl md:text-3xl font-bold text-black">{value}</p>
+        <p className="text-gray-600 text-xs md:text-sm mb-0.5 md:mb-1 leading-tight">{label}</p>
+        <p className="text-xl md:text-3xl font-bold text-black mb-0.5 md:mb-1">{value}</p>
+        {change && (
+          <p className={`text-xs md:text-sm ${trendColor[trend]} leading-tight`}>
+            {change}
+          </p>
+        )}
       </div>
     </Card>
   );
