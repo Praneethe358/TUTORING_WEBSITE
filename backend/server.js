@@ -111,7 +111,7 @@ io.on('connection', (socket) => {
 app.use(enforceHTTPS); // HTTPS enforcement in production
 
 // CORS - allow frontend access
-app.use(cors({
+const corsOptions = {
   origin: [
     'http://localhost:3000', 
     'http://localhost:3001', 
@@ -119,8 +119,12 @@ app.use(cors({
     'https://hope-tuitions-frontend.onrender.com',
     process.env.CLIENT_URL
   ].filter(Boolean),
-  credentials: true
-}));
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Requested-With'],
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
