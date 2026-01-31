@@ -81,11 +81,11 @@ const DashboardLayout = ({ sidebar: Sidebar, children, themeClass = '' }) => {
               padding: `${spacing.md} ${spacing.lg}`,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              justifyContent: 'flex-start',
               gap: spacing.md,
             }}
           >
-            <div className="dashboard-header-brand" style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
+            <div className="dashboard-header-brand" style={{ display: 'flex', alignItems: 'center', gap: spacing.md, flex: 1 }}>
               {/* Hamburger Menu - Mobile Only */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -99,7 +99,9 @@ const DashboardLayout = ({ sidebar: Sidebar, children, themeClass = '' }) => {
               {/* Brand Logo */}
               <Logo size={56} withText={true} />
             </div>
-            <NotificationBell />
+            <div className="dashboard-header-actions">
+              <NotificationBell />
+            </div>
           </div>
         </div>
 

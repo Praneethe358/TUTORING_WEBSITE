@@ -111,6 +111,15 @@
     justify-content: flex-start !important;
   }
 
+  .dashboard-header-actions {
+    margin-left: auto !important;
+  }
+
+  .dashboard-header-brand img {
+    height: 40px !important;
+    width: auto !important;
+  }
+
   .logo-text {
     font-size: 12px !important;
     line-height: 1.2 !important;
