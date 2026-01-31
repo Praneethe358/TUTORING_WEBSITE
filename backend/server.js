@@ -47,7 +47,13 @@ const authLimiter = rateLimit({
 // Socket.io setup
 const io = socketIO(server, {
   cors: {
-    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', process.env.CLIENT_URL || 'http://localhost:3000'],
+    origin: [
+      'http://localhost:3000', 
+      'http://localhost:3001', 
+      'http://localhost:3002',
+      'https://hope-tuitions-frontend.onrender.com',
+      process.env.CLIENT_URL
+    ].filter(Boolean),
     credentials: true
   }
 });
