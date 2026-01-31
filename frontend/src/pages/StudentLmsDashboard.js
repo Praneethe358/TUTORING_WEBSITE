@@ -195,10 +195,23 @@ const StudentLmsDashboard = () => {
             title="No Courses Yet"
             description="You haven't enrolled in any courses. Browse available courses to get started."
             icon="📚"
-            action={{
-              label: 'Browse Courses',
-              href: '/student/courses'
-            }}
+            action={
+              <Link 
+                to="/student/courses"
+                style={{ 
+                  display: 'inline-block',
+                  backgroundColor: colors.accent,
+                  color: 'white',
+                  padding: `${spacing.sm} ${spacing.md}`,
+                  borderRadius: borderRadius.md,
+                  textDecoration: 'none',
+                  fontSize: typography.fontSize.sm,
+                  fontWeight: typography.fontWeight.medium
+                }}
+              >
+                Browse Courses
+              </Link>
+            }
           />
         )}
       </div>
