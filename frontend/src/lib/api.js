@@ -11,7 +11,10 @@ import axios from 'axios';
  */
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000/api',
+  baseURL: process.env.REACT_APP_API_URL || 
+           (window.location.hostname.includes('onrender.com') 
+             ? 'https://hope-tuitions-backend.onrender.com/api'
+             : 'http://localhost:5000/api'),
   withCredentials: true,
   timeout: Number(process.env.REACT_APP_API_TIMEOUT_MS || 30000)
 });
