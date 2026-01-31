@@ -32,6 +32,9 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 const server = http.createServer(app);
 
+// Trust Render/Proxy for correct client IPs (needed for rate limiting)
+app.set('trust proxy', 1);
+
 // Basic rate limiting for auth and sensitive endpoints
 const authLimiter = rateLimit({
   windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000),
