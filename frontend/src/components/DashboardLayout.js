@@ -85,11 +85,11 @@ const DashboardLayout = ({ sidebar: Sidebar, children, themeClass = '' }) => {
               gap: spacing.md,
             }}
           >
-            <div className="dashboard-header-brand" style={{ display: 'flex', alignItems: 'center', gap: spacing.md, flex: 1 }}>
+            <div className="dashboard-header-brand" style={{ display: 'flex', alignItems: 'center', gap: spacing.sm, flex: 1 }}>
               {/* Hamburger Menu - Mobile Only */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="md:hidden text-black p-2 hover:bg-gray-100 rounded-lg"
+                className="md:hidden text-black p-1 hover:bg-gray-100 rounded-lg"
                 aria-label="Toggle menu"
               >
                 <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
