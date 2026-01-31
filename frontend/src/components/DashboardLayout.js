@@ -85,7 +85,7 @@ const DashboardLayout = ({ sidebar: Sidebar, children, themeClass = '' }) => {
               gap: spacing.md,
             }}
           >
-            <div className="dashboard-header-brand" style={{ display: 'flex', alignItems: 'flex-start', gap: '4px', flex: 1, minWidth: 0 }}>
+            <div className="dashboard-header-brand" style={{ display: 'flex', alignItems: 'center', gap: spacing.xs, flex: 1 }}>
               {/* Hamburger Menu - Mobile Only */}
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
