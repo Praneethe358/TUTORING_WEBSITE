@@ -580,7 +580,7 @@ const AttractiveHomePage = () => {
       </div>
 
       {/* Main Hero Section */}
-      <div style={{
+      <div className="hero-section" style={{
         background: 'linear-gradient(135deg, #1E3A8A 0%, #111827 100%)',
         color: 'white',
         padding: '30px 16px',
@@ -1386,6 +1386,11 @@ const AttractiveHomePage = () => {
 
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
+          /* Mobile Hero Section - Purple Black Gradient */
+          .hero-section {
+            background: linear-gradient(135deg, #6D28D9 0%, #1F1B2E 100%) !important;
+          }
+          
           /* Footer: Hide Quick Links and adjust to 2 columns (About & Contact) */
           .footer-grid {
             grid-template-columns: repeat(2, 1fr) !important;
