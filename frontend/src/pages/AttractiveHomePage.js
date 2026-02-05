@@ -11,8 +11,21 @@ const AttractiveHomePage = () => {
     phone: '',
     email: ''
   });
+  const [headerScrolled, setHeaderScrolled] = useState(false);
 
-  // Auto-redirect authenticated users
+  // Handle scroll event for header transparency
+  React.useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setHeaderScrolled(true);
+      } else {
+        setHeaderScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   if (user && role === 'student') {
     navigate('/student/dashboard', { replace: true });
     return null;
@@ -42,6 +55,77 @@ const AttractiveHomePage = () => {
           box-sizing: border-box;
         }
         
+        /* Sticky Header Styles */
+        .sticky-header-wrapper {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(135deg, #1E3A8A 0%, #111827 100%);
+          z-index: 1000;
+          padding: 12px 16px;
+          transition: all 0.3s ease;
+        }
+        
+        .sticky-header-wrapper.scrolled {
+          background: linear-gradient(135deg, rgba(30, 58, 138, 0.85) 0%, rgba(17, 24, 39, 0.85) 100%);
+          backdrop-filter: blur(10px);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .sticky-header-container {
+          max-width: 1200px;
+          margin: 0 auto;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 20px;
+        }
+        
+        .sticky-logo-group {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex-shrink: 0;
+        }
+        
+        .sticky-logo-name {
+          font-size: 18px;
+          font-weight: bold;
+          color: white;
+          text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+          white-space: nowrap;
+        }
+        
+        .sticky-nav {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          margin-left: auto;
+        }
+        
+        .sticky-nav button {
+          background: transparent;
+          color: white;
+          border: none;
+          cursor: pointer;
+          font-size: 13px;
+          font-weight: 500;
+          white-space: nowrap;
+          padding: 6px 12px;
+          transition: all 0.2s ease;
+          border-radius: 6px;
+        }
+        
+        .sticky-nav button:hover {
+          background: rgba(255, 255, 255, 0.15);
+        }
+        
+        /* Push page content down to account for fixed header */
+        .page-content {
+          padding-top: 56px;
+        }
+        
         @media (max-width: 768px) {
           body {
             font-size: 14px;
@@ -53,6 +137,31 @@ const AttractiveHomePage = () => {
           
           h3 {
             font-size: 18px !important;
+          }
+          
+          .sticky-header-wrapper {
+            padding: 10px 12px;
+          }
+          
+          .sticky-logo-group {
+            gap: 8px;
+          }
+          
+          .sticky-logo-name {
+            font-size: 16px;
+          }
+          
+          .sticky-nav {
+            gap: 6px;
+          }
+          
+          .sticky-nav button {
+            font-size: 11px;
+            padding: 5px 8px;
+          }
+          
+          .page-content {
+            padding-top: 50px;
           }
         }
         
@@ -495,6 +604,27 @@ const AttractiveHomePage = () => {
         </button>
       </div>
 
+      {/* Sticky Header Navigation */}
+      <div className={`sticky-header-wrapper ${headerScrolled ? 'scrolled' : ''}`}>
+        <div className="sticky-header-container">
+          {/* Logo and Brand Name */}
+          <div className="sticky-logo-group">
+            <Logo size={36} withText={false} />
+            <span className="sticky-logo-name">HOPE</span>
+          </div>
+          
+          {/* Login Buttons */}
+          <nav className="sticky-nav">
+            <button onClick={() => navigate('/login')}>
+              Student Login
+            </button>
+            <button onClick={() => navigate('/tutor/login')}>
+              Tutor Login
+            </button>
+          </nav>
+        </div>
+      </div>
+
       {/* Floating Contact Icons */}
       <div className="floating-icons-container" style={{
         position: 'fixed',
@@ -578,6 +708,7 @@ const AttractiveHomePage = () => {
         </a>
       </div>
 
+      <div className="page-content">
       {/* Main Hero Section */}
       <div style={{
         background: 'linear-gradient(135deg, #1E3A8A 0%, #111827 100%)',
@@ -1639,6 +1770,7 @@ const AttractiveHomePage = () => {
           }
         }
       `}</style>
+      </div>
     </div>
   );
 };
