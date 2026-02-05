@@ -36,6 +36,37 @@ const AttractiveHomePage = () => {
 
   return (
     <div style={{ background: '#f0f0f0', minHeight: '100vh' }}>
+      {/* Global Mobile Responsive Styles */}
+      <style>{`
+        * {
+          box-sizing: border-box;
+        }
+        
+        @media (max-width: 768px) {
+          body {
+            font-size: 14px;
+          }
+          
+          h2 {
+            font-size: 20px !important;
+          }
+          
+          h3 {
+            font-size: 18px !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          h2 {
+            font-size: 18px !important;
+          }
+          
+          h3 {
+            font-size: 16px !important;
+          }
+        }
+      `}</style>
+      
       {/* Mobile Responsive Styles for Floating Icons */}
       <style>{`
         @keyframes float {
@@ -69,36 +100,258 @@ const AttractiveHomePage = () => {
           box-shadow: 0 0 20px rgba(245, 158, 11, 0.5), 0 0 40px rgba(245, 158, 11, 0.3);
         }
         
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
+          /* Tablet and below */
           .floating-icon {
-            width: 45px !important;
-            height: 45px !important;
-            font-size: 20px !important;
+            width: 50px;
+            height: 50px;
+            font-size: 22px;
           }
           .floating-icons-container {
-            right: 15px !important;
-            top: 60% !important;
-            bottom: auto !important;
-            gap: 12px !important;
+            right: 20px;
+            bottom: 120px;
+            gap: 16px;
           }
+        }
+        
+        @media (max-width: 768px) {
+          /* Mobile specific styles */
+          .floating-icon {
+            width: 48px !important;
+            height: 48px !important;
+            font-size: 20px !important;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.25) !important;
+          }
+          
+          .floating-icons-container {
+            right: 12px !important;
+            bottom: 80px !important;
+            gap: 10px !important;
+            z-index: 999 !important;
+          }
+          
           .top-banner {
             display: none !important;
           }
-          .header-nav {
-            margin-left: auto !important;
-            gap: 10px !important;
-            background: rgba(14, 165, 233, 0.85) !important;
-            padding: 6px 10px !important;
-            border-radius: 999px !important;
+          
+          /* Header Container - Improved Mobile Layout */
+          .header-container {
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+            padding: 12px 0 !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
           }
+          
+          /* Logo and Name */
+          .header-logo-group {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            flex-shrink: 0 !important;
+          }
+          
+          .header-logo-group img {
+            width: 40px !important;
+            height: 40px !important;
+            flex-shrink: 0 !important;
+          }
+          
+          .header-logo-name {
+            font-size: 18px !important;
+            font-weight: bold !important;
+            color: white !important;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5) !important;
+            white-space: nowrap !important;
+            letter-spacing: 0.5px !important;
+          }
+          
+          /* Navigation Buttons */
+          .header-nav {
+            display: flex !important;
+            gap: 6px !important;
+            background: rgba(30, 58, 138, 0.9) !important;
+            padding: 5px 8px !important;
+            border-radius: 20px !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            flex-shrink: 0 !important;
+            align-items: center !important;
+          }
+          
           .header-nav button {
             background: transparent !important;
-            padding: 8px 10px !important;
-            border-radius: 14px !important;
-            font-size: 13px !important;
+            color: white !important;
+            padding: 6px 10px !important;
+            border-radius: 12px !important;
+            font-size: 12px !important;
+            font-weight: 500 !important;
+            border: 1px solid transparent !important;
+            transition: all 0.2s ease !important;
+            white-space: nowrap !important;
+            cursor: pointer !important;
           }
-          .header-container {
-            gap: 12px !important;
+          
+          .header-nav button:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
+          }
+          
+          .header-nav button:first-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          /* Extra small mobile */
+          .floating-icon {
+            width: 44px !important;
+            height: 44px !important;
+            font-size: 18px !important;
+          }
+          
+          .floating-icons-container {
+            right: 10px !important;
+            bottom: 60px !important;
+          }
+          
+          .header-logo-group {
+            gap: 6px !important;
+          }
+          
+          .header-logo-group img {
+            width: 36px !important;
+            height: 36px !important;
+          }
+          
+          .header-logo-name {
+            font-size: 16px !important;
+          }
+          
+          .header-nav {
+            padding: 4px 6px !important;
+            gap: 4px !important;
+          }
+          
+          .header-nav button {
+            padding: 5px 8px !important;
+            font-size: 11px !important;
+          }
+          
+          /* Hero Section Mobile Typography */
+          .hero-main-title {
+            font-size: 32px !important;
+            font-weight: 800 !important;
+            line-height: 1.15 !important;
+          }
+          
+          .hero-subtitle {
+            font-size: 20px !important;
+            margin-bottom: 18px !important;
+          }
+          
+          .hero-description {
+            font-size: 14px !important;
+            line-height: 1.5 !important;
+            margin-bottom: 20px !important;
+          }
+          
+          .feature-item {
+            font-size: 13px !important;
+            padding: 9px 10px !important;
+          }
+          
+          .feature-emoji {
+            font-size: 18px !important;
+          }
+          
+          .hero-content-grid {
+            gap: 16px !important;
+            padding: 0 !important;
+          }
+          
+          .form-card {
+            padding: 18px !important;
+            border-radius: 10px !important;
+          }
+          
+          .form-card h2 {
+            font-size: 20px !important;
+          }
+          
+          .form-card p {
+            font-size: 13px !important;
+            margin-bottom: 20px !important;
+          }
+          
+          .form-input {
+            padding: 10px !important;
+            font-size: 13px !important;
+            margin-bottom: 11px !important;
+          }
+          
+          .form-button {
+            padding: 11px !important;
+            font-size: 14px !important;
+            border-radius: 6px !important;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          /* Tablet and Mobile shared styles */
+          .hero-main-title {
+            font-size: 38px !important;
+            margin-bottom: 12px !important;
+          }
+          
+          .hero-subtitle {
+            font-size: 22px !important;
+            margin-bottom: 20px !important;
+          }
+          
+          .hero-description {
+            font-size: 15px !important;
+            line-height: 1.6 !important;
+          }
+          
+          .feature-item {
+            font-size: 14px !important;
+            padding: 10px 12px !important;
+            gap: 10px !important;
+          }
+          
+          .feature-emoji {
+            font-size: 20px !important;
+          }
+          
+          .hero-content-grid {
+            gap: 20px !important;
+          }
+          
+          .form-card {
+            padding: 20px !important;
+            border-radius: 12px !important;
+          }
+          
+          .form-card h2 {
+            font-size: 22px !important;
+            margin-bottom: 8px !important;
+          }
+          
+          .form-card p {
+            font-size: 14px !important;
+          }
+          
+          .form-input {
+            padding: 11px !important;
+            font-size: 14px !important;
+            border-radius: 6px !important;
+            margin-bottom: 12px !important;
+          }
+          
+          .form-button {
+            padding: 12px !important;
+            font-size: 15px !important;
           }
         }
       `}</style>
@@ -219,7 +472,7 @@ const AttractiveHomePage = () => {
       <div style={{
         background: 'linear-gradient(135deg, #1E3A8A 0%, #111827 100%)',
         color: 'white',
-        padding: '40px 20px',
+        padding: '30px 16px',
         position: 'relative',
         overflow: 'hidden'
       }}>
@@ -248,22 +501,21 @@ const AttractiveHomePage = () => {
           maxWidth: '1200px',
           margin: '0 auto 40px',
           display: 'flex',
-          justifyContent: 'flex-start',
+          justifyContent: 'space-between',
           alignItems: 'center',
           position: 'relative',
           zIndex: 2,
-          gap: '30px'
+          gap: '20px',
+          padding: '0 10px'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-            <div style={{ display: 'none' }}>
-              <Logo size={50} withText={true} />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Logo size={50} withText={false} />
-              <span style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', textShadow: '1px 1px 3px rgba(0,0,0,0.5)' }}>HOPE</span>
-            </div>
+          {/* Logo and Brand Name */}
+          <div className="header-logo-group" style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '0' }}>
+            <Logo size={50} withText={false} />
+            <span className="header-logo-name" style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', textShadow: '1px 1px 3px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>HOPE</span>
           </div>
-          <nav className="header-nav" style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'nowrap', marginLeft: 'auto' }}>
+          
+          {/* Login Buttons */}
+          <nav className="header-nav" style={{ display: 'flex', gap: '15px', alignItems: 'center', marginLeft: 'auto' }}>
             <button style={{
               background: 'transparent',
               color: 'white',
@@ -271,8 +523,17 @@ const AttractiveHomePage = () => {
               cursor: 'pointer',
               fontSize: '15px',
               fontWeight: '500',
-              whiteSpace: 'nowrap'
-            }} onClick={() => navigate('/login')}>
+              whiteSpace: 'nowrap',
+              padding: '8px 12px',
+              transition: 'all 0.2s ease'
+            }} onClick={() => navigate('/login')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.borderRadius = '6px';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+            }}>
               Student Login
             </button>
             <button style={{
@@ -282,8 +543,17 @@ const AttractiveHomePage = () => {
               cursor: 'pointer',
               fontSize: '15px',
               fontWeight: '500',
-              whiteSpace: 'nowrap'
-            }} onClick={() => navigate('/tutor/login')}>
+              whiteSpace: 'nowrap',
+              padding: '8px 12px',
+              transition: 'all 0.2s ease'
+            }} onClick={() => navigate('/tutor/login')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
+              e.currentTarget.style.borderRadius = '6px';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent';
+            }}>
               Tutor Login
             </button>
           </nav>
@@ -301,8 +571,12 @@ const AttractiveHomePage = () => {
           zIndex: 2
         }}>
           {/* Left Side - Content */}
-          <div>
-            <div style={{ 
+          <div style={{
+            '@media (max-width: 768px)': {
+              gridColumn: '1 / -1'
+            }
+          }}>
+            <div className="hero-main-title" style={{ 
               fontSize: '52px', 
               fontWeight: '900',
               marginBottom: '15px',
@@ -312,7 +586,7 @@ const AttractiveHomePage = () => {
             }}>
               HOPE Online Tuitions
             </div>
-            <div style={{ 
+            <div className="hero-subtitle" style={{ 
               fontSize: '28px',
               color: '#FFFFFF',
               marginBottom: '25px',
@@ -321,7 +595,7 @@ const AttractiveHomePage = () => {
             }}>
               Saving Time, Inspiring Minds
             </div>
-            <p style={{ 
+            <p className="hero-description" style={{ 
               fontSize: '17px',
               color: '#FFFFFF',
               marginBottom: '30px',
@@ -340,8 +614,8 @@ const AttractiveHomePage = () => {
                 { emoji: '👨‍🏫', text: 'Personalized Attention in Small Classes' },
                 { emoji: '📝', text: 'Assessments & Detailed Feedback' }
               ].map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', background: 'rgba(255,255,255,0.2)', padding: '12px 15px', borderRadius: '10px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.3)', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>
-                  <span style={{ fontSize: '24px' }}>{item.emoji}</span>
+                <div key={idx} className="feature-item" style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '16px', background: 'rgba(255,255,255,0.2)', padding: '12px 15px', borderRadius: '10px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.3)', boxShadow: '0 4px 10px rgba(0,0,0,0.3)' }}>
+                  <span className="feature-emoji" style={{ fontSize: '24px', flexShrink: 0 }}>{item.emoji}</span>
                   <span style={{ fontWeight: '600', color: '#FFFFFF', textShadow: '1px 1px 3px rgba(0,0,0,0.5)' }}>{item.text}</span>
                 </div>
               ))}
@@ -349,12 +623,13 @@ const AttractiveHomePage = () => {
           </div>
 
           {/* Right Side - Booking Form */}
-          <div style={{
+          <div className="form-card" style={{
             background: 'white',
             borderRadius: '16px',
             padding: '30px',
             boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
-            animation: 'slideInRight 0.8s ease-out'
+            animation: 'slideInRight 0.8s ease-out',
+            width: '100%'
           }}>
             <h2 style={{ 
               fontSize: '26px', 
@@ -383,6 +658,7 @@ const AttractiveHomePage = () => {
                   value={formData.name}
                   onChange={handleFormChange}
                   required
+                  className="form-input"
                   style={{
                     width: '100%',
                     padding: '12px',
@@ -405,6 +681,7 @@ const AttractiveHomePage = () => {
                   value={formData.phone}
                   onChange={handleFormChange}
                   required
+                  className="form-input"
                   style={{
                     width: '100%',
                     padding: '12px',
@@ -427,6 +704,7 @@ const AttractiveHomePage = () => {
                   value={formData.email}
                   onChange={handleFormChange}
                   required
+                  className="form-input"
                   style={{
                     width: '100%',
                     padding: '12px',
@@ -440,6 +718,7 @@ const AttractiveHomePage = () => {
 
               <button
                 type="submit"
+                className="form-button"
                 style={{
                   width: '100%',
                   padding: '14px',
