@@ -506,7 +506,7 @@ const AttractiveHomePage = () => {
         zIndex: 1000
       }}>
         {/* Call Icon */}
-        <a href="tel:+919999999999" className="floating-icon" style={{
+        <a href="tel:+91-8807717477" className="floating-icon" style={{
           width: '60px',
           height: '60px',
           borderRadius: '50%',
@@ -529,7 +529,7 @@ const AttractiveHomePage = () => {
         </a>
 
         {/* WhatsApp Icon */}
-        <a href="https://wa.me/919999999999" target="_blank" rel="noopener noreferrer" className="floating-icon" style={{
+        <a href="https://wa.me/918807717477" target="_blank" rel="noopener noreferrer" className="floating-icon" style={{
           width: '60px',
           height: '60px',
           borderRadius: '50%',
@@ -555,7 +555,7 @@ const AttractiveHomePage = () => {
         </a>
 
         {/* Email Icon */}
-        <a href="mailto:info@hopeonlinetuitions.com" className="floating-icon" style={{
+        <a href="mailto:hopetuitionbygd@gmail.com" className="floating-icon" style={{
           width: '60px',
           height: '60px',
           borderRadius: '50%',
