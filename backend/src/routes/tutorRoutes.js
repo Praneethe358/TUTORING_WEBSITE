@@ -12,6 +12,20 @@ const { authLimiter, registerLimiter, passwordResetLimiter } = require('../middl
 
 const router = express.Router();
 
+const parseSubjects = (value) => {
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) return parsed;
+    } catch (_e) {
+      // fall back to CSV parsing
+    }
+    return value.split(',').map((s) => s.trim()).filter(Boolean);
+  }
+  return [];
+};
+
 const passwordValidator = body('password')
   .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
   .matches(/[A-Z]/).withMessage('Include uppercase')
@@ -24,7 +38,7 @@ router.post('/register', registerLimiter, cvUpload.single('cv'), [
   body('phone').notEmpty(),
   passwordValidator,
   body('qualifications').notEmpty(),
-  body('subjects').isArray({ min: 1 }),
+  body('subjects').customSanitizer(parseSubjects).isArray({ min: 1 }),
   body('experienceYears').isNumeric()
 ], register);
 
