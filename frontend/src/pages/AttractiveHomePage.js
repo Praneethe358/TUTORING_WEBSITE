@@ -328,6 +328,33 @@ const AttractiveHomePage = () => {
             gap: 20px !important;
           }
           
+          /* Mobile Feature Cards - 2 Column Layout */
+          .mobile-feature-cards {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 16px !important;
+          }
+          
+          .mobile-feature-card {
+            padding: 20px !important;
+            border-radius: 12px !important;
+          }
+          
+          .mobile-feature-card > div:nth-child(3) {
+            font-size: 48px !important;
+            margin-bottom: 12px !important;
+          }
+          
+          .mobile-feature-card h3 {
+            font-size: 16px !important;
+            margin-bottom: 8px !important;
+          }
+          
+          .mobile-feature-card p {
+            font-size: 12px !important;
+            line-height: 1.4 !important;
+          }
+          
           .form-card {
             padding: 20px !important;
             border-radius: 12px !important;
@@ -775,7 +802,7 @@ const AttractiveHomePage = () => {
             We offer structured and personalized online tutoring tailored to different academic levels.
           </p>
 
-          <div style={{
+          <div className="mobile-feature-cards" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
             gap: '30px'
@@ -802,6 +829,7 @@ const AttractiveHomePage = () => {
             ].map((classInfo, idx) => (
               <div
                 key={idx}
+                className="mobile-feature-card"
                 style={{
                   background: 'white',
                   padding: '35px',
