@@ -380,6 +380,89 @@ const AttractiveHomePage = () => {
             padding: 12px !important;
             font-size: 15px !important;
           }
+          
+          /* Mobile Parent Features Cards - 2 Column Layout */
+          .parent-features-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 16px !important;
+          }
+          
+          .parent-feature-card {
+            padding: 20px !important;
+            border-radius: 10px !important;
+          }
+          
+          .parent-feature-card > div:first-child {
+            font-size: 40px !important;
+            margin-bottom: 10px !important;
+          }
+          
+          .parent-feature-card h3 {
+            font-size: 15px !important;
+            margin-bottom: 8px !important;
+          }
+          
+          .parent-feature-card p {
+            font-size: 12px !important;
+            line-height: 1.4 !important;
+          }
+          
+          /* Mobile Tutor Features Cards - 2 Column Layout */
+          .tutor-features-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 16px !important;
+          }
+          
+          .tutor-feature-card {
+            padding: 20px !important;
+            border-radius: 12px !important;
+          }
+          
+          .tutor-feature-card > div:first-child {
+            font-size: 40px !important;
+            margin-bottom: 12px !important;
+          }
+          
+          .tutor-feature-card h3 {
+            font-size: 15px !important;
+            margin-bottom: 8px !important;
+          }
+          
+          .tutor-feature-card p {
+            font-size: 12px !important;
+            line-height: 1.4 !important;
+          }
+          
+          /* Mobile How It Works Cards - 2 Column Layout */
+          .how-it-works-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 16px !important;
+          }
+          
+          .how-it-works-card {
+            padding: 20px !important;
+            border-radius: 10px !important;
+          }
+          
+          .how-it-works-card > div:first-child {
+            width: 50px !important;
+            height: 50px !important;
+            font-size: 24px !important;
+            margin-bottom: 12px !important;
+          }
+          
+          .how-it-works-card h3 {
+            font-size: 15px !important;
+            margin-bottom: 8px !important;
+          }
+          
+          .how-it-works-card p {
+            font-size: 12px !important;
+            line-height: 1.4 !important;
+          }
         }
       `}</style>
 
@@ -918,7 +1001,7 @@ const AttractiveHomePage = () => {
             Trusted by families for quality online education
           </p>
 
-          <div style={{
+          <div className="parent-features-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
             gap: '30px'
@@ -931,6 +1014,7 @@ const AttractiveHomePage = () => {
             ].map((feature, idx) => (
               <div
                 key={idx}
+                className="parent-feature-card"
                 style={{
                   background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
                   padding: '30px',
@@ -990,7 +1074,7 @@ const AttractiveHomePage = () => {
           </div>
 
           {/* Key Points Grid */}
-          <div style={{
+          <div className="tutor-features-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
             gap: '25px',
@@ -1002,7 +1086,7 @@ const AttractiveHomePage = () => {
               { icon: '💰', title: 'Performance-Based Salary', desc: 'Earn based on classes taken and teaching quality' },
               { icon: '🤝', title: 'Academic Support', desc: 'Get guidance from our experienced academic team' }
             ].map((item, idx) => (
-              <div key={idx} style={{
+              <div key={idx} className="tutor-feature-card" style={{
                 background: 'white',
                 padding: '30px',
                 borderRadius: '15px',
@@ -1129,7 +1213,7 @@ const AttractiveHomePage = () => {
             How It Works
           </h2>
 
-          <div style={{
+          <div className="how-it-works-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
             gap: '30px'
@@ -1142,6 +1226,7 @@ const AttractiveHomePage = () => {
             ].map((step, idx) => (
               <div
                 key={idx}
+                className="how-it-works-card"
                 style={{
                   background: 'white',
                   padding: '30px',
