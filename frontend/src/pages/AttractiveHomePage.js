@@ -1388,7 +1388,7 @@ const AttractiveHomePage = () => {
         @media (max-width: 768px) {
           /* Mobile Hero Section - Purple Black Gradient - Override inline styles */
           div.hero-section[style*="background"] {
-            background: linear-gradient(135deg, #6D28D9 0%, #1F1B2E 100%) !important;
+            background: linear-gradient(135deg, #5B21B6 0%, #1F1B2E 100%) !important;
           }
           
           /* Footer: Hide Quick Links and adjust to 2 columns (About & Contact) */
