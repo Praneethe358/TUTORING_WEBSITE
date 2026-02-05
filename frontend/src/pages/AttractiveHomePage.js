@@ -1385,10 +1385,26 @@ const AttractiveHomePage = () => {
 
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
-          /* Footer: 2 columns on tablet */
+          /* Footer: Hide Quick Links and adjust to 2 columns (About & Contact) */
           .footer-grid {
             grid-template-columns: repeat(2, 1fr) !important;
             gap: 20px !important;
+          }
+          
+          /* Hide Quick Links section on mobile */
+          .footer-grid > div:nth-child(2) {
+            display: none !important;
+          }
+          
+          /* Adjust footer grid to center with 2 visible columns */
+          .footer-grid {
+            max-width: 600px !important;
+            margin: 0 auto 30px auto !important;
+          }
+          
+          /* Footer text alignment */
+          .footer-grid > div {
+            text-align: left !important;
           }
           
           /* Top Banner Mobile */
@@ -1541,6 +1557,13 @@ const AttractiveHomePage = () => {
           .footer-grid {
             grid-template-columns: 1fr !important;
             gap: 15px !important;
+            max-width: 100% !important;
+            margin: 0 0 30px 0 !important;
+          }
+          
+          /* Ensure Quick Links remain hidden on small mobile */
+          .footer-grid > div:nth-child(2) {
+            display: none !important;
           }
           
           /* Extra small devices - single column for other grids */
