@@ -1386,9 +1386,13 @@ const AttractiveHomePage = () => {
 
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
-          /* Mobile Hero Section - Purple Black Gradient - Override inline styles */
-          div.hero-section[style*="background"] {
+          /* Mobile Hero Section - Dark Purple Black Gradient - Multiple selectors for specificity */
+          .hero-section,
+          div.hero-section,
+          div.hero-section[style],
+          div[class~="hero-section"] {
             background: linear-gradient(135deg, #5B21B6 0%, #1F1B2E 100%) !important;
+            background-image: linear-gradient(135deg, #5B21B6 0%, #1F1B2E 100%) !important;
           }
           
           /* Footer: Hide Quick Links and adjust to 2 columns (About & Contact) */
