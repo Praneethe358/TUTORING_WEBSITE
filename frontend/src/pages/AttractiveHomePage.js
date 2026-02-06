@@ -1436,7 +1436,182 @@ const AttractiveHomePage = () => {
             color: #FFFFFF !important;
           }
           
-          /* Footer Mobile Styling */
+          /* HOW IT WORKS SECTION - Mobile Design */
+          div[style*="background: linear-gradient(135deg, #f3e8ff"]  {
+            background: #F5F8FF !important;
+          }
+          
+          .how-it-works-card {
+            background: #FFFFFF !important;
+            border: 1px solid #E0E7FF !important;
+            padding: 24px !important;
+            border-radius: 12px !important;
+          }
+          
+          .how-it-works-card:hover {
+            border-color: #2ECC71 !important;
+            box-shadow: 0 8px 16px rgba(46, 204, 113, 0.15) !important;
+          }
+          
+          .how-it-works-card > div:first-child {
+            background: linear-gradient(135deg, #1F3C88 0%, #3A6CF0 100%) !important;
+            width: 56px !important;
+            height: 56px !important;
+            color: #FFFFFF !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 24px !important;
+            font-weight: bold !important;
+            margin: 0 auto 16px !important;
+            box-shadow: 0 4px 12px rgba(31, 60, 136, 0.2) !important;
+          }
+          
+          .how-it-works-card h3 {
+            font-size: 18px !important;
+            color: #1F3C88 !important;
+            font-weight: 600 !important;
+            margin-bottom: 8px !important;
+          }
+          
+          .how-it-works-card p {
+            font-size: 13px !important;
+            color: #6B7280 !important;
+            line-height: 1.6 !important;
+          }
+          
+          /* CLASSES SECTION - Mobile Design */
+          .mobile-feature-card {
+            background: #FFFFFF !important;
+            border: 1px solid #E5E7EB !important;
+            padding: 28px !important;
+            border-radius: 12px !important;
+            transition: all 0.3s ease !important;
+          }
+          
+          .mobile-feature-card:hover {
+            border-color: #2ECC71 !important;
+            box-shadow: 0 10px 20px rgba(46, 204, 113, 0.15) !important;
+          }
+          
+          .mobile-feature-card h3 {
+            font-size: 20px !important;
+            color: #1F3C88 !important;
+            font-weight: 600 !important;
+            margin-bottom: 10px !important;
+          }
+          
+          .mobile-feature-card p {
+            font-size: 13px !important;
+            color: #6B7280 !important;
+            line-height: 1.6 !important;
+          }
+          
+          /* WHY PARENTS CHOOSE HOPE - Mobile Design */
+          div[style*="background: white"][style*="padding: 60px"] {
+            background: #FFFFFF !important;
+          }
+          
+          .parent-feature-card {
+            background: #F0F7FF !important;
+            border: 1px solid #BDE0FD !important;
+            padding: 24px !important;
+            border-radius: 12px !important;
+            text-align: center !important;
+            transition: all 0.3s ease !important;
+          }
+          
+          .parent-feature-card:hover {
+            border-color: #2ECC71 !important;
+            box-shadow: 0 12px 24px rgba(46, 204, 113, 0.15) !important;
+            transform: translateY(-6px) !important;
+          }
+          
+          .parent-feature-card > div:first-child {
+            font-size: 40px !important;
+            margin-bottom: 12px !important;
+          }
+          
+          .parent-feature-card h3 {
+            font-size: 18px !important;
+            color: #1F3C88 !important;
+            font-weight: 600 !important;
+            margin-bottom: 8px !important;
+          }
+          
+          .parent-feature-card p {
+            font-size: 13px !important;
+            color: #4B5563 !important;
+            line-height: 1.5 !important;
+          }
+          
+          /* BECOME A TUTOR - Mobile Design */
+          div[style*="background: linear-gradient(135deg, #F0F9FF"]  {
+            background: #F5F8FF !important;
+          }
+          
+          .tutor-features-grid h2 {
+            color: #1F3C88 !important;
+          }
+          
+          .tutor-features-grid > div > p {
+            color: #6B7280 !important;
+          }
+          
+          .tutor-feature-card {
+            background: #FFFFFF !important;
+            padding: 24px !important;
+            border-radius: 12px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+            transition: all 0.3s ease !important;
+            border: 1px solid #E5E7EB !important;
+          }
+          
+          .tutor-feature-card:hover {
+            border-color: #2ECC71 !important;
+            box-shadow: 0 8px 16px rgba(46, 204, 113, 0.15) !important;
+            transform: translateY(-4px) !important;
+          }
+          
+          .tutor-feature-card > div:first-child {
+            font-size: 40px !important;
+            margin-bottom: 12px !important;
+          }
+          
+          .tutor-feature-card h3 {
+            font-size: 18px !important;
+            color: #1F3C88 !important;
+            font-weight: 600 !important;
+            margin-bottom: 8px !important;
+          }
+          
+          .tutor-feature-card p {
+            font-size: 13px !important;
+            color: #6B7280 !important;
+            line-height: 1.6 !important;
+          }
+          
+          /* FLOATING CONTACT ICONS - Mobile Design */
+          .floating-icons-container a {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+            transition: all 0.3s ease !important;
+          }
+          
+          a[style*="#10B981"] {
+            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%) !important;
+          }
+          
+          a[style*="#25D366"] {
+            background: #25D366 !important;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3) !important;
+          }
+          
+          a[style*="#FF8C42"],
+          a[style*="#EA7B3E"] {
+            background: linear-gradient(135deg, #FF8C42 0%, #FF7A2D 100%) !important;
+            box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3) !important;
+          }
           footer,
           div[style*="background: #0F172A"],
           div[style*="background: #1a1a2e"] {
