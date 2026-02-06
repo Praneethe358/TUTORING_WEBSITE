@@ -1386,16 +1386,84 @@ const AttractiveHomePage = () => {
 
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
-          /* Mobile Hero Section - Lapis Blue to Black Gradient - Multiple selectors for specificity */
+          /* Mobile Hero Section - Navy Blue to Light Blue Gradient */
           .hero-section,
           div.hero-section,
           div.hero-section[style],
           div[class~="hero-section"] {
-            background: linear-gradient(135deg, #1e40af 0%, #000000 100%) !important;
-            background-image: linear-gradient(135deg, #1e40af 0%, #000000 100%) !important;
+            background: linear-gradient(135deg, #1F3C88 0%, #3A6CF0 100%) !important;
+            background-image: linear-gradient(135deg, #1F3C88 0%, #3A6CF0 100%) !important;
           }
           
-          /* Footer: Hide Quick Links and adjust to 2 columns (About & Contact) */
+          /* Hero Main Title - White */
+          .hero-main-title {
+            color: #FFFFFF !important;
+          }
+          
+          /* Hero Subtitle - Light Grey */
+          .hero-subtitle {
+            color: #E5E7EB !important;
+          }
+          
+          /* Hero Description - White */
+          .hero-description {
+            color: #FFFFFF !important;
+          }
+          
+          /* Enroll Now Button - Orange with White Text */
+          button[style*="color: '#EF4444'"],
+          button[style*="white"],
+          .enroll-button {
+            background: #FF8C42 !important;
+            color: #FFFFFF !important;
+            border: none !important;
+            transition: all 0.3s ease !important;
+          }
+          
+          /* Become a Tutor Button - White Border */
+          button[style*="border: '2px solid white'"],
+          .tutor-button {
+            background: transparent !important;
+            color: #FFFFFF !important;
+            border: 2px solid #FFFFFF !important;
+            transition: all 0.3s ease !important;
+          }
+          
+          button[style*="border: '2px solid white'"]:hover,
+          .tutor-button:hover {
+            background: #2ECC71 !important;
+            border-color: #2ECC71 !important;
+            color: #FFFFFF !important;
+          }
+          
+          /* Footer Mobile Styling */
+          footer,
+          div[style*="background: #0F172A"],
+          div[style*="background: #1a1a2e"] {
+            background: #0F172A !important;
+          }
+          
+          footer h3,
+          footer h4,
+          .footer-grid > div > h3 {
+            color: #FFFFFF !important;
+          }
+          
+          footer a,
+          footer p,
+          .footer-grid > div > a {
+            color: #CBD5E1 !important;
+          }
+          
+          footer a:hover,
+          .footer-grid > div > a:hover {
+            color: #2ECC71 !important;
+          }
+          
+          footer hr,
+          .footer-divider {
+            border-color: #1F2937 !important;
+          }
           .footer-grid {
             grid-template-columns: repeat(2, 1fr) !important;
             gap: 20px !important;
