@@ -510,7 +510,7 @@ const AttractiveHomePage = () => {
           width: '60px',
           height: '60px',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #2ECC71 0%, #27AE60 100%)',
+          background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -520,14 +520,11 @@ const AttractiveHomePage = () => {
           transition: 'all 0.3s ease',
           cursor: 'pointer',
           transform: 'scale(1)',
-          position: 'relative',
-          boxShadow: '0 8px 20px rgba(46, 204, 113, 0.3)'
+          position: 'relative'
         }} onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'scale(1.1)';
-          e.currentTarget.style.boxShadow = '0 12px 28px rgba(46, 204, 113, 0.4)';
         }} onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.boxShadow = '0 8px 20px rgba(46, 204, 113, 0.3)';
         }} title="Call: +91-8807717477">
           📞
         </a>
@@ -547,14 +544,11 @@ const AttractiveHomePage = () => {
           transition: 'all 0.3s ease',
           cursor: 'pointer',
           transform: 'scale(1)',
-          fontWeight: 'bold',
-          boxShadow: '0 8px 20px rgba(37, 211, 102, 0.3)'
+          fontWeight: 'bold'
         }} onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'scale(1.1)';
-          e.currentTarget.style.boxShadow = '0 12px 28px rgba(37, 211, 102, 0.4)';
         }} onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.boxShadow = '0 8px 20px rgba(37, 211, 102, 0.3)';
         }} title="Chat on WhatsApp: +91-8807717477">
           <svg viewBox="0 0 24 24" width="32" height="32" fill="white">
             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
@@ -566,7 +560,7 @@ const AttractiveHomePage = () => {
           width: '60px',
           height: '60px',
           borderRadius: '50%',
-          background: 'linear-gradient(135deg, #FF8C42 0%, #FF7A2D 100%)',
+          background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -575,14 +569,11 @@ const AttractiveHomePage = () => {
           textDecoration: 'none',
           transition: 'all 0.3s ease',
           cursor: 'pointer',
-          transform: 'scale(1)',
-          boxShadow: '0 8px 20px rgba(255, 140, 66, 0.3)'
+          transform: 'scale(1)'
         }} onMouseEnter={(e) => {
           e.currentTarget.style.transform = 'scale(1.1)';
-          e.currentTarget.style.boxShadow = '0 12px 28px rgba(255, 140, 66, 0.4)';
         }} onMouseLeave={(e) => {
           e.currentTarget.style.transform = 'scale(1)';
-          e.currentTarget.style.boxShadow = '0 8px 20px rgba(255, 140, 66, 0.3)';
         }} title="Email: hopetuitionbygd@gmail.com">
           📧
         </a>
@@ -590,7 +581,7 @@ const AttractiveHomePage = () => {
 
       {/* Main Hero Section */}
       <div className="hero-section" style={{
-        background: 'linear-gradient(135deg, #1E3A8A 0%, #111827 100%)',
+        background: 'linear-gradient(135deg, #1F3C88 0%, #3A6CF0 100%)',
         color: 'white',
         padding: '30px 16px',
         position: 'relative',
@@ -870,7 +861,7 @@ const AttractiveHomePage = () => {
 
       {/* Classes We Teach Section */}
       <div style={{
-        background: '#FFFFFF',
+        background: 'linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%)',
         padding: '70px 20px',
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -879,14 +870,14 @@ const AttractiveHomePage = () => {
             fontWeight: 'bold',
             textAlign: 'center',
             marginBottom: '15px',
-            color: '#1F3C88'
+            color: '#1f2937'
           }}>
             Classes We Teach
           </h2>
           <p style={{
             textAlign: 'center',
             fontSize: '18px',
-            color: '#6B7280',
+            color: '#6b7280',
             marginBottom: '50px',
             maxWidth: '800px',
             margin: '0 auto 50px',
@@ -904,45 +895,54 @@ const AttractiveHomePage = () => {
               { 
                 level: 'Classes 6–7', 
                 desc: 'Strong foundations and concept clarity',
-                icon: '📚'
+                icon: '📚',
+                color: '#3B82F6'
               },
               { 
                 level: 'Classes 8–10', 
                 desc: 'Board-focused learning with continuous support',
-                icon: '🎯'
+                icon: '🎯',
+                color: '#F59E0B'
               },
               { 
                 level: 'Classes 11–12', 
                 desc: 'Advanced subjects and career preparation',
-                icon: '🎓'
+                icon: '🎓',
+                color: '#10B981'
               }
             ].map((classInfo, idx) => (
               <div
                 key={idx}
                 className="mobile-feature-card"
                 style={{
-                  background: '#FFFFFF',
+                  background: 'white',
                   padding: '35px',
-                  borderRadius: '12px',
+                  borderRadius: '16px',
                   textAlign: 'center',
-                  transition: 'all 0.3s ease',
-                  border: '1px solid #E5E7EB',
+                  transition: 'transform 0.3s, box-shadow 0.3s',
+                  border: `3px solid ${classInfo.color}`,
                   cursor: 'pointer',
                   position: 'relative',
-                  overflow: 'hidden',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
+                  overflow: 'hidden'
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-6px)';
-                  e.currentTarget.style.boxShadow = '0 12px 24px rgba(46, 204, 113, 0.15)';
-                  e.currentTarget.style.borderColor = '#2ECC71';
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-10px)';
+                  e.currentTarget.style.boxShadow = `0 15px 30px ${classInfo.color}40`;
                 }}
-                onMouseLeave={(e) => {
+                onMouseOut={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-                  e.currentTarget.style.borderColor = '#E5E7EB';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
               >
+                <div style={{
+                  position: 'absolute',
+                  top: '-20px',
+                  right: '-20px',
+                  width: '100px',
+                  height: '100px',
+                  background: `${classInfo.color}15`,
+                  borderRadius: '50%'
+                }}></div>
                 <div style={{ 
                   fontSize: '56px', 
                   marginBottom: '20px',
@@ -955,14 +955,14 @@ const AttractiveHomePage = () => {
                   fontSize: '24px', 
                   fontWeight: 'bold', 
                   marginBottom: '15px', 
-                  color: '#1F3C88',
+                  color: classInfo.color,
                   position: 'relative',
                   zIndex: 1
                 }}>
                   {classInfo.level}
                 </h3>
                 <p style={{ 
-                  color: '#6B7280', 
+                  color: '#6b7280', 
                   fontSize: '16px', 
                   lineHeight: '1.7',
                   position: 'relative',
@@ -978,7 +978,7 @@ const AttractiveHomePage = () => {
 
       {/* Features Section */}
       <div style={{
-        background: '#FFFFFF',
+        background: 'white',
         padding: '60px 20px',
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -987,14 +987,14 @@ const AttractiveHomePage = () => {
             fontWeight: 'bold',
             textAlign: 'center',
             marginBottom: '15px',
-            color: '#1F3C88'
+            color: '#1f2937'
           }}>
             Why Parents Choose HOPE
           </h2>
           <p style={{
             textAlign: 'center',
             fontSize: '18px',
-            color: '#6B7280',
+            color: '#6b7280',
             marginBottom: '50px',
             maxWidth: '700px',
             margin: '0 auto 50px'
@@ -1017,30 +1017,28 @@ const AttractiveHomePage = () => {
                 key={idx}
                 className="parent-feature-card"
                 style={{
-                  background: '#F0F7FF',
+                  background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
                   padding: '30px',
                   borderRadius: '12px',
                   textAlign: 'center',
-                  transition: 'all 0.3s ease',
-                  border: '1px solid #BDE0FD',
+                  transition: 'transform 0.3s, box-shadow 0.3s',
+                  border: '1px solid #bfdbfe',
                   cursor: 'pointer'
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.borderColor = '#2ECC71';
-                  e.currentTarget.style.boxShadow = '0 12px 24px rgba(46, 204, 113, 0.15)';
-                  e.currentTarget.style.transform = 'translateY(-6px)';
+                  e.currentTarget.style.transform = 'translateY(-8px)';
+                  e.currentTarget.style.boxShadow = '0 12px 24px rgba(59, 130, 246, 0.15)';
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.borderColor = '#BDE0FD';
-                  e.currentTarget.style.boxShadow = 'none';
                   e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
               >
                 <div style={{ fontSize: '48px', marginBottom: '15px' }}>{feature.emoji}</div>
-                <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#1F3C88' }}>
+                <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#1f2937' }}>
                   {feature.title}
                 </h3>
-                <p style={{ color: '#4B5563', fontSize: '14px', lineHeight: '1.6' }}>
+                <p style={{ color: '#6b7280', fontSize: '14px', lineHeight: '1.6' }}>
                   {feature.desc}
                 </p>
               </div>
@@ -1051,7 +1049,7 @@ const AttractiveHomePage = () => {
 
       {/* Become a Tutor Section */}
       <div style={{
-        background: '#F5F8FF',
+        background: 'linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%)',
         padding: '80px 20px',
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -1059,7 +1057,7 @@ const AttractiveHomePage = () => {
             <h2 style={{
               fontSize: '48px',
               fontWeight: 'bold',
-              color: '#1F3C88',
+              color: '#1E3A8A',
               marginBottom: '15px',
               textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
             }}>
@@ -1067,7 +1065,7 @@ const AttractiveHomePage = () => {
             </h2>
             <p style={{
               fontSize: '20px',
-              color: '#6B7280',
+              color: '#374151',
               lineHeight: '1.7',
               maxWidth: '900px',
               margin: '0 auto'
@@ -1090,34 +1088,31 @@ const AttractiveHomePage = () => {
               { icon: '🤝', title: 'Academic Support', desc: 'Get guidance from our experienced academic team' }
             ].map((item, idx) => (
               <div key={idx} className="tutor-feature-card" style={{
-                background: '#FFFFFF',
+                background: 'white',
                 padding: '30px',
-                borderRadius: '12px',
+                borderRadius: '15px',
                 textAlign: 'center',
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-                transition: 'all 0.3s ease',
-                cursor: 'pointer',
-                border: '1px solid #E5E7EB'
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                cursor: 'pointer'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#2ECC71';
-                e.currentTarget.style.boxShadow = '0 12px 24px rgba(46, 204, 113, 0.15)';
-                e.currentTarget.style.transform = 'translateY(-6px)';
+                e.currentTarget.style.transform = 'translateY(-8px)';
+                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 0, 0, 0.12)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#E5E7EB';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
                 e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
               }}>
                 <div style={{ fontSize: '48px', marginBottom: '15px' }}>{item.icon}</div>
                 <h3 style={{
                   fontSize: '20px',
                   fontWeight: 'bold',
-                  color: '#1F3C88',
+                  color: '#1E3A8A',
                   marginBottom: '10px'
                 }}>{item.title}</h3>
                 <p style={{
-                  fontSize: '14px',
+                  fontSize: '15px',
                   color: '#6B7280',
                   lineHeight: '1.6'
                 }}>{item.desc}</p>
@@ -1127,17 +1122,16 @@ const AttractiveHomePage = () => {
 
           {/* Eligibility Section */}
           <div style={{
-            background: '#FFFFFF',
+            background: 'white',
             borderRadius: '20px',
             padding: '40px',
             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-            marginBottom: '40px',
-            border: '1px solid #E5E7EB'
+            marginBottom: '40px'
           }}>
             <h3 style={{
               fontSize: '28px',
               fontWeight: 'bold',
-              color: '#1F3C88',
+              color: '#1E3A8A',
               marginBottom: '25px',
               textAlign: 'center'
             }}>
@@ -1159,9 +1153,8 @@ const AttractiveHomePage = () => {
                   alignItems: 'center',
                   gap: '15px',
                   padding: '15px',
-                  background: '#F0F7FF',
-                  borderRadius: '10px',
-                  border: '1px solid #E0E7FF'
+                  background: '#F0F9FF',
+                  borderRadius: '10px'
                 }}>
                   <span style={{ fontSize: '32px' }}>{req.icon}</span>
                   <span style={{
@@ -1180,7 +1173,7 @@ const AttractiveHomePage = () => {
               onClick={() => navigate('/tutor/register')}
               style={{
                 padding: '18px 48px',
-                background: 'linear-gradient(135deg, #1F3C88 0%, #3A6CF0 100%)',
+                background: 'linear-gradient(135deg, #1E3A8A 0%, #111827 100%)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '12px',
@@ -1188,15 +1181,15 @@ const AttractiveHomePage = () => {
                 fontSize: '20px',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
-                boxShadow: '0 6px 20px rgba(31, 60, 136, 0.3)'
+                boxShadow: '0 6px 20px rgba(30, 58, 138, 0.3)'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'scale(1.05)';
-                e.currentTarget.style.boxShadow = '0 8px 28px rgba(31, 60, 136, 0.4)';
+                e.currentTarget.style.boxShadow = '0 8px 28px rgba(30, 58, 138, 0.4)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'scale(1)';
-                e.currentTarget.style.boxShadow = '0 6px 20px rgba(31, 60, 136, 0.3)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(30, 58, 138, 0.3)';
               }}
             >
               Apply as a Tutor →
@@ -1207,7 +1200,7 @@ const AttractiveHomePage = () => {
 
       {/* How It Works */}
       <div style={{
-        background: '#F5F8FF',
+        background: 'linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%)',
         padding: '60px 20px',
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -1216,7 +1209,7 @@ const AttractiveHomePage = () => {
             fontWeight: 'bold',
             textAlign: 'center',
             marginBottom: '50px',
-            color: '#1F3C88'
+            color: '#1f2937'
           }}>
             How It Works
           </h2>
@@ -1240,24 +1233,13 @@ const AttractiveHomePage = () => {
                   padding: '30px',
                   borderRadius: '12px',
                   textAlign: 'center',
-                  position: 'relative',
-                  border: '1px solid #E0E7FF',
-                  transition: 'all 0.3s ease',
-                  cursor: 'pointer'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.borderColor = '#2ECC71';
-                  e.currentTarget.style.boxShadow = '0 12px 24px rgba(46, 204, 113, 0.15)';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.borderColor = '#E0E7FF';
-                  e.currentTarget.style.boxShadow = 'none';
+                  position: 'relative'
                 }}
               >
                 <div style={{
                   width: '60px',
                   height: '60px',
-                  background: 'linear-gradient(135deg, #1F3C88 0%, #3A6CF0 100%)',
+                  background: 'linear-gradient(135deg, #1E3A8A 0%, #111827 100%)',
                   color: 'white',
                   borderRadius: '50%',
                   display: 'flex',
@@ -1266,14 +1248,14 @@ const AttractiveHomePage = () => {
                   fontSize: '28px',
                   fontWeight: 'bold',
                   margin: '0 auto 20px',
-                  boxShadow: '0 4px 12px rgba(31, 60, 136, 0.2)'
+                  boxShadow: '0 4px 15px rgba(30, 58, 138, 0.3)'
                 }}>
                   {step.num}
                 </div>
-                <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#1F3C88' }}>
+                <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '10px', color: '#1f2937' }}>
                   {step.title}
                 </h3>
-                <p style={{ color: '#6B7280', fontSize: '14px', lineHeight: '1.6' }}>
+                <p style={{ color: '#6b7280', fontSize: '14px', lineHeight: '1.6' }}>
                   {step.desc}
                 </p>
               </div>
@@ -1284,7 +1266,7 @@ const AttractiveHomePage = () => {
 
       {/* CTA Section */}
       <div style={{
-        background: 'linear-gradient(135deg, #1F3C88 0%, #3A6CF0 100%)',
+        background: 'linear-gradient(135deg, #EA580C 0%, #DC2626 100%)',
         color: 'white',
         padding: '60px 20px',
         textAlign: 'center'
@@ -1301,24 +1283,18 @@ const AttractiveHomePage = () => {
               onClick={() => navigate('/register')}
               style={{
                 padding: '14px 32px',
-                background: '#FF8C42',
-                color: '#FFFFFF',
+                background: 'white',
+                color: '#EF4444',
                 border: 'none',
                 borderRadius: '8px',
                 fontWeight: 'bold',
                 fontSize: '16px',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                boxShadow: '0 4px 15px rgba(255, 140, 66, 0.2)'
+                transition: 'transform 0.2s',
+                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
               }}
-              onMouseOver={(e) => {
-                e.target.style.transform = 'scale(1.05)';
-                e.target.style.boxShadow = '0 6px 20px rgba(255, 140, 66, 0.3)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.transform = 'scale(1)';
-                e.target.style.boxShadow = '0 4px 15px rgba(255, 140, 66, 0.2)';
-              }}
+              onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
+              onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
             >
               Enroll Now
             </button>
@@ -1410,7 +1386,7 @@ const AttractiveHomePage = () => {
 
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
-          /* Mobile Hero Section - Navy Blue to Light Blue Gradient */
+          /* Mobile Hero Section - Navy Blue to Bright Blue Gradient */
           .hero-section,
           div.hero-section,
           div.hero-section[style],
@@ -1419,250 +1395,93 @@ const AttractiveHomePage = () => {
             background-image: linear-gradient(135deg, #1F3C88 0%, #3A6CF0 100%) !important;
           }
           
-          /* Hero Main Title - White */
-          .hero-main-title {
+          /* Hero title - White */
+          div[style*="fontSize: 52px"] {
             color: #FFFFFF !important;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
           }
           
-          /* Hero Subtitle - Light Grey */
-          .hero-subtitle {
+          /* Hero subtitle - Light Grey */
+          div[style*="fontSize: 28px"] {
             color: #E5E7EB !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3) !important;
           }
           
-          /* Hero Description - White */
-          .hero-description {
-            color: #FFFFFF !important;
+          /* Feature items - Add green border on hover */
+          div[style*="background: rgba(255,255,255,0.2)"] {
+            background: rgba(46, 204, 113, 0.15) !important;
+            border: 1px solid rgba(46, 204, 113, 0.3) !important;
+            transition: all 0.3s ease !important;
           }
           
-          /* Enroll Now Button - Orange with White Text */
-          button[style*="color: '#EF4444'"],
-          button[style*="white"],
-          .enroll-button {
+          div[style*="background: rgba(255,255,255,0.2)"]:hover {
+            background: rgba(46, 204, 113, 0.25) !important;
+            border-color: #2ECC71 !important;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2) !important;
+          }
+          
+          /* Form card - Pure white with navy focus */
+          div[style*="borderRadius: 16px"] {
+            background: #FFFFFF !important;
+            box-shadow: 0 10px 30px rgba(31, 60, 136, 0.15) !important;
+          }
+          
+          /* Form inputs - Navy blue focus */
+          input[type="text"], 
+          input[type="tel"], 
+          input[type="email"],
+          input.form-input {
+            border-color: #E0E7FF !important;
+            background: #FFFFFF !important;
+            color: #2C2C2C !important;
+          }
+          
+          input[type="text"]:focus, 
+          input[type="tel"]:focus, 
+          input[type="email"]:focus,
+          input.form-input:focus {
+            border-color: #1F3C88 !important;
+            box-shadow: 0 0 0 3px rgba(31, 60, 136, 0.1) !important;
+          }
+          
+          /* Buttons - Primary (Enroll) = Orange, Secondary (Tutor) = White border */
+          button[style*="background: #FF8C42"],
+          button[style*="background: #1E3A8A"] {
             background: #FF8C42 !important;
             color: #FFFFFF !important;
             border: none !important;
-            transition: all 0.3s ease !important;
+            font-weight: 600 !important;
           }
           
-          /* Become a Tutor Button - White Border */
-          button[style*="border: '2px solid white'"],
-          .tutor-button {
+          button[style*="border: 2px solid white"],
+          button[style*="border-color: rgba(255,255,255"] {
             background: transparent !important;
             color: #FFFFFF !important;
             border: 2px solid #FFFFFF !important;
+            font-weight: 600 !important;
             transition: all 0.3s ease !important;
           }
           
-          button[style*="border: '2px solid white'"]:hover,
-          .tutor-button:hover {
+          button[style*="border: 2px solid white"]:hover,
+          button[style*="border-color: rgba(255,255,255"]:hover {
             background: #2ECC71 !important;
             border-color: #2ECC71 !important;
             color: #FFFFFF !important;
           }
           
-          /* HOW IT WORKS SECTION - Mobile Design */
-          div[style*="background: linear-gradient(135deg, #f3e8ff"]  {
-            background: #F5F8FF !important;
-          }
-          
-          .how-it-works-card {
-            background: #FFFFFF !important;
-            border: 1px solid #E0E7FF !important;
-            padding: 24px !important;
-            border-radius: 12px !important;
-          }
-          
-          .how-it-works-card:hover {
-            border-color: #2ECC71 !important;
-            box-shadow: 0 8px 16px rgba(46, 204, 113, 0.15) !important;
-          }
-          
-          .how-it-works-card > div:first-child {
-            background: linear-gradient(135deg, #1F3C88 0%, #3A6CF0 100%) !important;
-            width: 56px !important;
-            height: 56px !important;
+          /* Navigation buttons */
+          nav button {
             color: #FFFFFF !important;
-            border-radius: 50% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            font-size: 24px !important;
-            font-weight: bold !important;
-            margin: 0 auto 16px !important;
-            box-shadow: 0 4px 12px rgba(31, 60, 136, 0.2) !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
           }
           
-          .how-it-works-card h3 {
-            font-size: 18px !important;
-            color: #1F3C88 !important;
-            font-weight: 600 !important;
-            margin-bottom: 8px !important;
+          nav button:hover {
+            background: #2ECC71 !important;
+            border-radius: 6px !important;
           }
           
-          .how-it-works-card p {
-            font-size: 13px !important;
-            color: #6B7280 !important;
-            line-height: 1.6 !important;
-          }
-          
-          /* CLASSES SECTION - Mobile Design */
-          .mobile-feature-card {
-            background: #FFFFFF !important;
-            border: 1px solid #E5E7EB !important;
-            padding: 28px !important;
-            border-radius: 12px !important;
-            transition: all 0.3s ease !important;
-          }
-          
-          .mobile-feature-card:hover {
-            border-color: #2ECC71 !important;
-            box-shadow: 0 10px 20px rgba(46, 204, 113, 0.15) !important;
-          }
-          
-          .mobile-feature-card h3 {
-            font-size: 20px !important;
-            color: #1F3C88 !important;
-            font-weight: 600 !important;
-            margin-bottom: 10px !important;
-          }
-          
-          .mobile-feature-card p {
-            font-size: 13px !important;
-            color: #6B7280 !important;
-            line-height: 1.6 !important;
-          }
-          
-          /* WHY PARENTS CHOOSE HOPE - Mobile Design */
-          div[style*="background: white"][style*="padding: 60px"] {
-            background: #FFFFFF !important;
-          }
-          
-          .parent-feature-card {
-            background: #F0F7FF !important;
-            border: 1px solid #BDE0FD !important;
-            padding: 24px !important;
-            border-radius: 12px !important;
-            text-align: center !important;
-            transition: all 0.3s ease !important;
-          }
-          
-          .parent-feature-card:hover {
-            border-color: #2ECC71 !important;
-            box-shadow: 0 12px 24px rgba(46, 204, 113, 0.15) !important;
-            transform: translateY(-6px) !important;
-          }
-          
-          .parent-feature-card > div:first-child {
-            font-size: 40px !important;
-            margin-bottom: 12px !important;
-          }
-          
-          .parent-feature-card h3 {
-            font-size: 18px !important;
-            color: #1F3C88 !important;
-            font-weight: 600 !important;
-            margin-bottom: 8px !important;
-          }
-          
-          .parent-feature-card p {
-            font-size: 13px !important;
-            color: #4B5563 !important;
-            line-height: 1.5 !important;
-          }
-          
-          /* BECOME A TUTOR - Mobile Design */
-          div[style*="background: linear-gradient(135deg, #F0F9FF"]  {
-            background: #F5F8FF !important;
-          }
-          
-          .tutor-features-grid h2 {
-            color: #1F3C88 !important;
-          }
-          
-          .tutor-features-grid > div > p {
-            color: #6B7280 !important;
-          }
-          
-          .tutor-feature-card {
-            background: #FFFFFF !important;
-            padding: 24px !important;
-            border-radius: 12px !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-            transition: all 0.3s ease !important;
-            border: 1px solid #E5E7EB !important;
-          }
-          
-          .tutor-feature-card:hover {
-            border-color: #2ECC71 !important;
-            box-shadow: 0 8px 16px rgba(46, 204, 113, 0.15) !important;
-            transform: translateY(-4px) !important;
-          }
-          
-          .tutor-feature-card > div:first-child {
-            font-size: 40px !important;
-            margin-bottom: 12px !important;
-          }
-          
-          .tutor-feature-card h3 {
-            font-size: 18px !important;
-            color: #1F3C88 !important;
-            font-weight: 600 !important;
-            margin-bottom: 8px !important;
-          }
-          
-          .tutor-feature-card p {
-            font-size: 13px !important;
-            color: #6B7280 !important;
-            line-height: 1.6 !important;
-          }
-          
-          /* FLOATING CONTACT ICONS - Mobile Design */
-          .floating-icons-container a {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-            transition: all 0.3s ease !important;
-          }
-          
-          a[style*="#10B981"] {
-            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%) !important;
-          }
-          
-          a[style*="#25D366"] {
-            background: #25D366 !important;
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3) !important;
-          }
-          
-          a[style*="#FF8C42"],
-          a[style*="#EA7B3E"] {
-            background: linear-gradient(135deg, #FF8C42 0%, #FF7A2D 100%) !important;
-            box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3) !important;
-          }
-          footer,
-          div[style*="background: #0F172A"],
-          div[style*="background: #1a1a2e"] {
-            background: #0F172A !important;
-          }
-          
-          footer h3,
-          footer h4,
-          .footer-grid > div > h3 {
-            color: #FFFFFF !important;
-          }
-          
-          footer a,
-          footer p,
-          .footer-grid > div > a {
-            color: #CBD5E1 !important;
-          }
-          
-          footer a:hover,
-          .footer-grid > div > a:hover {
-            color: #2ECC71 !important;
-          }
-          
-          footer hr,
-          .footer-divider {
-            border-color: #1F2937 !important;
-          }
+          /* Footer: Hide Quick Links and adjust to 2 columns (About & Contact) */
           .footer-grid {
             grid-template-columns: repeat(2, 1fr) !important;
             gap: 20px !important;
@@ -1677,6 +1496,31 @@ const AttractiveHomePage = () => {
           .footer-grid {
             max-width: 600px !important;
             margin: 0 auto 30px auto !important;
+          }
+          
+          /* Footer Background - Dark Navy */
+          footer {
+            background: #0F172A !important;
+          }
+          
+          footer div[style*="background"] {
+            background: #0F172A !important;
+          }
+          
+          /* Footer text - White headings, Light Blue links */
+          footer h4 {
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+          }
+          
+          footer p, footer a {
+            color: #CBD5E1 !important;
+            font-weight: 500 !important;
+            transition: color 0.2s ease !important;
+          }
+          
+          footer a:hover {
+            color: #2ECC71 !important;
           }
           
           /* Footer text alignment */
