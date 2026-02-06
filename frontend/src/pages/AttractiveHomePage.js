@@ -581,7 +581,7 @@ const AttractiveHomePage = () => {
 
       {/* Main Hero Section */}
       <div className="hero-section" style={{
-        background: 'linear-gradient(135deg, #1F3C88 0%, #3A6CF0 100%)',
+        background: 'linear-gradient(135deg, #1E3A8A 0%, #111827 100%)',
         color: 'white',
         padding: '30px 16px',
         position: 'relative',
@@ -1386,99 +1386,13 @@ const AttractiveHomePage = () => {
 
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
-          /* Mobile Hero Section - Navy Blue to Bright Blue Gradient */
+          /* Mobile Hero Section - Lapis Blue to Black Gradient - Multiple selectors for specificity */
           .hero-section,
           div.hero-section,
           div.hero-section[style],
           div[class~="hero-section"] {
-            background: linear-gradient(135deg, #1F3C88 0%, #3A6CF0 100%) !important;
-            background-image: linear-gradient(135deg, #1F3C88 0%, #3A6CF0 100%) !important;
-          }
-          
-          /* Hero title - White */
-          div[style*="fontSize: 52px"] {
-            color: #FFFFFF !important;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
-          }
-          
-          /* Hero subtitle - Light Grey */
-          div[style*="fontSize: 28px"] {
-            color: #E5E7EB !important;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3) !important;
-          }
-          
-          /* Feature items - Add green border on hover */
-          div[style*="background: rgba(255,255,255,0.2)"] {
-            background: rgba(46, 204, 113, 0.15) !important;
-            border: 1px solid rgba(46, 204, 113, 0.3) !important;
-            transition: all 0.3s ease !important;
-          }
-          
-          div[style*="background: rgba(255,255,255,0.2)"]:hover {
-            background: rgba(46, 204, 113, 0.25) !important;
-            border-color: #2ECC71 !important;
-            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2) !important;
-          }
-          
-          /* Form card - Pure white with navy focus */
-          div[style*="borderRadius: 16px"] {
-            background: #FFFFFF !important;
-            box-shadow: 0 10px 30px rgba(31, 60, 136, 0.15) !important;
-          }
-          
-          /* Form inputs - Navy blue focus */
-          input[type="text"], 
-          input[type="tel"], 
-          input[type="email"],
-          input.form-input {
-            border-color: #E0E7FF !important;
-            background: #FFFFFF !important;
-            color: #2C2C2C !important;
-          }
-          
-          input[type="text"]:focus, 
-          input[type="tel"]:focus, 
-          input[type="email"]:focus,
-          input.form-input:focus {
-            border-color: #1F3C88 !important;
-            box-shadow: 0 0 0 3px rgba(31, 60, 136, 0.1) !important;
-          }
-          
-          /* Buttons - Primary (Enroll) = Orange, Secondary (Tutor) = White border */
-          button[style*="background: #FF8C42"],
-          button[style*="background: #1E3A8A"] {
-            background: #FF8C42 !important;
-            color: #FFFFFF !important;
-            border: none !important;
-            font-weight: 600 !important;
-          }
-          
-          button[style*="border: 2px solid white"],
-          button[style*="border-color: rgba(255,255,255"] {
-            background: transparent !important;
-            color: #FFFFFF !important;
-            border: 2px solid #FFFFFF !important;
-            font-weight: 600 !important;
-            transition: all 0.3s ease !important;
-          }
-          
-          button[style*="border: 2px solid white"]:hover,
-          button[style*="border-color: rgba(255,255,255"]:hover {
-            background: #2ECC71 !important;
-            border-color: #2ECC71 !important;
-            color: #FFFFFF !important;
-          }
-          
-          /* Navigation buttons */
-          nav button {
-            color: #FFFFFF !important;
-            font-weight: 500 !important;
-            transition: all 0.2s ease !important;
-          }
-          
-          nav button:hover {
-            background: #2ECC71 !important;
-            border-radius: 6px !important;
+            background: linear-gradient(135deg, #1e40af 0%, #000000 100%) !important;
+            background-image: linear-gradient(135deg, #1e40af 0%, #000000 100%) !important;
           }
           
           /* Footer: Hide Quick Links and adjust to 2 columns (About & Contact) */
@@ -1496,31 +1410,6 @@ const AttractiveHomePage = () => {
           .footer-grid {
             max-width: 600px !important;
             margin: 0 auto 30px auto !important;
-          }
-          
-          /* Footer Background - Dark Navy */
-          footer {
-            background: #0F172A !important;
-          }
-          
-          footer div[style*="background"] {
-            background: #0F172A !important;
-          }
-          
-          /* Footer text - White headings, Light Blue links */
-          footer h4 {
-            color: #FFFFFF !important;
-            font-weight: 700 !important;
-          }
-          
-          footer p, footer a {
-            color: #CBD5E1 !important;
-            font-weight: 500 !important;
-            transition: color 0.2s ease !important;
-          }
-          
-          footer a:hover {
-            color: #2ECC71 !important;
           }
           
           /* Footer text alignment */
