@@ -11,7 +11,7 @@ import axios from 'axios';
 const desktopLogoStyles = `
   @media (min-width: 1024px) {
     .hp-header-logo-desktop img {
-      height: 96px !important;
+      height: 150px !important;
       width: auto !important;
     }
   }
