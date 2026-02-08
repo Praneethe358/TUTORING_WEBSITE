@@ -10,7 +10,7 @@ import axios from 'axios';
 // Add desktop-specific logo styling
 const styles = `
   @media (min-width: 1024px) {
-    .homepage-header-logo img {
+    .homepage-header-logo .logo-root img {
       height: 150px !important;
     }
   }
