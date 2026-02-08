@@ -311,6 +311,17 @@ const AttractiveHomePage = () => {
             font-size: 14px !important;
             border-radius: 6px !important;
           }
+          
+          .demo-form-row {
+            flex-direction: column !important;
+            gap: 10px !important;
+          }
+          
+          .demo-form-row select,
+          .demo-form-row input {
+            width: 100% !important;
+            flex: unset !important;
+          }
         }
         
         @media (max-width: 768px) {
@@ -816,7 +827,7 @@ const AttractiveHomePage = () => {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', marginBottom: '12px' }}>
+              <div className="demo-form-row" style={{ display: 'flex', gap: '10px', marginBottom: '12px' }}>
                 <select
                   name="classGrade"
                   value={formData.classGrade}
@@ -889,7 +900,7 @@ const AttractiveHomePage = () => {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', marginBottom: '12px' }}>
+              <div className="demo-form-row" style={{ display: 'flex', gap: '10px', marginBottom: '12px' }}>
                 <input
                   type="email"
                   name="contactEmail"

@@ -55,9 +55,26 @@ const TutorDemoClasses = () => {
 
   return (
     <div style={{ padding: 'clamp(1rem, 4vw, 2rem)' }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .tutor-demo-grid {
+            grid-template-columns: 1fr !important;
+          }
+          .tutor-demo-modal-content {
+            padding: 20px !important;
+            width: 95% !important;
+          }
+          .tutor-demo-modal-actions {
+            flex-direction: column !important;
+          }
+          .tutor-demo-modal-actions button {
+            width: 100% !important;
+          }
+        }
+      `}</style>
       {/* Header */}
       <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '26px', fontWeight: '700', color: colors.textPrimary, margin: 0 }}>
+        <h1 style={{ fontSize: 'clamp(22px, 5vw, 26px)', fontWeight: '700', color: colors.textPrimary, margin: 0 }}>
           🎓 Demo Classes
         </h1>
         <p style={{ color: colors.textSecondary, marginTop: '4px', fontSize: '14px' }}>
@@ -83,7 +100,7 @@ const TutorDemoClasses = () => {
               <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#1E40AF', marginBottom: '14px' }}>
                 📅 Upcoming ({scheduled.length})
               </h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '16px' }}>
+              <div className="tutor-demo-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '16px' }}>
                 {scheduled.map(demo => (
                   <div key={demo._id} style={{ ...cardStyle, borderLeft: '4px solid #3B82F6' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
@@ -142,7 +159,7 @@ const TutorDemoClasses = () => {
               <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#065F46', marginBottom: '14px' }}>
                 ✅ Completed ({completed.length})
               </h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '16px' }}>
+              <div className="tutor-demo-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '16px' }}>
                 {completed.map(demo => (
                   <div key={demo._id} style={{ ...cardStyle, borderLeft: '4px solid #10B981', opacity: 0.85 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
@@ -186,7 +203,7 @@ const TutorDemoClasses = () => {
           position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)',
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
         }} onClick={() => setFeedbackModal(null)}>
-          <div style={{
+          <div className="tutor-demo-modal-content" style={{
             background: 'white', borderRadius: borderRadius.lg, padding: '28px',
             width: '90%', maxWidth: '480px', boxShadow: shadows.xl
           }} onClick={e => e.stopPropagation()}>
@@ -215,7 +232,7 @@ const TutorDemoClasses = () => {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <div className="tutor-demo-modal-actions" style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                 <button type="button" onClick={() => setFeedbackModal(null)}
                   style={{ padding: '10px 20px', borderRadius: '8px', border: `1px solid ${colors.border}`, background: 'white', cursor: 'pointer', fontWeight: '500' }}>
                   Cancel
