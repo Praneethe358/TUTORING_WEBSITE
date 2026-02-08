@@ -7,16 +7,12 @@ import '../styles/homepage-animations.css';
 import '../styles/homepage-premium-purple.css';
 import axios from 'axios';
 
-// Add desktop-specific logo styling with higher specificity
-const styles = `
-  .homepage-header-logo .logo-root img {
-    height: 300px !important;
-  }
-  
+// Desktop-only logo sizing via CSS media query
+const desktopLogoStyles = `
   @media (min-width: 1024px) {
-    .homepage-header-logo .logo-root img {
-      height: 300px !important;
-      max-height: 300px !important;
+    .hp-header-logo-desktop img {
+      height: 96px !important;
+      width: auto !important;
     }
   }
 `;
@@ -76,8 +72,7 @@ const HomePage = () => {
 
   return (
     <div className="homepage-premium-purple" style={{ background: colors.bgSecondary, color: brand.text, minHeight: '100vh' }}>
-      {/* Inject custom styles for desktop logo sizing */}
-      <style>{styles}</style>
+      <style>{desktopLogoStyles}</style>
       
       {/* Header / Navbar */}
       <header
@@ -94,8 +89,8 @@ const HomePage = () => {
       >
         <div style={{ ...sectionStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `${spacing.lg} 0`, gap: spacing.lg }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
-            <div className="homepage-header-logo" style={{ display: 'flex', alignItems: 'center' }}>
-              <Logo size={300} withText={true} />
+            <div className="hp-header-logo-desktop">
+              <Logo size={64} withText={true} />
             </div>
             <span style={{ fontSize: typography.fontSize.sm, color: brand.muted, display: 'none', '@media (min-width: 768px)': { display: 'inline' } }}>Saving Time, Inspiring Minds</span>
           </div>
