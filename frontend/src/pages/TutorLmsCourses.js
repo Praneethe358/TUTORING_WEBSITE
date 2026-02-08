@@ -259,13 +259,7 @@ const TutorLmsCourses = () => {
         <div className="text-slate-400">Loading courses...</div>
       ) : courses.length === 0 ? (
         <div className="bg-slate-800 rounded-xl p-6 sm:p-12 border border-slate-700 text-center">
-          <p className="text-slate-400 text-sm sm:text-base mb-4 sm:mb-6">No LMS courses found. Create your first course to get started!</p>
-          <button
-            onClick={() => setShowCreateForm(true)}
-            className="w-full sm:w-auto px-6 py-3 sm:py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium min-h-[44px]"
-          >
-            Create Course
-          </button>
+          <p className="text-slate-400 text-sm sm:text-base">No LMS courses found. Click "+ Create Course" above to get started!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:gap-4">
