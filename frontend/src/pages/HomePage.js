@@ -95,7 +95,7 @@ const HomePage = () => {
         <div style={{ ...sectionStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `${spacing.lg} 0`, gap: spacing.lg }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
             <div className="homepage-header-logo" style={{ display: 'flex', alignItems: 'center' }}>
-              <Logo size={180} withText={true} />
+              <Logo size={300} withText={true} />
             </div>
             <span style={{ fontSize: typography.fontSize.sm, color: brand.muted, display: 'none', '@media (min-width: 768px)': { display: 'inline' } }}>Saving Time, Inspiring Minds</span>
           </div>
