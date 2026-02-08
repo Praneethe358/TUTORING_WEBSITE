@@ -153,19 +153,14 @@ const TutorLmsCourses = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5">Category</label>
-                  <select
+                  <label className="block text-xs sm:text-sm font-medium text-slate-300 mb-1.5">Subject / Category</label>
+                  <input
+                    type="text"
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-2 bg-slate-900 border border-slate-700 rounded-lg text-white text-sm min-h-[44px] sm:min-h-[auto]"
-                  >
-                    <option value="">Select Category</option>
-                    <option value="Web Development">Web Development</option>
-                    <option value="Mobile Development">Mobile Development</option>
-                    <option value="Data Science">Data Science</option>
-                    <option value="Design">Design</option>
-                    <option value="Business">Business</option>
-                  </select>
+                    placeholder="e.g., Mathematics, Physics, Web Development"
+                  />
                 </div>
               </div>
 
