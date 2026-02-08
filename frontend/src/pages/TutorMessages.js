@@ -69,65 +69,25 @@ const TutorMessages = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const [convRes, classRes, courseRes, enrollRes] = await Promise.all([
+        const [convRes, assignedRes] = await Promise.all([
           api.get('/messages/conversations'),
-          api.get('/classes'),
-          api.get('/lms/courses?instructor=current'),
-          api.get('/lms/instructor/students')
+          api.get('/tutor/assigned-students')
         ]);
         setConversations(convRes.data.conversations || []);
 
-        // Build student list from classes the tutor is teaching
-        const classStudents = Array.isArray(classRes.data?.data) ? classRes.data.data : [];
-        const uniqueStudents = new Map();
-        classStudents.forEach(cls => {
-          if (cls.student?._id) {
-            uniqueStudents.set(cls.student._id.toString(), {
-              userId: cls.student._id,
-              user: { 
-                name: cls.student.name, 
-                email: cls.student.email,
-                avatar: cls.student.avatar || cls.student.profileImage
-              },
-              source: 'student'
-            });
-          }
-        });
+        // Build student list from admin-assigned students only
+        const assignedStudents = Array.isArray(assignedRes.data?.students) ? assignedRes.data.students : [];
+        const uniqueStudents = assignedStudents.map(s => ({
+          userId: s._id || s.id,
+          user: {
+            name: s.name,
+            email: s.email,
+            avatar: s.avatar || s.profileImage
+          },
+          source: 'assigned'
+        })).filter(s => s.userId && s.user?.name);
 
-        // Add students enrolled in tutor's LMS courses (even if no class scheduled yet)
-        const courses = Array.isArray(courseRes.data?.data) ? courseRes.data.data : [];
-        courses.forEach(course => {
-          (course.enrolledStudents || []).forEach(student => {
-            const id = student._id || student.id;
-            if (id) {
-              uniqueStudents.set(id.toString(), {
-                userId: id,
-                user: { 
-                  name: student.name, 
-                  email: student.email,
-                  avatar: student.avatar || student.profileImage
-                },
-                source: 'enrollment'
-              });
-            }
-          });
-        });
-
-        // Add any enrollment-based students from instructor-students endpoint (covers cases where populate may be missing)
-        const instructorStudents = Array.isArray(enrollRes.data?.data) ? enrollRes.data.data : [];
-        instructorStudents.forEach(s => {
-          if (s.userId) {
-            uniqueStudents.set(s.userId.toString(), {
-              userId: s.userId,
-              user: { 
-                ...s.user,
-                avatar: s.user?.avatar || s.user?.profileImage
-              },
-              source: 'enrollment'
-            });
-          }
-        });
-        setStudents(Array.from(uniqueStudents.values()));
+        setStudents(uniqueStudents);
       } catch (err) {
         console.error(err);
       } finally {

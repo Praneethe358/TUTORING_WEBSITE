@@ -2,51 +2,29 @@ const mongoose = require('mongoose');
 const Message = require('../models/Message');
 const Student = require('../models/Student');
 const Tutor = require('../models/Tutor');
-const CourseEnrollment = require('../models/CourseEnrollment');
+const TutorAssignment = require('../models/TutorAssignment');
 
 async function ensureConversationAllowed(currentUserId, currentRole, targetUserId, targetRole) {
-  // Only enforce enrollment for student-to-tutor conversations to prevent unsolicited outreach
+  // Messaging is only allowed between admin-assigned tutor-student pairs
   if (currentRole === 'student' && targetRole === 'tutor') {
-    const tutorObjectId = new mongoose.Types.ObjectId(targetUserId);
-    const tutorCourseIds = await Tutor.aggregate([
-      { $match: { _id: tutorObjectId } },
-      {
-        $lookup: {
-          from: 'lmscourses',
-          localField: '_id',
-          foreignField: 'instructor',
-          as: 'courses'
-        }
-      },
-      { $project: { courseIds: '$courses._id' } }
-    ]);
-
-    const courseIds = tutorCourseIds?.[0]?.courseIds || [];
-    if (courseIds.length === 0) return false;
-
-    const enrollment = await CourseEnrollment.findOne({
-      studentId: currentUserId,
-      courseId: { $in: courseIds },
-      status: { $ne: 'dropped' }
+    const assignment = await TutorAssignment.findOne({
+      student: currentUserId,
+      tutor: targetUserId,
+      status: 'active'
     }).lean();
-
-    return Boolean(enrollment);
+    return Boolean(assignment);
   }
 
   if (currentRole === 'tutor' && targetRole === 'student') {
-    // Tutors can message students only if they share a course
-    const course = await CourseEnrollment.findOne({
-      studentId: targetUserId,
-      status: { $ne: 'dropped' }
-    })
-      .populate({ path: 'courseId', select: 'instructor', options: { lean: true } })
-      .lean();
-
-    if (!course?.courseId) return false;
-    return course.courseId.instructor.toString() === currentUserId.toString();
+    const assignment = await TutorAssignment.findOne({
+      tutor: currentUserId,
+      student: targetUserId,
+      status: 'active'
+    }).lean();
+    return Boolean(assignment);
   }
 
-  return true;
+  return false;
 }
 
 /**
@@ -69,7 +47,7 @@ exports.getConversation = async (req, res) => {
 
     const allowed = await ensureConversationAllowed(currentUserId, requesterRole, userId, targetRole);
     if (!allowed) {
-      return res.status(403).json({ message: 'Messaging is only allowed with tutors you are enrolled with.' });
+      return res.status(403).json({ message: 'Messaging is only allowed with your admin-assigned tutors/students.' });
     }
 
     const query = {
@@ -179,12 +157,22 @@ exports.getConversations = async (req, res) => {
       })
     );
 
+    // Filter to only show conversations with admin-assigned counterparts
+    const assignedIds = (await TutorAssignment.find({
+      $or: [{ tutor: userId }, { student: userId }],
+      status: 'active'
+    }).select('tutor student').lean()).map(a =>
+      a.tutor.toString() === userId.toString() ? a.student.toString() : a.tutor.toString()
+    );
+    const assignedSet = new Set(assignedIds);
+    const filteredConversations = populatedConversations.filter(c => assignedSet.has(c.userId.toString()));
+
     res.json({
-      conversations: populatedConversations,
+      conversations: filteredConversations,
       pagination: {
         page,
         limit,
-        total,
+        total: filteredConversations.length,
         pages: Math.ceil(total / limit)
       }
     });
@@ -204,7 +192,7 @@ exports.saveMessage = async (req, res) => {
 
     const allowed = await ensureConversationAllowed(senderId, senderType, receiverId, receiverType);
     if (!allowed) {
-      return res.status(403).json({ message: 'Messaging is only allowed between enrolled students and their tutors.' });
+      return res.status(403).json({ message: 'Messaging is only allowed between admin-assigned tutors and students.' });
     }
 
     const senderModel = senderType === 'tutor' ? 'Tutor' : 'Student';

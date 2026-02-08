@@ -83,12 +83,13 @@ const StudentMessages = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const [convRes, tutorRes] = await Promise.all([
+        const [convRes, assignedRes] = await Promise.all([
           api.get('/messages/conversations'),
-          api.get('/tutor/public')
+          api.get('/student/assigned-tutors')
         ]);
         setConversations(convRes.data.conversations || []);
-        setTutors(Array.isArray(tutorRes.data) ? tutorRes.data : (tutorRes.data.tutors || []));
+        const assignedTutors = Array.isArray(assignedRes.data?.tutors) ? assignedRes.data.tutors : [];
+        setTutors(assignedTutors);
       } catch (err) {
         console.error(err);
       } finally {
