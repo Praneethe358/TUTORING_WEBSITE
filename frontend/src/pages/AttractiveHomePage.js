@@ -997,7 +997,7 @@ const AttractiveHomePage = () => {
               { 
                 level: 'Spoken Hindi', 
                 desc: 'Conversational Hindi for everyday fluency',
-                icon: '🇮🇳',
+                icon: '🙏',
                 color: '#EF4444'
               }
             ].map((classInfo, idx) => (
