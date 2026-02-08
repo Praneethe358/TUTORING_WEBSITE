@@ -1342,13 +1342,6 @@ const AttractiveHomePage = () => {
               </p>
             </div>
             <div>
-              <h4 style={{ color: 'white', marginBottom: '15px', fontWeight: 'bold' }}>Quick Links</h4>
-              <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li style={{ marginBottom: '8px' }}><button onClick={() => {}} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', textDecoration: 'none' }}>How It Works</button></li>
-                <li style={{ marginBottom: '8px' }}><button onClick={() => {}} style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', textDecoration: 'none' }}>Pricing</button></li>
-              </ul>
-            </div>
-            <div>
               <h4 style={{ color: 'white', marginBottom: '15px', fontWeight: 'bold', fontSize: '18px' }}>Contact Us</h4>
               <p style={{ fontSize: '15px', marginBottom: '12px', color: '#FFA500', fontWeight: '500' }}>✉️ hopetuitionbygd@gmail.com</p>
               <p style={{ fontSize: '15px', color: '#FFA500', fontWeight: '500' }}>📞 +91-8807717477</p>
