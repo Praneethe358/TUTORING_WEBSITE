@@ -997,7 +997,13 @@ const AttractiveHomePage = () => {
               { 
                 level: 'Spoken Hindi', 
                 desc: 'Conversational Hindi for everyday fluency',
-                icon: '🙏',
+                icon: <div style={{ display: 'inline-block', width: '50px', height: '36px', borderRadius: '4px', overflow: 'hidden', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>
+                  <div style={{ height: '33.3%', background: '#FF9933' }}></div>
+                  <div style={{ height: '33.3%', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ width: '10px', height: '10px', border: '1.5px solid #000080', borderRadius: '50%' }}></div>
+                  </div>
+                  <div style={{ height: '33.4%', background: '#138808' }}></div>
+                </div>,
                 color: '#EF4444'
               }
             ].map((classInfo, idx) => (
