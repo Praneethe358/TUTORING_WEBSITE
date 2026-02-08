@@ -987,6 +987,18 @@ const AttractiveHomePage = () => {
                 desc: 'Advanced subjects and career preparation',
                 icon: '🎓',
                 color: '#10B981'
+              },
+              { 
+                level: 'Spoken English', 
+                desc: 'Fluent communication and confident speaking skills',
+                icon: '🗣️',
+                color: '#8B5CF6'
+              },
+              { 
+                level: 'Spoken Hindi', 
+                desc: 'Conversational Hindi for everyday fluency',
+                icon: '🇮🇳',
+                color: '#EF4444'
               }
             ].map((classInfo, idx) => (
               <div
