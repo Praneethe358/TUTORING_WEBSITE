@@ -7,12 +7,25 @@ import '../styles/homepage-animations.css';
 import '../styles/homepage-premium-purple.css';
 import axios from 'axios';
 
-// Desktop-only logo sizing via CSS media query
+// Desktop-only logo sizing via CSS media query - increase both parent and image
 const desktopLogoStyles = `
   @media (min-width: 1024px) {
+    .hp-header-logo-desktop {
+      display: flex !important;
+      align-items: center !important;
+      flex-shrink: 0 !important;
+    }
+    
+    .hp-header-logo-desktop .logo-root {
+      display: flex !important;
+      align-items: center !important;
+      flex-shrink: 0 !important;
+    }
+    
     .hp-header-logo-desktop img {
       height: 150px !important;
       width: auto !important;
+      flex-shrink: 0 !important;
     }
   }
 `;
@@ -88,8 +101,8 @@ const HomePage = () => {
         }}
       >
         <div style={{ ...sectionStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `${spacing.lg} 0`, gap: spacing.lg }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
-            <div className="hp-header-logo-desktop">
+          <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md, minWidth: 0 }}>
+            <div className="hp-header-logo-desktop" style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
               <Logo size={64} withText={true} />
             </div>
             <span style={{ fontSize: typography.fontSize.sm, color: brand.muted, display: 'none', '@media (min-width: 768px)': { display: 'inline' } }}>Saving Time, Inspiring Minds</span>
