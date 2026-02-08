@@ -397,25 +397,6 @@ const HomePage = () => {
               </p>
             </div>
 
-            {/* Quick Links */}
-            <div>
-              <h3 style={{ 
-                color: brand.white, 
-                fontSize: typography.fontSize.base,
-                fontWeight: typography.fontWeight.bold,
-                marginBottom: spacing.lg,
-                margin: `0 0 ${spacing.lg}`
-              }}>
-                Quick Links
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: spacing.sm }}>
-                <FooterLink onClick={() => scrollTo('hero')}>Home</FooterLink>
-                <FooterLink onClick={() => scrollTo('why')}>Why Choose HOPE</FooterLink>
-                <FooterLink onClick={() => scrollTo('parents')}>For Parents</FooterLink>
-                <FooterLink onClick={() => scrollTo('tutors')}>For Tutors</FooterLink>
-              </div>
-            </div>
-
             {/* Get Started */}
             <div>
               <h3 style={{ 
