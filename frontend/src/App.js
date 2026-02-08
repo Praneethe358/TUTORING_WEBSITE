@@ -56,6 +56,7 @@ import TutorLmsModules from './pages/TutorLmsModules';
 import TutorLmsAssignments from './pages/TutorLmsAssignments';
 import TutorLmsQuizzes from './pages/TutorLmsQuizzes';
 import TutorLmsGrading from './pages/TutorLmsGrading';
+import TutorDemoClasses from './pages/TutorDemoClasses';
 
 // Student LMS Pages - NEW
 import StudentLmsDashboard from './pages/StudentLmsDashboard';
@@ -77,6 +78,7 @@ import AdminAnnouncements from './pages/AdminAnnouncements';
 import AdminAnalytics from './pages/AdminAnalytics';
 import AdminSettings from './pages/AdminSettings';
 import AdminAssignments from './pages/AdminAssignments';
+import AdminDemoRequests from './pages/AdminDemoRequests';
 import StudentMyTutors from './pages/StudentMyTutors';
 
 // Admin LMS Pages - NEW
@@ -191,6 +193,7 @@ function App() {
     { path: '/tutor/earnings', element: <ProtectedTutorRoute><TutorDashboardLayout><TutorEarnings /></TutorDashboardLayout></ProtectedTutorRoute> },
     { path: '/tutor/materials', element: <ProtectedTutorRoute><TutorDashboardLayout><TutorMaterials /></TutorDashboardLayout></ProtectedTutorRoute> },
     { path: '/tutor/messages', element: <ProtectedTutorRoute><TutorDashboardLayout><TutorMessages /></TutorDashboardLayout></ProtectedTutorRoute> },
+    { path: '/tutor/demo-classes', element: <ProtectedTutorRoute><TutorDashboardLayout><TutorDemoClasses /></TutorDashboardLayout></ProtectedTutorRoute> },
     { path: '/tutor/settings', element: <ProtectedTutorRoute><TutorDashboardLayout><TutorSettings /></TutorDashboardLayout></ProtectedTutorRoute> },
     // LMS Routes - NEW
     { path: '/tutor/lms/courses', element: <ProtectedTutorRoute><TutorDashboardLayout><TutorLmsCourses /></TutorDashboardLayout></ProtectedTutorRoute> },
@@ -214,6 +217,7 @@ function App() {
     { path: '/admin/settings', element: <ProtectedAdminRoute><AdminSettings /></ProtectedAdminRoute> },
     { path: '/admin/tutor-availability', element: <ProtectedAdminRoute><AdminTutorAvailability /></ProtectedAdminRoute> },
     { path: '/admin/assignments', element: <ProtectedAdminRoute><AdminAssignments /></ProtectedAdminRoute> },
+    { path: '/admin/demo-requests', element: <ProtectedAdminRoute><AdminDemoRequests /></ProtectedAdminRoute> },
     
     // Admin LMS Routes - NEW
     { path: '/admin/lms/dashboard', element: <ProtectedAdminRoute><AdminLmsDashboard /></ProtectedAdminRoute> },

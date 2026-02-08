@@ -26,6 +26,12 @@ const {
   updateAssignment,
   deleteAssignment
 } = require('../controllers/tutorAssignmentController');
+const {
+  getAllDemoRequests,
+  updateDemoRequest,
+  convertToStudent,
+  deleteDemoRequest
+} = require('../controllers/demoRequestController');
 const { protectAdmin } = require('../middleware/authMiddleware');
 const { authLimiter } = require('../middleware/rateLimitMiddleware');
 
@@ -103,5 +109,11 @@ router.post('/assignments', createAssignment);
 router.post('/assignments/bulk', bulkCreateAssignments);
 router.put('/assignments/:id', updateAssignment);
 router.delete('/assignments/:id', deleteAssignment);
+
+// Demo Requests
+router.get('/demo-requests', getAllDemoRequests);
+router.put('/demo-requests/:id', updateDemoRequest);
+router.post('/demo-requests/:id/convert', convertToStudent);
+router.delete('/demo-requests/:id', deleteDemoRequest);
 
 module.exports = router;

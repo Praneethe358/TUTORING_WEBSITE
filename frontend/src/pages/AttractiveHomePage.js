@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../lib/api';
 import Logo from '../components/Logo';
 
 const AttractiveHomePage = () => {
   const navigate = useNavigate();
   const { user, role } = useAuth();
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: ''
+    studentName: '',
+    classGrade: '',
+    subjects: '',
+    preferredTimeSlot: '',
+    contactPhone: '',
+    contactEmail: '',
+    whatsapp: ''
   });
+  const [demoSubmitting, setDemoSubmitting] = useState(false);
+  const [demoSuccess, setDemoSuccess] = useState(false);
+  const [demoError, setDemoError] = useState('');
 
   // Auto-redirect authenticated users
   if (user && role === 'student') {
@@ -27,11 +35,19 @@ const AttractiveHomePage = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSchedule = (e) => {
+  const handleSchedule = async (e) => {
     e.preventDefault();
-    // Store form data and navigate to booking/register
-    sessionStorage.setItem('bookingData', JSON.stringify(formData));
-    navigate('/register');
+    setDemoSubmitting(true);
+    setDemoError('');
+    try {
+      await api.post('/demo-requests', formData);
+      setDemoSuccess(true);
+      setFormData({ studentName: '', classGrade: '', subjects: '', preferredTimeSlot: '', contactPhone: '', contactEmail: '', whatsapp: '' });
+    } catch (err) {
+      setDemoError(err.response?.data?.message || 'Failed to submit. Please try again.');
+    } finally {
+      setDemoSubmitting(false);
+    }
   };
 
   return (
@@ -748,35 +764,51 @@ const AttractiveHomePage = () => {
               marginBottom: '10px',
               color: '#1f2937'
             }}>
-              Enroll Today – Empower Your Child!
+              Book a FREE Demo Class!
             </h2>
             <p style={{ 
               color: '#6b7280', 
-              marginBottom: '25px', 
+              marginBottom: '20px', 
               fontSize: '15px',
               lineHeight: '1.5'
             }}>
-              Start your child's journey with HOPE Online Tuitions
+              Experience our teaching — no commitment needed
             </p>
 
-            {/* Form Fields */}
+            {demoSuccess ? (
+              <div style={{
+                background: '#ecfdf5',
+                border: '1px solid #6ee7b7',
+                borderRadius: '10px',
+                padding: '20px',
+                textAlign: 'center'
+              }}>
+                <span style={{ fontSize: '36px' }}>🎉</span>
+                <h3 style={{ color: '#065f46', margin: '10px 0 5px', fontSize: '18px' }}>Request Submitted!</h3>
+                <p style={{ color: '#047857', fontSize: '14px', margin: 0 }}>We'll contact you shortly to schedule your free demo class.</p>
+                <button onClick={() => setDemoSuccess(false)} style={{
+                  marginTop: '15px', padding: '8px 20px', background: '#1E3A8A', color: 'white',
+                  border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px'
+                }}>Book Another</button>
+              </div>
+            ) : (
             <form onSubmit={handleSchedule}>
-              <div style={{ marginBottom: '15px' }}>
+              {demoError && (
+                <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', borderRadius: '8px', padding: '10px', marginBottom: '12px', color: '#dc2626', fontSize: '13px' }}>
+                  {demoError}
+                </div>
+              )}
+              <div style={{ marginBottom: '12px' }}>
                 <input
                   type="text"
-                  name="name"
-                  placeholder="Enter Name of your Child"
-                  value={formData.name}
+                  name="studentName"
+                  placeholder="Student Name *"
+                  value={formData.studentName}
                   onChange={handleFormChange}
                   required
-                  className="form-input"
                   style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box',
+                    width: '100%', padding: '11px', border: '1px solid #e5e7eb',
+                    borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box',
                     transition: 'border-color 0.3s'
                   }}
                   onFocus={(e) => e.target.style.borderColor = '#1E3A8A'}
@@ -784,22 +816,72 @@ const AttractiveHomePage = () => {
                 />
               </div>
 
-              <div style={{ marginBottom: '15px' }}>
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '12px' }}>
+                <select
+                  name="classGrade"
+                  value={formData.classGrade}
+                  onChange={handleFormChange}
+                  required
+                  style={{
+                    flex: 1, padding: '11px', border: '1px solid #e5e7eb',
+                    borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box',
+                    background: 'white', color: formData.classGrade ? '#1f2937' : '#9ca3af'
+                  }}
+                >
+                  <option value="" disabled>Class / Grade *</option>
+                  {[...Array(12)].map((_, i) => (
+                    <option key={i+1} value={`Class ${i+1}`}>Class {i+1}</option>
+                  ))}
+                </select>
+
+                <select
+                  name="preferredTimeSlot"
+                  value={formData.preferredTimeSlot}
+                  onChange={handleFormChange}
+                  required
+                  style={{
+                    flex: 1, padding: '11px', border: '1px solid #e5e7eb',
+                    borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box',
+                    background: 'white', color: formData.preferredTimeSlot ? '#1f2937' : '#9ca3af'
+                  }}
+                >
+                  <option value="" disabled>Preferred Time *</option>
+                  <option value="Morning (9AM-12PM)">Morning (9-12)</option>
+                  <option value="Afternoon (12PM-3PM)">Afternoon (12-3)</option>
+                  <option value="Evening (3PM-6PM)">Evening (3-6)</option>
+                  <option value="Night (6PM-9PM)">Night (6-9)</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
+                <input
+                  type="text"
+                  name="subjects"
+                  placeholder="Subjects (e.g. Maths, Science) *"
+                  value={formData.subjects}
+                  onChange={handleFormChange}
+                  required
+                  style={{
+                    width: '100%', padding: '11px', border: '1px solid #e5e7eb',
+                    borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box',
+                    transition: 'border-color 0.3s'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#1E3A8A'}
+                  onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+                />
+              </div>
+
+              <div style={{ marginBottom: '12px' }}>
                 <input
                   type="tel"
-                  name="phone"
-                  placeholder="Enter your Mobile Number"
-                  value={formData.phone}
+                  name="contactPhone"
+                  placeholder="Mobile Number *"
+                  value={formData.contactPhone}
                   onChange={handleFormChange}
                   required
-                  className="form-input"
                   style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box',
+                    width: '100%', padding: '11px', border: '1px solid #e5e7eb',
+                    borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box',
                     transition: 'border-color 0.3s'
                   }}
                   onFocus={(e) => e.target.style.borderColor = '#1E3A8A'}
@@ -807,54 +889,50 @@ const AttractiveHomePage = () => {
                 />
               </div>
 
-              <div style={{ marginBottom: '15px' }}>
+              <div style={{ display: 'flex', gap: '10px', marginBottom: '12px' }}>
                 <input
                   type="email"
-                  name="email"
-                  placeholder="Email Address"
-                  value={formData.email}
+                  name="contactEmail"
+                  placeholder="Email (optional)"
+                  value={formData.contactEmail}
                   onChange={handleFormChange}
-                  required
-                  className="form-input"
                   style={{
-                    width: '100%',
-                    padding: '12px',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    boxSizing: 'border-box'
+                    flex: 1, padding: '11px', border: '1px solid #e5e7eb',
+                    borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box'
+                  }}
+                />
+                <input
+                  type="text"
+                  name="whatsapp"
+                  placeholder="WhatsApp (optional)"
+                  value={formData.whatsapp}
+                  onChange={handleFormChange}
+                  style={{
+                    flex: 1, padding: '11px', border: '1px solid #e5e7eb',
+                    borderRadius: '8px', fontSize: '14px', boxSizing: 'border-box'
                   }}
                 />
               </div>
 
               <button
                 type="submit"
-                className="form-button"
+                disabled={demoSubmitting}
                 style={{
-                  width: '100%',
-                  padding: '14px',
-                  background: 'linear-gradient(135deg, #FF8C42 0%, #FF6B35 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontWeight: 'bold',
-                  fontSize: '16px',
-                  cursor: 'pointer',
+                  width: '100%', padding: '14px',
+                  background: demoSubmitting ? '#9ca3af' : 'linear-gradient(135deg, #FF8C42 0%, #FF6B35 100%)',
+                  color: 'white', border: 'none', borderRadius: '8px',
+                  fontWeight: 'bold', fontSize: '16px',
+                  cursor: demoSubmitting ? 'not-allowed' : 'pointer',
                   transition: 'transform 0.2s, box-shadow 0.2s',
                   boxShadow: '0 4px 15px rgba(255, 107, 53, 0.3)'
                 }}
-                onMouseOver={(e) => {
-                  e.target.style.transform = 'translateY(-2px)';
-                  e.target.style.boxShadow = '0 6px 20px rgba(255, 107, 53, 0.4)';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.transform = 'translateY(0)';
-                  e.target.style.boxShadow = '0 4px 15px rgba(255, 107, 53, 0.3)';
-                }}
+                onMouseOver={(e) => { if (!demoSubmitting) { e.target.style.transform = 'translateY(-2px)'; e.target.style.boxShadow = '0 6px 20px rgba(255, 107, 53, 0.4)'; }}}
+                onMouseOut={(e) => { e.target.style.transform = 'translateY(0)'; e.target.style.boxShadow = '0 4px 15px rgba(255, 107, 53, 0.3)'; }}
               >
-                Continue to Schedule
+                {demoSubmitting ? '⏳ Submitting...' : '🎯 Book FREE Demo Class'}
               </button>
             </form>
+            )}
           </div>
         </div>
       </div>
@@ -1273,14 +1351,14 @@ const AttractiveHomePage = () => {
       }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
           <h2 style={{ fontSize: '42px', fontWeight: 'bold', marginBottom: '20px', textShadow: '2px 2px 4px rgba(0,0,0,0.2)' }}>
-            Enroll Today – Empower Your Child!
+            Start with a FREE Demo Class!
           </h2>
           <p style={{ fontSize: '20px', marginBottom: '30px', color: 'rgba(255, 255, 255, 0.95)', lineHeight: '1.6' }}>
-            Join HOPE Online Tuitions and watch your child excel academically from the comfort of home.
+            Experience our teaching firsthand — no commitment, no cost. Book your child's free demo today!
           </p>
           <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button
-              onClick={() => navigate('/register')}
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               style={{
                 padding: '14px 32px',
                 background: 'white',
@@ -1296,10 +1374,10 @@ const AttractiveHomePage = () => {
               onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
               onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
             >
-              Enroll Now
+              📞 Book FREE Demo Class
             </button>
             <button
-              onClick={() => navigate('/tutor/register')}
+              onClick={() => navigate('/register')}
               style={{
                 padding: '14px 32px',
                 background: 'transparent',
@@ -1314,7 +1392,7 @@ const AttractiveHomePage = () => {
               onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
               onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
             >
-              Become a Tutor
+              Enroll Now
             </button>
           </div>
         </div>

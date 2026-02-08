@@ -32,6 +32,7 @@ const TutorSidebar = () => {
     { path: '/tutor/mark-attendance', label: 'Mark Attendance', icon: '✅' },
     { path: '/tutor/materials', label: 'Upload Materials', icon: '📤' },
     { path: '/tutor/messages', label: 'Messages', icon: '✉️' },
+    { path: '/tutor/demo-classes', label: 'Demo Classes', icon: '🎓' },
     
     // LMS Section
     { label: 'LMS Management', divider: true },

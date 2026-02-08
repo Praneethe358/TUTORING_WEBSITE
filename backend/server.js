@@ -168,6 +168,7 @@ app.use('/api/lms', lmsRoutes); // LMS API routes
 app.use('/api/lms/student', studentLmsRoutes); // Student LMS routes
 app.use('/api/lms/admin', adminLmsRoutes); // Admin LMS routes
 app.use('/api/search', searchRoutes);
+app.use('/api/demo-requests', require('./src/routes/demoRequestRoutes'));
 app.use('/api/contact', contactRoutes); // Contact form routes
 app.use('/api/email-verification', emailVerificationRoutes); // Email verification routes
 app.use(errorHandler);

@@ -62,6 +62,10 @@ router.get('/bookings', protectTutor, upcomingBookings);
 router.get('/all-students', protectTutor, getAllStudents);
 router.get('/assigned-students', protectTutor, require('../controllers/tutorAssignmentController').getAssignedStudentsForTutor);
 
+// Demo Classes
+router.get('/demo-classes', protectTutor, require('../controllers/demoRequestController').getTutorDemoClasses);
+router.put('/demo-classes/:id/complete', protectTutor, require('../controllers/demoRequestController').completeDemoClass);
+
 // student-facing tutor interactions
 router.get('/public', listApprovedTutors);
 router.get('/public/:id', getTutorProfile);
