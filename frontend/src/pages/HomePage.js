@@ -7,11 +7,16 @@ import '../styles/homepage-animations.css';
 import '../styles/homepage-premium-purple.css';
 import axios from 'axios';
 
-// Add desktop-specific logo styling
+// Add desktop-specific logo styling with higher specificity
 const styles = `
+  .homepage-header-logo .logo-root img {
+    height: 64px !important;
+  }
+  
   @media (min-width: 1024px) {
     .homepage-header-logo .logo-root img {
-      height: 150px !important;
+      height: 180px !important;
+      max-height: 180px !important;
     }
   }
 `;
@@ -89,8 +94,8 @@ const HomePage = () => {
       >
         <div style={{ ...sectionStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `${spacing.lg} 0`, gap: spacing.lg }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
-            <div className="homepage-header-logo">
-              <Logo size={64} withText={true} />
+            <div className="homepage-header-logo" style={{ display: 'flex', alignItems: 'center' }}>
+              <Logo size={180} withText={true} />
             </div>
             <span style={{ fontSize: typography.fontSize.sm, color: brand.muted, display: 'none', '@media (min-width: 768px)': { display: 'inline' } }}>Saving Time, Inspiring Minds</span>
           </div>
