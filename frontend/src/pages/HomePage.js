@@ -11,7 +11,7 @@ import axios from 'axios';
 const styles = `
   @media (min-width: 1024px) {
     .homepage-header-logo img {
-      height: 96px !important;
+      height: 150px !important;
     }
   }
 `;
