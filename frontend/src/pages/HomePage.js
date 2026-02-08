@@ -7,6 +7,15 @@ import '../styles/homepage-animations.css';
 import '../styles/homepage-premium-purple.css';
 import axios from 'axios';
 
+// Add desktop-specific logo styling
+const styles = `
+  @media (min-width: 1024px) {
+    .homepage-header-logo img {
+      height: 96px !important;
+    }
+  }
+`;
+
 const brand = {
   navy: colors.primary,
   blue: colors.primaryLight,
@@ -62,6 +71,9 @@ const HomePage = () => {
 
   return (
     <div className="homepage-premium-purple" style={{ background: colors.bgSecondary, color: brand.text, minHeight: '100vh' }}>
+      {/* Inject custom styles for desktop logo sizing */}
+      <style>{styles}</style>
+      
       {/* Header / Navbar */}
       <header
         style={{
@@ -77,7 +89,9 @@ const HomePage = () => {
       >
         <div style={{ ...sectionStyle, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: `${spacing.lg} 0`, gap: spacing.lg }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: spacing.md }}>
-            <Logo size={64} withText={true} />
+            <div className="homepage-header-logo">
+              <Logo size={64} withText={true} />
+            </div>
             <span style={{ fontSize: typography.fontSize.sm, color: brand.muted, display: 'none', '@media (min-width: 768px)': { display: 'inline' } }}>Saving Time, Inspiring Minds</span>
           </div>
           <nav style={{ display: 'flex', alignItems: 'center', gap: spacing.md, flexWrap: 'wrap' }}>
