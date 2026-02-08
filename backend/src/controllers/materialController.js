@@ -1,4 +1,5 @@
 const Material = require('../models/Material');
+const TutorAssignment = require('../models/TutorAssignment');
 const fs = require('fs');
 const path = require('path');
 
@@ -56,19 +57,26 @@ exports.getTutorMaterials = async (req, res) => {
   }
 };
 
-// Get materials for students (public + shared)
+// Get materials for students (only from assigned tutors)
 exports.getStudentMaterials = async (req, res) => {
   try {
     const { tutorId } = req.params;
     const studentId = req.user.id;
 
+    // Verify this student is assigned to this tutor
+    const assignment = await TutorAssignment.findOne({
+      tutor: tutorId,
+      student: studentId,
+      status: 'active'
+    }).lean();
+
+    if (!assignment) {
+      return res.status(403).json({ message: 'You are not assigned to this tutor' });
+    }
+
     const materials = await Material.find({
       tutor: tutorId,
-      isActive: true,
-      $or: [
-        { visibility: 'public' },
-        { 'sharedWith.student': studentId }
-      ]
+      isActive: true
     })
       .populate('tutor', 'name email')
       .sort({ createdAt: -1 });
@@ -79,18 +87,23 @@ exports.getStudentMaterials = async (req, res) => {
   }
 };
 
-// Get all available materials for student
+// Get all available materials for student (only from assigned tutors)
 exports.getAllAvailableMaterials = async (req, res) => {
   try {
     const studentId = req.user.id;
 
-    // Get all public materials + materials shared with student
+    // Get all tutors assigned to this student
+    const assignments = await TutorAssignment.find({
+      student: studentId,
+      status: 'active'
+    }).select('tutor').lean();
+
+    const assignedTutorIds = assignments.map(a => a.tutor);
+
+    // Only show materials from assigned tutors
     const materials = await Material.find({
-      isActive: true,
-      $or: [
-        { visibility: 'public' },
-        { 'sharedWith.student': studentId }
-      ]
+      tutor: { $in: assignedTutorIds },
+      isActive: true
     })
       .populate('tutor', 'name email')
       .sort({ createdAt: -1 });
@@ -113,13 +126,15 @@ exports.downloadMaterial = async (req, res) => {
       return res.status(404).json({ message: 'Material not found' });
     }
 
-    // Check access
-    const hasAccess =
-      material.visibility === 'public' ||
-      material.sharedWith.some(s => s.student.toString() === studentId);
+    // Check access - student must be assigned to the tutor who uploaded this material
+    const assignment = await TutorAssignment.findOne({
+      tutor: material.tutor,
+      student: studentId,
+      status: 'active'
+    }).lean();
 
-    if (!hasAccess) {
-      return res.status(403).json({ message: 'Access denied' });
+    if (!assignment) {
+      return res.status(403).json({ message: 'Access denied. You are not assigned to this tutor.' });
     }
 
     // Record download

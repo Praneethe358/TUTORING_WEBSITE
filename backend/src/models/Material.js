@@ -43,8 +43,8 @@ const materialSchema = new mongoose.Schema(
     },
     visibility: {
       type: String,
-      enum: ['public', 'private'],
-      default: 'public'
+      enum: ['public', 'private', 'assigned'],
+      default: 'assigned'
     },
     sharedWith: [
       {

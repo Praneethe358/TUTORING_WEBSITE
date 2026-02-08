@@ -3,6 +3,7 @@ const LessonProgress = require('../models/LessonProgress');
 const LMSCourse = require('../models/LMSCourse');
 const Lesson = require('../models/Lesson');
 const Student = require('../models/Student');
+const TutorAssignment = require('../models/TutorAssignment');
 
 /**
  * Enrollment & Progress Controller
@@ -23,6 +24,17 @@ exports.enrollCourse = async (req, res) => {
 
     if (course.status !== 'published') {
       return res.status(400).json({ success: false, message: 'Course is not published' });
+    }
+
+    // Check if student is assigned to this course's instructor
+    const assignment = await TutorAssignment.findOne({
+      tutor: course.instructor,
+      student: req.userId,
+      status: 'active'
+    }).lean();
+
+    if (!assignment) {
+      return res.status(403).json({ success: false, message: 'You can only enroll in courses from your assigned tutors' });
     }
 
     // Check if already enrolled

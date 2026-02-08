@@ -21,7 +21,7 @@ const TutorMaterials = () => {
     title: '',
     description: '',
     category: '',
-    visibility: 'public',
+    visibility: 'assigned',
     file: null
   });
 
@@ -75,7 +75,7 @@ const TutorMaterials = () => {
       setMaterials(prev => [res.data.material, ...prev]);
       setSuccess(true);
       setUploading(false);
-      setFormData({ title: '', description: '', category: '', visibility: 'public', file: null });
+      setFormData({ title: '', description: '', category: '', visibility: 'assigned', file: null });
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
       setUploadError(err.response?.data?.message || 'Failed to upload file');
@@ -169,29 +169,9 @@ const TutorMaterials = () => {
           
           <div>
             <label className="block text-sm text-slate-400 mb-2">Visibility</label>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-              <label className="flex items-center gap-2 cursor-pointer min-h-[44px]">
-                <input
-                  type="radio"
-                  name="visibility"
-                  value="public"
-                  checked={formData.visibility === 'public'}
-                  onChange={(e) => setFormData({ ...formData, visibility: e.target.value })}
-                  className="text-indigo-600 w-4 h-4"
-                />
-                <span className="text-white">Public (all students)</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer min-h-[44px]">
-                <input
-                  type="radio"
-                  name="visibility"
-                  value="private"
-                  checked={formData.visibility === 'private'}
-                  onChange={(e) => setFormData({ ...formData, visibility: e.target.value })}
-                  className="text-indigo-600 w-4 h-4"
-                />
-                <span className="text-white">Private (selected students)</span>
-              </label>
+            <div className="flex items-center gap-2 min-h-[44px]">
+              <span className="text-white">🔒 Assigned students only</span>
+              <span className="text-xs text-slate-500">(Only students assigned to you by admin can access this material)</span>
             </div>
           </div>
 
@@ -245,12 +225,8 @@ const TutorMaterials = () => {
                         {new Date(material.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                          material.visibility === 'public' 
-                            ? 'bg-green-900 text-green-300' 
-                            : 'bg-blue-900 text-blue-300'
-                        }`}>
-                          {material.visibility}
+                        <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-indigo-900 text-indigo-300">
+                          Assigned Students
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -270,12 +246,8 @@ const TutorMaterials = () => {
                 <div key={material._id} className="p-4 hover:bg-slate-700/50">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="text-white font-medium flex-1">{material.title}</h3>
-                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ml-2 ${
-                      material.visibility === 'public' 
-                        ? 'bg-green-900 text-green-300' 
-                        : 'bg-blue-900 text-blue-300'
-                    }`}>
-                      {material.visibility}
+                    <span className="inline-block px-2 py-1 rounded-full text-xs font-medium ml-2 bg-indigo-900 text-indigo-300">
+                      Assigned Students
                     </span>
                   </div>
                   <div className="space-y-1 text-sm text-slate-300">

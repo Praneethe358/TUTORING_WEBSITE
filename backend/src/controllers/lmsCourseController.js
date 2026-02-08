@@ -5,6 +5,7 @@ const LessonProgress = require('../models/LessonProgress');
 const CourseEnrollment = require('../models/CourseEnrollment');
 const Assignment = require('../models/Assignment');
 const Quiz = require('../models/Quiz');
+const TutorAssignment = require('../models/TutorAssignment');
 
 /**
  * LMS Course Controller - Handles course CRUD operations
@@ -90,9 +91,15 @@ exports.getCourses = async (req, res) => {
       }
     }
 
-    // If student, only show published courses
+    // If student, only show published courses from assigned tutors
     if (req.user?.role === 'student') {
       query.status = 'published';
+      const assignments = await TutorAssignment.find({
+        student: req.userId,
+        status: 'active'
+      }).select('tutor').lean();
+      const assignedTutorIds = assignments.map(a => a.tutor);
+      query.instructor = { $in: assignedTutorIds };
     }
 
     // If instructor, show own courses + published courses
