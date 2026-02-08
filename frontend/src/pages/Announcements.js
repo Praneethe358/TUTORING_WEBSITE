@@ -38,9 +38,7 @@ const AnnouncementViewer = () => {
   const getPriorityBadge = (priority) => {
     const styles = {
       urgent: 'bg-red-100 text-red-800 border-red-200',
-      high: 'bg-orange-100 text-orange-800 border-orange-200',
-      medium: 'bg-blue-100 text-blue-800 border-blue-200',
-      low: 'bg-gray-100 text-gray-800 border-gray-200',
+      normal: 'bg-blue-100 text-blue-800 border-blue-200',
     };
     return (
       <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${styles[priority]}`}>
@@ -83,7 +81,7 @@ const AnnouncementViewer = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900">Announcements</h1>
           <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0">
-            {['all', 'urgent', 'high', 'medium', 'low'].map((f) => (
+            {['all', 'urgent', 'normal'].map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}

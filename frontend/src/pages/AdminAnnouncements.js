@@ -19,7 +19,7 @@ const AdminAnnouncements = () => {
     title: '',
     content: '',
     targetRole: 'all',
-    priority: 'medium',
+    priority: 'normal',
     category: 'general',
     isPinned: false,
     publishNow: false,
@@ -57,7 +57,7 @@ const AdminAnnouncements = () => {
       title: '',
       content: '',
       targetRole: 'all',
-      priority: 'medium',
+      priority: 'normal',
       category: 'general',
       isPinned: false,
       publishNow: false,
@@ -122,13 +122,11 @@ const AdminAnnouncements = () => {
 
   const getPriorityBadgeStyle = (priority) => {
     const styles = {
-      low: { backgroundColor: '#f3f4f6', color: '#1f2937' },
-      medium: { backgroundColor: '#dbeafe', color: '#1e40af' },
-      high: { backgroundColor: '#fed7aa', color: '#9a3412' },
+      normal: { backgroundColor: '#dbeafe', color: '#1e40af' },
       urgent: { backgroundColor: '#fecaca', color: '#991b1b' }
     };
     return {
-      ...styles[priority] || styles.medium,
+      ...styles[priority] || styles.normal,
       padding: `${spacing.xs} ${spacing.md}`,
       borderRadius: borderRadius.full,
       fontSize: typography.fontSize.xs,
@@ -291,9 +289,7 @@ const AdminAnnouncements = () => {
                     outline: 'none'
                   }}
                 >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
+                  <option value="normal">Normal</option>
                   <option value="urgent">Urgent</option>
                 </select>
               </div>
