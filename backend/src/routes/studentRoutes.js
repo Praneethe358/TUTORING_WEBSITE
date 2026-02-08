@@ -46,6 +46,7 @@ router.get('/profile', protectStudent, profile);
 router.put('/profile', protectStudent, updateProfile);
 router.post('/change-password', protectStudent, changePassword);
 router.post('/logout', protectStudent, logout);
+router.get('/assigned-tutors', protectStudent, require('../controllers/tutorAssignmentController').getAssignedTutorsForStudent);
 router.get('/bookings', protectStudent, async (req, res) => {
   try {
     const Booking = require('../models/Booking');

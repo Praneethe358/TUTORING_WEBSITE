@@ -46,9 +46,9 @@ const TutorClasses = () => {
       }
       
       try {
-        allStudentsRes = await api.get('/tutor/all-students');
+        allStudentsRes = await api.get('/tutor/assigned-students');
       } catch (err) {
-        console.warn('Could not fetch all students:', err.message);
+        console.warn('Could not fetch assigned students:', err.message);
         allStudentsRes = { data: { students: [] } };
       }
       
@@ -61,9 +61,9 @@ const TutorClasses = () => {
       
       setClasses(classesRes.data?.data || []);
       
-      // Get all registered students
+      // Get assigned students only (admin-controlled)
       const allStudents = allStudentsRes.data?.students || [];
-      console.log('All students:', allStudents);
+      console.log('Assigned students:', allStudents);
       setStudents(allStudents);
       setCourses(coursesRes.data?.courses || []);
     } catch (err) {
@@ -205,7 +205,7 @@ const TutorClasses = () => {
           
           {/* Students Selection */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Students * (Select multiple)</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">Assigned Students * (Select multiple)</label>
             <select
               name="studentIds"
               value={form.studentIds}
@@ -221,7 +221,7 @@ const TutorClasses = () => {
                 </option>
               ))}
             </select>
-            <p className="text-xs text-slate-400 mt-1">Hold Ctrl/Cmd to select multiple students</p>
+            <p className="text-xs text-slate-400 mt-1">Hold Ctrl/Cmd to select multiple students. Only admin-assigned students are shown.</p>
             
             {/* Selected Students Display */}
             {form.studentIds && form.studentIds.length > 0 && (

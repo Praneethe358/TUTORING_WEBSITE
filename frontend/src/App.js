@@ -76,6 +76,8 @@ import AdminAuditLogs from './pages/AdminAuditLogs';
 import AdminAnnouncements from './pages/AdminAnnouncements';
 import AdminAnalytics from './pages/AdminAnalytics';
 import AdminSettings from './pages/AdminSettings';
+import AdminAssignments from './pages/AdminAssignments';
+import StudentMyTutors from './pages/StudentMyTutors';
 
 // Admin LMS Pages - NEW
 import AdminLmsDashboard from './pages/AdminLmsDashboard';
@@ -155,6 +157,7 @@ function App() {
     { path: '/student/settings', element: <ProtectedRoute><StudentSettings /></ProtectedRoute> },
     { path: '/student/courses', element: <ProtectedRoute><StudentCourseCatalog /></ProtectedRoute> },
     { path: '/student/browse-tutors', element: <ProtectedRoute><StudentTutorAvailability /></ProtectedRoute> },
+    { path: '/student/my-tutors', element: <ProtectedRoute><StudentMyTutors /></ProtectedRoute> },
     { path: '/announcements', element: <ProtectedRoute><Announcements /></ProtectedRoute> },
     
     // Student LMS Routes - NEW
@@ -210,6 +213,7 @@ function App() {
     { path: '/admin/analytics', element: <ProtectedAdminRoute><AdminAnalytics /></ProtectedAdminRoute> },
     { path: '/admin/settings', element: <ProtectedAdminRoute><AdminSettings /></ProtectedAdminRoute> },
     { path: '/admin/tutor-availability', element: <ProtectedAdminRoute><AdminTutorAvailability /></ProtectedAdminRoute> },
+    { path: '/admin/assignments', element: <ProtectedAdminRoute><AdminAssignments /></ProtectedAdminRoute> },
     
     // Admin LMS Routes - NEW
     { path: '/admin/lms/dashboard', element: <ProtectedAdminRoute><AdminLmsDashboard /></ProtectedAdminRoute> },

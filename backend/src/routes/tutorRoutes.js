@@ -60,6 +60,7 @@ router.post('/courses', protectTutor, createCourse);
 router.get('/courses', protectTutor, myCourses);
 router.get('/bookings', protectTutor, upcomingBookings);
 router.get('/all-students', protectTutor, getAllStudents);
+router.get('/assigned-students', protectTutor, require('../controllers/tutorAssignmentController').getAssignedStudentsForTutor);
 
 // student-facing tutor interactions
 router.get('/public', listApprovedTutors);

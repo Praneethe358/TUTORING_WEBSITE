@@ -19,6 +19,13 @@ const {
   getClassTrends,
   exportAnalyticsReport
 } = require('../controllers/analyticsController');
+const {
+  getAssignments,
+  createAssignment,
+  bulkCreateAssignments,
+  updateAssignment,
+  deleteAssignment
+} = require('../controllers/tutorAssignmentController');
 const { protectAdmin } = require('../middleware/authMiddleware');
 const { authLimiter } = require('../middleware/rateLimitMiddleware');
 
@@ -89,5 +96,12 @@ router.get('/analytics/platform', getPlatformAnalytics);
 router.get('/analytics/tutors', getTutorAnalytics);
 router.get('/analytics/students', getStudentAnalytics);
 router.get('/analytics/trends', getClassTrends);
+
+// Tutor-Student Assignments (Admin-controlled)
+router.get('/assignments', getAssignments);
+router.post('/assignments', createAssignment);
+router.post('/assignments/bulk', bulkCreateAssignments);
+router.put('/assignments/:id', updateAssignment);
+router.delete('/assignments/:id', deleteAssignment);
 
 module.exports = router;

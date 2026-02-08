@@ -25,7 +25,7 @@ const StudentSidebar = () => {
   const menuItems = [
     { path: '/student/dashboard', label: 'Dashboard', icon: '📊' },
     { path: '/student/classes', label: 'My Classes', icon: '📚' },
-    { path: '/student/tutors-availability', label: 'Browse Tutors', icon: '👨‍🏫' },
+    { path: '/student/my-tutors', label: 'My Tutors', icon: '👨‍🏫' },
     { path: '/student/attendance', label: 'Attendance', icon: '📝' },
     { path: '/student/materials', label: 'Materials', icon: '📄' },
     { path: '/student/messages', label: 'Messages', icon: '✉️' },

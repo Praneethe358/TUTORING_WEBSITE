@@ -14,6 +14,7 @@ const AdminSidebar = () => {
     { path: '/admin/tutors', label: 'Tutors', icon: '👨‍🏫' },
     { path: '/admin/tutor-cvs', label: 'Tutor CVs', icon: '📄' },
     { path: '/admin/students', label: 'Students', icon: '👨‍🎓' },
+    { path: '/admin/assignments', label: 'Assignments', icon: '🔗' },
     { path: '/admin/courses', label: 'Courses', icon: '📚' },
     { path: '/admin/enrollments', label: 'Enrollments', icon: '📝' },
     { path: '/admin/announcements', label: 'Announcements', icon: '📢' },

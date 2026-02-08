@@ -4,6 +4,7 @@ const Attendance = require('../models/Attendance');
 const Notification = require('../models/Notification');
 const Student = require('../models/Student');
 const Tutor = require('../models/Tutor');
+const TutorAssignment = require('../models/TutorAssignment');
 
 /**
  * CLASS CONTROLLER
@@ -22,7 +23,11 @@ exports.getClasses = async (req, res) => {
     
     // Role-based filtering
     if (role === 'student') {
-      query.student = id;
+      // Students see classes where they are listed in students array or as student
+      query.$or = [
+        { student: id },
+        { students: id }
+      ];
     } else if (role === 'tutor') {
       query.tutor = id;
     }
@@ -166,6 +171,25 @@ exports.createClass = async (req, res) => {
       });
     }
     console.log('✅ All students verified:', students.map(s => s._id));
+    
+    // Verify all students are assigned to this tutor (skip for admin)
+    if (req.authRole !== 'admin' && req.authRole !== 'super-admin') {
+      const assignments = await TutorAssignment.find({
+        tutor: tutorId,
+        student: { $in: finalStudentIds },
+        status: 'active'
+      });
+      const assignedStudentIds = assignments.map(a => a.student.toString());
+      const unassigned = finalStudentIds.filter(sid => !assignedStudentIds.includes(sid.toString()));
+      if (unassigned.length > 0) {
+        console.log('❌ Unassigned students:', unassigned);
+        return res.status(403).json({
+          success: false,
+          message: 'Some students are not assigned to you by admin. Only assigned students can be added to classes.'
+        });
+      }
+      console.log('✅ All students are assigned to this tutor');
+    }
     
     // Check for scheduling conflicts
     const scheduledDate = new Date(scheduledAt);
