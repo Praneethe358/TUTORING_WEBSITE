@@ -122,10 +122,23 @@ const AdminDemoRequests = () => {
 
   return (
     <AdminDashboardLayout>
+      <style>{`
+        .demo-table { display: table; }
+        .demo-cards { display: none; }
+        @media (max-width: 768px) {
+          .demo-table { display: none !important; }
+          .demo-cards { display: grid !important; }
+          .demo-filter-tabs { gap: 6px !important; }
+          .demo-filter-tabs button { padding: 6px 12px !important; font-size: 12px !important; }
+          .demo-modal-content { padding: 20px !important; }
+          .demo-modal-actions { flex-direction: column !important; }
+          .demo-modal-actions button { width: 100% !important; }
+        }
+      `}</style>
       <div style={{ padding: 'clamp(1rem, 4vw, 3rem)' }}>
         {/* Header */}
         <div style={{ marginBottom: '24px' }}>
-          <h1 style={{ fontSize: '28px', fontWeight: '700', color: colors.textPrimary, margin: 0 }}>
+          <h1 style={{ fontSize: 'clamp(22px, 5vw, 28px)', fontWeight: '700', color: colors.textPrimary, margin: 0 }}>
             🎯 Demo Requests
           </h1>
           <p style={{ color: colors.textSecondary, marginTop: '4px', fontSize: '14px' }}>
@@ -134,7 +147,7 @@ const AdminDemoRequests = () => {
         </div>
 
         {/* Status Filter Tabs */}
-        <div style={{
+        <div className="demo-filter-tabs" style={{
           display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap'
         }}>
           {['all', 'pending', 'scheduled', 'completed', 'converted', 'rejected'].map(s => (
@@ -154,7 +167,7 @@ const AdminDemoRequests = () => {
           ))}
         </div>
 
-        {/* Table */}
+        {/* Content */}
         {loading ? (
           <div style={{ textAlign: 'center', padding: '60px', color: colors.textSecondary }}>
             Loading...
@@ -168,81 +181,135 @@ const AdminDemoRequests = () => {
             <p style={{ color: colors.textSecondary, marginTop: '12px' }}>No demo requests found</p>
           </div>
         ) : (
-          <div style={{
-            background: 'white', borderRadius: borderRadius.lg,
-            boxShadow: shadows.sm, overflow: 'hidden'
-          }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-                <thead>
-                  <tr style={{ background: '#f9fafb', borderBottom: `2px solid ${colors.border}` }}>
-                    {['Student', 'Grade', 'Subjects', 'Contact', 'Time Slot', 'Status', 'Tutor', 'Actions'].map(h => (
-                      <th key={h} style={{
-                        padding: '12px 14px', textAlign: 'left', fontWeight: '600',
-                        color: colors.textSecondary, fontSize: '12px', textTransform: 'uppercase',
-                        letterSpacing: '0.5px', whiteSpace: 'nowrap'
-                      }}>{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {requests.map((req) => {
-                    const sc = statusColors[req.status] || statusColors.pending;
-                    return (
-                      <tr key={req._id} style={{ borderBottom: `1px solid ${colors.border}` }}>
-                        <td style={{ padding: '12px 14px', fontWeight: '500' }}>{req.studentName}</td>
-                        <td style={{ padding: '12px 14px' }}>{req.classGrade}</td>
-                        <td style={{ padding: '12px 14px', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {req.subjects}
-                        </td>
-                        <td style={{ padding: '12px 14px' }}>
-                          <div style={{ fontSize: '13px' }}>{req.contactPhone}</div>
-                          {req.contactEmail && <div style={{ fontSize: '12px', color: colors.textSecondary }}>{req.contactEmail}</div>}
-                        </td>
-                        <td style={{ padding: '12px 14px', whiteSpace: 'nowrap', fontSize: '13px' }}>{req.preferredTimeSlot}</td>
-                        <td style={{ padding: '12px 14px' }}>
-                          <span style={{
-                            display: 'inline-block', padding: '4px 10px', borderRadius: '12px',
-                            fontSize: '12px', fontWeight: '600',
-                            background: sc.bg, color: sc.text
-                          }}>
-                            {sc.label}
-                          </span>
-                        </td>
-                        <td style={{ padding: '12px 14px', fontSize: '13px' }}>
-                          {req.assignedTutor?.name || '—'}
-                        </td>
-                        <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
-                          <button onClick={() => openEdit(req)} style={{
-                            padding: '5px 10px', fontSize: '12px', border: `1px solid ${colors.primary}`,
-                            background: 'white', color: colors.primary, borderRadius: '6px',
-                            cursor: 'pointer', marginRight: '6px', fontWeight: '500'
-                          }}>✏️ Edit</button>
-                          {req.status === 'completed' && (
-                            <button onClick={() => openConvert(req)} style={{
-                              padding: '5px 10px', fontSize: '12px', border: 'none',
-                              background: '#7C3AED', color: 'white', borderRadius: '6px',
+          <>
+            {/* Desktop Table */}
+            <div className="demo-table" style={{
+              background: 'white', borderRadius: borderRadius.lg,
+              boxShadow: shadows.sm, overflow: 'hidden'
+            }}>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                  <thead>
+                    <tr style={{ background: '#f9fafb', borderBottom: `2px solid ${colors.border}` }}>
+                      {['Student', 'Grade', 'Subjects', 'Contact', 'Time Slot', 'Status', 'Tutor', 'Actions'].map(h => (
+                        <th key={h} style={{
+                          padding: '12px 14px', textAlign: 'left', fontWeight: '600',
+                          color: colors.textSecondary, fontSize: '12px', textTransform: 'uppercase',
+                          letterSpacing: '0.5px', whiteSpace: 'nowrap'
+                        }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {requests.map((req) => {
+                      const sc = statusColors[req.status] || statusColors.pending;
+                      return (
+                        <tr key={req._id} style={{ borderBottom: `1px solid ${colors.border}` }}>
+                          <td style={{ padding: '12px 14px', fontWeight: '500' }}>{req.studentName}</td>
+                          <td style={{ padding: '12px 14px' }}>{req.classGrade}</td>
+                          <td style={{ padding: '12px 14px', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {req.subjects}
+                          </td>
+                          <td style={{ padding: '12px 14px' }}>
+                            <div style={{ fontSize: '13px' }}>{req.contactPhone}</div>
+                            {req.contactEmail && <div style={{ fontSize: '12px', color: colors.textSecondary }}>{req.contactEmail}</div>}
+                          </td>
+                          <td style={{ padding: '12px 14px', whiteSpace: 'nowrap', fontSize: '13px' }}>{req.preferredTimeSlot}</td>
+                          <td style={{ padding: '12px 14px' }}>
+                            <span style={{
+                              display: 'inline-block', padding: '4px 10px', borderRadius: '12px',
+                              fontSize: '12px', fontWeight: '600',
+                              background: sc.bg, color: sc.text
+                            }}>
+                              {sc.label}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 14px', fontSize: '13px' }}>
+                            {req.assignedTutor?.name || '—'}
+                          </td>
+                          <td style={{ padding: '12px 14px', whiteSpace: 'nowrap' }}>
+                            <button onClick={() => openEdit(req)} style={{
+                              padding: '5px 10px', fontSize: '12px', border: `1px solid ${colors.primary}`,
+                              background: 'white', color: colors.primary, borderRadius: '6px',
                               cursor: 'pointer', marginRight: '6px', fontWeight: '500'
-                            }}>🎓 Convert</button>
-                          )}
-                          <button onClick={() => handleDelete(req._id)} style={{
-                            padding: '5px 10px', fontSize: '12px', border: `1px solid #EF4444`,
-                            background: 'white', color: '#EF4444', borderRadius: '6px',
-                            cursor: 'pointer', fontWeight: '500'
-                          }}>🗑️</button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                            }}>✏️ Edit</button>
+                            {req.status === 'completed' && (
+                              <button onClick={() => openConvert(req)} style={{
+                                padding: '5px 10px', fontSize: '12px', border: 'none',
+                                background: '#7C3AED', color: 'white', borderRadius: '6px',
+                                cursor: 'pointer', marginRight: '6px', fontWeight: '500'
+                              }}>🎓 Convert</button>
+                            )}
+                            <button onClick={() => handleDelete(req._id)} style={{
+                              padding: '5px 10px', fontSize: '12px', border: `1px solid #EF4444`,
+                              background: 'white', color: '#EF4444', borderRadius: '6px',
+                              cursor: 'pointer', fontWeight: '500'
+                            }}>🗑️</button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="demo-cards" style={{ display: 'none', gridTemplateColumns: '1fr', gap: '12px' }}>
+              {requests.map((req) => {
+                const sc = statusColors[req.status] || statusColors.pending;
+                return (
+                  <div key={req._id} style={{
+                    background: 'white', borderRadius: borderRadius.lg, boxShadow: shadows.sm,
+                    padding: '16px', border: `1px solid ${colors.border}`
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                      <div>
+                        <div style={{ fontWeight: '600', fontSize: '15px', color: colors.textPrimary }}>{req.studentName}</div>
+                        <div style={{ fontSize: '13px', color: colors.textSecondary }}>{req.classGrade} • {req.subjects}</div>
+                      </div>
+                      <span style={{
+                        padding: '4px 10px', borderRadius: '12px', fontSize: '11px', fontWeight: '600',
+                        background: sc.bg, color: sc.text, whiteSpace: 'nowrap'
+                      }}>{sc.label}</span>
+                    </div>
+                    <div style={{ fontSize: '13px', color: colors.textSecondary, marginBottom: '6px' }}>
+                      📞 {req.contactPhone}
+                      {req.contactEmail && <span> • ✉️ {req.contactEmail}</span>}
+                    </div>
+                    <div style={{ fontSize: '13px', color: colors.textSecondary, marginBottom: '6px' }}>
+                      ⏰ {req.preferredTimeSlot}
+                      {req.assignedTutor?.name && <span> • 👨‍🏫 {req.assignedTutor.name}</span>}
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+                      <button onClick={() => openEdit(req)} style={{
+                        padding: '7px 14px', fontSize: '12px', border: `1px solid ${colors.primary}`,
+                        background: 'white', color: colors.primary, borderRadius: '6px',
+                        cursor: 'pointer', fontWeight: '500', flex: 1
+                      }}>✏️ Edit</button>
+                      {req.status === 'completed' && (
+                        <button onClick={() => openConvert(req)} style={{
+                          padding: '7px 14px', fontSize: '12px', border: 'none',
+                          background: '#7C3AED', color: 'white', borderRadius: '6px',
+                          cursor: 'pointer', fontWeight: '500', flex: 1
+                        }}>🎓 Convert</button>
+                      )}
+                      <button onClick={() => handleDelete(req._id)} style={{
+                        padding: '7px 14px', fontSize: '12px', border: `1px solid #EF4444`,
+                        background: 'white', color: '#EF4444', borderRadius: '6px',
+                        cursor: 'pointer', fontWeight: '500'
+                      }}>🗑️</button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Pagination */}
             {totalPages > 1 && (
               <div style={{
                 display: 'flex', justifyContent: 'center', gap: '8px',
-                padding: '16px', borderTop: `1px solid ${colors.border}`
+                padding: '16px', marginTop: '8px'
               }}>
                 <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
                   style={{ padding: '6px 14px', borderRadius: '6px', border: `1px solid ${colors.border}`, background: 'white', cursor: page === 1 ? 'not-allowed' : 'pointer', opacity: page === 1 ? 0.5 : 1 }}>← Prev</button>
@@ -253,7 +320,7 @@ const AdminDemoRequests = () => {
                   style={{ padding: '6px 14px', borderRadius: '6px', border: `1px solid ${colors.border}`, background: 'white', cursor: page === totalPages ? 'not-allowed' : 'pointer', opacity: page === totalPages ? 0.5 : 1 }}>Next →</button>
               </div>
             )}
-          </div>
+          </>
         )}
 
         {/* Edit Modal */}
@@ -320,7 +387,7 @@ const AdminDemoRequests = () => {
                     placeholder="Internal notes..." />
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                <div className="demo-modal-actions" style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                   <button type="button" onClick={() => setModal(null)}
                     style={{ padding: '10px 20px', borderRadius: '8px', border: `1px solid ${colors.border}`, background: 'white', cursor: 'pointer', fontWeight: '500' }}>
                     Cancel
@@ -377,7 +444,7 @@ const AdminDemoRequests = () => {
                   <strong>ℹ️ Note:</strong> This will create a student account with the name "{selectedRequest.studentName}" and the phone number from the demo request.
                 </div>
 
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                <div className="demo-modal-actions" style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                   <button type="button" onClick={() => setModal(null)}
                     style={{ padding: '10px 20px', borderRadius: '8px', border: `1px solid ${colors.border}`, background: 'white', cursor: 'pointer', fontWeight: '500' }}>
                     Cancel

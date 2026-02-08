@@ -234,11 +234,28 @@ const AdminAssignments = () => {
 
   return (
     <AdminDashboardLayout>
-      <div style={{ padding: spacing.xl }}>
+      <style>{`
+        .assign-table-wrap { display: block; }
+        .assign-cards-wrap { display: none; }
+        @media (max-width: 768px) {
+          .assign-table-wrap { display: none !important; }
+          .assign-cards-wrap { display: grid !important; }
+          .assign-header { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+          .assign-header button { width: 100% !important; }
+          .assign-form-grid { grid-template-columns: 1fr !important; }
+          .assign-filter-bar { flex-direction: column !important; }
+          .assign-filter-bar > div { min-width: unset !important; }
+          .assign-mode-tabs { flex-direction: column !important; }
+          .assign-mode-tabs button { width: 100% !important; }
+          .assign-form-actions { flex-direction: column !important; }
+          .assign-form-actions button { width: 100% !important; }
+        }
+      `}</style>
+      <div style={{ padding: 'clamp(1rem, 4vw, 2rem)' }}>
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xl }}>
+        <div className="assign-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.xl }}>
           <div>
-            <h1 style={{ fontSize: typography.fontSize['2xl'], fontWeight: typography.fontWeight.bold, color: colors.textPrimary, margin: 0 }}>
+            <h1 style={{ fontSize: 'clamp(20px, 5vw, 28px)', fontWeight: typography.fontWeight.bold, color: colors.textPrimary, margin: 0 }}>
               🔗 Tutor–Student Assignments
             </h1>
             <p style={{ color: colors.textSecondary, fontSize: typography.fontSize.sm, marginTop: spacing.xs }}>
@@ -273,14 +290,14 @@ const AdminAssignments = () => {
             </h2>
 
             {/* Mode Tabs */}
-            <div style={{ display: 'flex', gap: spacing.sm, marginBottom: spacing.lg }}>
+            <div className="assign-mode-tabs" style={{ display: 'flex', gap: spacing.sm, marginBottom: spacing.lg, flexWrap: 'wrap' }}>
               <button style={tabStyle(assignMode === 'single')} onClick={() => setAssignMode('single')}>Single Assignment</button>
               <button style={tabStyle(assignMode === 'bulk-students')} onClick={() => setAssignMode('bulk-students')}>One Tutor → Many Students</button>
               <button style={tabStyle(assignMode === 'bulk-tutors')} onClick={() => setAssignMode('bulk-tutors')}>Many Tutors → One Student</button>
             </div>
 
             <form onSubmit={handleSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: spacing.lg }}>
+              <div className="assign-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: spacing.lg }}>
                 {/* Tutor Selection */}
                 {(assignMode === 'single' || assignMode === 'bulk-students') && (
                   <div>
@@ -383,7 +400,7 @@ const AdminAssignments = () => {
               </div>
 
               {/* Subject & Notes */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: spacing.lg, marginTop: spacing.lg }}>
+              <div className="assign-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: spacing.lg, marginTop: spacing.lg }}>
                 <div>
                   <label style={{ display: 'block', fontWeight: typography.fontWeight.medium, fontSize: typography.fontSize.sm, marginBottom: spacing.xs, color: colors.textPrimary }}>Subject</label>
                   <input
@@ -406,7 +423,7 @@ const AdminAssignments = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: spacing.md, marginTop: spacing.lg }}>
+              <div className="assign-form-actions" style={{ display: 'flex', gap: spacing.md, marginTop: spacing.lg }}>
                 <button type="submit" style={btnPrimary}>Create Assignment</button>
                 <button type="button" onClick={() => { setShowForm(false); resetForm(); }} style={btnSecondary}>Cancel</button>
               </div>
@@ -415,7 +432,7 @@ const AdminAssignments = () => {
         )}
 
         {/* Filters */}
-        <div style={{ ...cardStyle, marginBottom: spacing.lg, display: 'flex', gap: spacing.lg, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="assign-filter-bar" style={{ ...cardStyle, marginBottom: spacing.lg, display: 'flex', gap: spacing.lg, alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: '200px' }}>
             <label style={{ display: 'block', fontSize: typography.fontSize.xs, color: colors.textSecondary, marginBottom: '4px' }}>Filter by Tutor</label>
             <select value={filterTutor} onChange={e => setFilterTutor(e.target.value)} style={inputStyle}>
@@ -469,7 +486,9 @@ const AdminAssignments = () => {
             <p style={{ color: colors.textSecondary, fontSize: typography.fontSize.sm }}>Click "+ New Assignment" to assign tutors to students</p>
           </div>
         ) : (
-          <div style={cardStyle}>
+          <>
+          {/* Desktop Table */}
+          <div className="assign-table-wrap" style={cardStyle}>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
@@ -532,6 +551,59 @@ const AdminAssignments = () => {
               </table>
             </div>
           </div>
+
+          {/* Mobile Cards */}
+          <div className="assign-cards-wrap" style={{ display: 'none', gridTemplateColumns: '1fr', gap: '12px' }}>
+            {assignments.map(a => (
+              <div key={a._id} style={{
+                background: 'white', borderRadius: borderRadius.lg, border: `1px solid ${colors.gray200}`,
+                padding: '16px', boxShadow: shadows.sm
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '13px', color: colors.textSecondary, marginBottom: '2px' }}>Tutor</div>
+                    <div style={{ fontWeight: '600', fontSize: '14px', color: colors.textPrimary }}>{a.tutor?.name || 'N/A'}</div>
+                    <div style={{ fontSize: '12px', color: colors.textSecondary }}>{a.tutor?.email}</div>
+                  </div>
+                  <span
+                    style={{ ...badgeStyle(a.status), cursor: 'pointer' }}
+                    onClick={() => handleToggleStatus(a)}
+                  >
+                    {a.status}
+                  </span>
+                </div>
+                <div style={{ marginBottom: '10px' }}>
+                  <div style={{ fontSize: '13px', color: colors.textSecondary, marginBottom: '2px' }}>Student</div>
+                  <div style={{ fontWeight: '500', fontSize: '14px', color: colors.textPrimary }}>{a.student?.name || 'N/A'}</div>
+                  <div style={{ fontSize: '12px', color: colors.textSecondary }}>{a.student?.email}</div>
+                </div>
+                <div style={{ display: 'flex', gap: '16px', fontSize: '13px', color: colors.textSecondary, marginBottom: '12px' }}>
+                  <span>📚 {a.subject || '—'}</span>
+                  <span>📅 {new Date(a.createdAt).toLocaleDateString()}</span>
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {editingAssignment?._id === a._id ? (
+                    <>
+                      <input
+                        value={editingAssignment.subject}
+                        onChange={e => setEditingAssignment({ ...editingAssignment, subject: e.target.value })}
+                        style={{ ...inputStyle, flex: 1 }}
+                        placeholder="Subject"
+                      />
+                      <button onClick={() => handleUpdate(a._id)} style={{ ...btnPrimary, padding: `${spacing.xs} ${spacing.sm}`, fontSize: '12px' }}>Save</button>
+                      <button onClick={() => setEditingAssignment(null)} style={{ ...btnSecondary, padding: `${spacing.xs} ${spacing.sm}`, fontSize: '12px' }}>✕</button>
+                    </>
+                  ) : (
+                    <>
+                      <button onClick={() => setEditingAssignment({ ...a })} style={{ ...btnSecondary, padding: `${spacing.xs} ${spacing.sm}`, fontSize: '12px', flex: 1 }}>Edit</button>
+                      <button onClick={() => handleDelete(a._id)} style={{ ...btnDanger, padding: `${spacing.xs} ${spacing.sm}`, fontSize: '12px' }}>Remove</button>
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          </>
         )}
       </div>
     </AdminDashboardLayout>
