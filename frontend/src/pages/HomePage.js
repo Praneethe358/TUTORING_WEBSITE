@@ -10,13 +10,13 @@ import axios from 'axios';
 // Add desktop-specific logo styling with higher specificity
 const styles = `
   .homepage-header-logo .logo-root img {
-    height: 64px !important;
+    height: 300px !important;
   }
   
   @media (min-width: 1024px) {
     .homepage-header-logo .logo-root img {
-      height: 180px !important;
-      max-height: 180px !important;
+      height: 300px !important;
+      max-height: 300px !important;
     }
   }
 `;
