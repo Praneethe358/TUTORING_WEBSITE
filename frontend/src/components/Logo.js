@@ -1,15 +1,12 @@
 import React from 'react';
 import { colors, typography, spacing } from '../theme/designSystem';
 
-// Uses the exact provided raster logo asset without modification
-import hopeLogo from '../pages/TUTORIALLOGO.jpeg';
-
 const Logo = ({ size = 300, withText = false }) => {
   return (
     <div className="logo-root flex items-center gap-2 sm:gap-3">
       <img
-        src={hopeLogo}
-        alt="HOPE"
+        src="/hope-logo.png"
+        alt="HOPE Online Tuitions"
         className="flex-shrink-0"
         style={{ height: size, width: 'auto' }}
       />
