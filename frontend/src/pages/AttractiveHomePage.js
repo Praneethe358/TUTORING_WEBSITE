@@ -648,7 +648,7 @@ const AttractiveHomePage = () => {
         }}>
           {/* Logo and Brand Name */}
           <div className="header-logo-group" style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: '0' }}>
-            <Logo size={100} withText={false} />
+            <Logo size={120} withText={false} />
             <span className="header-logo-name" style={{ fontSize: '28px', fontWeight: 'bold', color: 'white', textShadow: '1px 1px 3px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>HOPE</span>
           </div>
           
