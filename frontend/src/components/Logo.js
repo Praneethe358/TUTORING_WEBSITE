@@ -1,14 +1,22 @@
 import React from 'react';
 import { colors, typography, spacing } from '../theme/designSystem';
 
-const Logo = ({ size = 300, withText = false }) => {
+// Uses the exact provided raster logo asset without modification
+import hopeLogo from '../pages/TUTORIALLOGO.jpeg';
+
+const Logo = ({ size = 48, withText = false }) => {
   return (
-    <div className="logo-root flex items-center gap-2 sm:gap-3">
+    <div className="logo-root flex items-center gap-2 sm:gap-3" style={{ display: 'flex', alignItems: 'center', gap: spacing.sm }}>
       <img
-        src="/hope-logo.png"
-        alt="HOPE Online Tuitions"
+        src={hopeLogo}
+        alt="HOPE Online Tuitions Logo"
         className="flex-shrink-0"
-        style={{ height: size, width: 'auto' }}
+        style={{ 
+          height: size, 
+          width: 'auto',
+          objectFit: 'contain',
+          maxWidth: '100%'
+        }}
       />
 
       {withText && (
@@ -17,9 +25,12 @@ const Logo = ({ size = 300, withText = false }) => {
           style={{
             letterSpacing: '-0.2px',
             color: colors.textPrimary,
+            fontSize: size > 50 ? typography.fontSize.base : typography.fontSize.sm,
+            fontWeight: typography.fontWeight.bold,
+            whiteSpace: 'nowrap'
           }}
         >
-          HOPE ONLINE TUTION - Saving Time , Inspiring Mind
+          HOPE Online Tuitions
         </span>
       )}
     </div>
