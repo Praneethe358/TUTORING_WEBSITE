@@ -647,9 +647,9 @@ const AttractiveHomePage = () => {
           padding: '0 10px'
         }}>
           {/* Logo and Brand Name */}
-          <div className="header-logo-group" style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: '0' }}>
-            <Logo size={50} withText={false} />
-            <span className="header-logo-name" style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', textShadow: '1px 1px 3px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>HOPE</span>
+          <div className="header-logo-group" style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: '0' }}>
+            <Logo size={80} withText={false} />
+            <span className="header-logo-name" style={{ fontSize: '28px', fontWeight: 'bold', color: 'white', textShadow: '1px 1px 3px rgba(0,0,0,0.5)', whiteSpace: 'nowrap' }}>HOPE</span>
           </div>
           
           {/* Login Buttons */}
