@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { LoadingSpinner } from '../components/LoadingSkeleton';
@@ -68,6 +69,15 @@ const EnhancedTutorProfile = () => {
 
   return (
     <div className="min-h-screen bg-slate-900 p-8">
+      <Helmet>
+        <title>{tutor.name} - Expert Online Tutor | HOPE Online Tuitions</title>
+        <meta name="description" content={`Learn from ${tutor.name}, an experienced online tutor with ${tutor.experienceYears} years of teaching experience. Subjects: ${tutor.subjects?.join(', ') || 'Multiple subjects'}. Book online classes now.`} />
+        <meta name="keywords" content={`${tutor.name} tutor, ${tutor.subjects?.join(', ')}, online tutor, qualified teacher, personalized tutoring`} />
+        <meta property="og:title" content={`${tutor.name} - Online Tutor Profile`} />
+        <meta property="og:description" content={`${tutor.experienceYears} years experience teaching ${tutor.subjects?.slice(0,3).join(', ')}. Rated ${tutor.rating?.toFixed(1) || 'highly'} by students.`} />
+        <link rel="canonical" href={`https://frontend.onrender.com/tutors/${id}`} />
+      </Helmet>
+      
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <button
@@ -84,7 +94,7 @@ const EnhancedTutorProfile = () => {
               {tutor.avatar ? (
                 <img
                   src={`http://localhost:5000${tutor.avatar}`}
-                  alt={tutor.name}
+                  alt={`${tutor.name} - Online Tutor Profile`}
                   className="w-24 h-24 rounded-full object-cover border-4 border-indigo-600"
                 />
               ) : (

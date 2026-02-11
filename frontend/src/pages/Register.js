@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
+import { Helmet } from 'react-helmet-async';
 import { CourseraInput, CourseraButton, CourseraAlert } from '../components/CourseraCard';
 import { colors, typography, spacing, borderRadius } from '../theme/designSystem';
 
@@ -65,7 +66,13 @@ const Register = ({ inline = false, onLoginSuccess }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <>
+      <Helmet>
+        <title>Student Registration - HOPE Online Tuitions</title>
+        <meta name="description" content="Create your HOPE Online Tuitions student account. Join thousands of students learning from expert tutors for Classes 6-12." />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <form onSubmit={handleSubmit}>
       {!inline && (
         <h1 style={{
           fontSize: typography.fontSize['2xl'],
@@ -124,6 +131,7 @@ const Register = ({ inline = false, onLoginSuccess }) => {
         </p>
       )}
     </form>
+    </>
   );
 };
 

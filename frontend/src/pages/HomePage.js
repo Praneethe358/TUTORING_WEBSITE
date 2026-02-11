@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { colors, spacing, typography, shadows, transitions } from '../theme/designSystem';
@@ -62,6 +63,76 @@ const HomePage = () => {
 
   return (
     <div className="homepage-premium-purple" style={{ background: colors.bgSecondary, color: brand.text, minHeight: '100vh' }}>
+      <Helmet>
+        <title>HOPE Online Tuitions - Best Online Tuition for Classes 6-12 in India</title>
+        <meta name="description" content="HOPE Online Tuitions provides personalized online tutoring for Classes 6-12. Safe, structured online learning from home with expert tutors. Enroll today for quality education." />
+        <meta name="keywords" content="online tuition classes 6-12, online tutoring India, home tuition online, CBSE online classes, ICSE online tuition, personalized online coaching, best online tutors" />
+        <meta property="og:title" content="HOPE Online Tuitions - Safe Online Learning from Home" />
+        <meta property="og:description" content="Structured online tuition for school students Classes 6-12. Expert tutors, personalized attention, and progress tracking." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://frontend.onrender.com" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="HOPE Online Tuitions - Best Online Tuition Classes" />
+        <meta name="twitter:description" content="Quality online education for Classes 6-12. Safe, structured learning from home." />
+        <link rel="canonical" href="https://frontend.onrender.com" />
+        
+        {/* Structured Data - Organization */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "EducationalOrganization",
+            "name": "HOPE Online Tuitions",
+            "description": "Online tutoring platform for Classes 6-12 students in India",
+            "url": "https://frontend.onrender.com",
+            "logo": "https://frontend.onrender.com/logo-main.jpeg",
+            "slogan": "Saving Time, Inspiring Minds",
+            "email": "hopetuitionbygd@gmail.com",
+            "telephone": "+91-8807717477",
+            "address": {
+              "@type": "PostalAddress",
+              "addressCountry": "IN"
+            },
+            "areaServed": {
+              "@type": "Country",
+              "name": "India"
+            },
+            "educationalProgramMode": "Online",
+            "audience": {
+              "@type": "EducationalAudience",
+              "educationalRole": "student",
+              "audienceType": "Students from Classes 6-12"
+            }
+          })}
+        </script>
+        
+        {/* Structured Data - Service */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            "serviceType": "Online Tutoring",
+            "provider": {
+              "@type": "EducationalOrganization",
+              "name": "HOPE Online Tuitions"
+            },
+            "areaServed": {
+              "@type": "Country",
+              "name": "India"
+            },
+            "audience": {
+              "@type": "Audience",
+              "audienceType": "Students, Parents"
+            },
+            "offers": {
+              "@type": "Offer",
+              "availability": "https://schema.org/InStock",
+              "price": "Varies",
+              "priceCurrency": "INR"
+            }
+          })}
+        </script>
+      </Helmet>
+      
       {/* Header / Navbar */}
       <header
         style={{

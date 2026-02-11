@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import api from '../lib/api';
 import { Button, Container, Grid, Card, Badge, SectionHeading } from '../components/ModernUI';
@@ -54,6 +55,15 @@ const ModernTutorsListPage = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Find Expert Tutors - Browse Qualified Teachers | HOPE Online Tuitions</title>
+        <meta name="description" content="Browse verified online tutors for Classes 6-12. Expert teachers for CBSE, ICSE, and all subjects. Safe, personalized online tutoring from qualified educators." />
+        <meta name="keywords" content="find tutors online, hire online tutor, CBSE tutors, ICSE tutors, subject tutors, qualified teachers online, best online tutors India" />
+        <meta property="og:title" content="Find Expert Tutors - HOPE Online Tuitions" />
+        <meta property="og:description" content="Connect with verified tutors for personalized online learning. All subjects for Classes 6-12." />
+        <link rel="canonical" href="https://frontend.onrender.com/tutors" />
+      </Helmet>
+      
       <CourseraNavbar />
       <div style={{ background: colors.bgSecondary, minHeight: '100vh', paddingTop: '80px' }}>
         <Container style={{ paddingTop: spacing['3xl'], paddingBottom: spacing['3xl'] }}>

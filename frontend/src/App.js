@@ -1,4 +1,5 @@
 import React from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import StudentTutorAvailability from './pages/StudentTutorAvailability';
 import AdminTutorAvailability from './pages/AdminTutorAvailability';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
@@ -233,15 +234,17 @@ function App() {
   });
 
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <AdminProvider>
-          <AuthProvider>
-            <RouterProvider router={router} />
-          </AuthProvider>
-        </AdminProvider>
-      </ToastProvider>
-    </ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <AdminProvider>
+            <AuthProvider>
+              <RouterProvider router={router} />
+            </AuthProvider>
+          </AdminProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   );
 }
 

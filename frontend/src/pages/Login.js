@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { Helmet } from 'react-helmet-async';
 import { CourseraInput, CourseraButton, CourseraAlert } from '../components/CourseraCard';
 import { colors, typography, spacing } from '../theme/designSystem';
 
@@ -31,7 +32,13 @@ const Login = ({ inline = false, onLoginSuccess }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <>
+      <Helmet>
+        <title>Student Login - HOPE Online Tuitions</title>
+        <meta name="description" content="Login to your HOPE Online Tuitions student account. Access your dashboard, courses, assignments, and connect with your tutors." />
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <form onSubmit={handleSubmit}>
       {!inline && (
         <h1 style={{
           fontSize: typography.fontSize['2xl'],
@@ -77,6 +84,7 @@ const Login = ({ inline = false, onLoginSuccess }) => {
         </>
       )}
     </form>
+    </>
   );
 };
 
