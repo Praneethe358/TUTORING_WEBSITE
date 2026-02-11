@@ -5,6 +5,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const http = require('http');
 const socketIO = require('socket.io');
+const helmet = require('helmet');
 const enforceHTTPS = require('./src/middleware/httpsMiddleware');
 const studentRoutes = require('./src/routes/studentRoutes');
 const tutorRoutes = require('./src/routes/tutorRoutes');
@@ -124,6 +125,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+app.use(helmet()); // Security headers
 app.use(enforceHTTPS); // HTTPS enforcement in production
 
 app.use(express.json());

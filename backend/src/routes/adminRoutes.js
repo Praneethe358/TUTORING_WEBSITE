@@ -2,7 +2,7 @@ const express = require('express');
 const { body } = require('express-validator');
 const {
   login, profile, logout, dashboardStats,
-  getTutors, approveTutor, rejectTutor, blockTutor,
+  getTutors, approveTutor, rejectTutor, blockTutor, deleteTutor,
   getStudents, deleteUser,
   getBookings, cancelBooking,
   getCourses, approveCourse, rejectCourse,
@@ -65,6 +65,7 @@ router.put('/tutors/:id/reject', [
 router.put('/tutors/:id/block', [
   body('reason').optional()
 ], blockTutor);
+router.delete('/tutors/:id', deleteTutor);
 
 // Students
 router.get('/students', getStudents);

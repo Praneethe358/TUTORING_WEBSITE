@@ -261,6 +261,42 @@ exports.blockTutor = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+exports.deleteTutor = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const tutor = await Tutor.findById(id);
+    
+    if (!tutor) return res.status(404).json({ message: 'Tutor not found' });
+    
+    const tutorEmail = tutor.email;
+    const tutorName = tutor.name;
+
+    // Delete all related data
+    await Promise.all([
+      // Delete courses created by tutor
+      Course.deleteMany({ tutor: id }),
+      // Delete bookings with tutor
+      Booking.deleteMany({ tutor: id }),
+      // Delete tutor's assignments
+      require('../models/TutorAssignment').deleteMany({ tutor: id }),
+      // Delete the tutor
+      Tutor.findByIdAndDelete(id)
+    ]);
+
+    // Log the deletion action
+    await logAction(req.user._id, 'delete_tutor', 'Tutor', id, tutorEmail, { 
+      name: tutorName,
+      deletedBy: req.user.email 
+    }, req);
+
+    res.json({ 
+      message: 'Tutor and all associated data deleted successfully',
+      email: tutorEmail,
+      note: 'Email can now be used for new registration'
+    });
+  } catch (err) { next(err); }
+};
+
 // STUDENT MANAGEMENT
 exports.getStudents = async (req, res, next) => {
   try {

@@ -54,6 +54,12 @@ const AdminTutors = () => {
           return;
         }
         await api.put(`/admin/tutors/${tutorId}/block`, { reason: msg });
+      } else if (act === 'delete') {
+        if (!window.confirm('Are you sure you want to DELETE this tutor? This will permanently remove:\n\n• Tutor account\n• All courses created by tutor\n• All bookings\n• All assignments\n\nThe email can be used for new registration after deletion.\n\nThis action CANNOT be undone!')) {
+          return;
+        }
+        await api.delete(`/admin/tutors/${tutorId}`);
+        alert('Tutor deleted successfully. Email can now be reused.');
       }
       loadTutors();
       setSelectedTutor(null);
@@ -321,6 +327,23 @@ const AdminTutors = () => {
                               Block
                             </button>
                           )}
+                          <button 
+                            onClick={() => handleAction(tutor._id, 'delete')}
+                            style={{
+                              padding: `${spacing.sm} ${spacing.md}`,
+                              backgroundColor: '#dc2626',
+                              color: colors.white,
+                              border: 'none',
+                              borderRadius: borderRadius.md,
+                              fontWeight: typography.fontWeight.medium,
+                              cursor: 'pointer',
+                              fontSize: typography.fontSize.sm
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#991b1b'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#dc2626'}
+                          >
+                            Delete
+                          </button>
                         </div>
                       </td>
                     </tr>
