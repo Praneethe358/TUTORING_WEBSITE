@@ -6,7 +6,7 @@
   
   <!-- Home Page (Main Landing) -->
   <url>
-    <loc>https://frontend.onrender.com/</loc>
+    <loc>https://hope-tuitions-frontend.onrender.com/</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -14,7 +14,7 @@
   
   <!-- Public Tutors List -->
   <url>
-    <loc>https://frontend.onrender.com/tutors</loc>
+    <loc>https://hope-tuitions-frontend.onrender.com/tutors</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
@@ -22,7 +22,7 @@
   
   <!-- Student Login -->
   <url>
-    <loc>https://frontend.onrender.com/login</loc>
+    <loc>https://hope-tuitions-frontend.onrender.com/login</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -30,7 +30,7 @@
   
   <!-- Student Registration -->
   <url>
-    <loc>https://frontend.onrender.com/register</loc>
+    <loc>https://hope-tuitions-frontend.onrender.com/register</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -38,7 +38,7 @@
   
   <!-- Tutor Login -->
   <url>
-    <loc>https://frontend.onrender.com/tutor/login</loc>
+    <loc>https://hope-tuitions-frontend.onrender.com/tutor/login</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -46,10 +46,11 @@
   
   <!-- Tutor Registration -->
   <url>
-    <loc>https://frontend.onrender.com/tutor/register</loc>
+    <loc>https://hope-tuitions-frontend.onrender.com/tutor/register</loc>
     <lastmod>2026-02-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
 </urlset>
+

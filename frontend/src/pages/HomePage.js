@@ -70,11 +70,11 @@ const HomePage = () => {
         <meta property="og:title" content="HOPE Online Tuitions - Safe Online Learning from Home" />
         <meta property="og:description" content="Structured online tuition for school students Classes 6-12. Expert tutors, personalized attention, and progress tracking." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://frontend.onrender.com" />
+        <meta property="og:url" content="https://hope-tuitions-frontend.onrender.com" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="HOPE Online Tuitions - Best Online Tuition Classes" />
         <meta name="twitter:description" content="Quality online education for Classes 6-12. Safe, structured learning from home." />
-        <link rel="canonical" href="https://frontend.onrender.com" />
+        <link rel="canonical" href="https://hope-tuitions-frontend.onrender.com" />
         
         {/* Structured Data - Organization */}
         <script type="application/ld+json">
@@ -83,8 +83,8 @@ const HomePage = () => {
             "@type": "EducationalOrganization",
             "name": "HOPE Online Tuitions",
             "description": "Online tutoring platform for Classes 6-12 students in India",
-            "url": "https://frontend.onrender.com",
-            "logo": "https://frontend.onrender.com/logo-main.jpeg",
+            "url": "https://hope-tuitions-frontend.onrender.com",
+            "logo": "https://hope-tuitions-frontend.onrender.com/logo-main.jpeg",
             "slogan": "Saving Time, Inspiring Minds",
             "email": "hopetuitionbygd@gmail.com",
             "telephone": "+91-8807717477",

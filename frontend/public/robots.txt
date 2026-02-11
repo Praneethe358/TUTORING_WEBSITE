@@ -26,4 +26,5 @@ Disallow: /tutor/lms/*
 Disallow: /admin/*
 
 # Sitemap location
-Sitemap: https://frontend.onrender.com/sitemap.xml
+Sitemap: https://hope-tuitions-frontend.onrender.com/sitemap.xml
+
