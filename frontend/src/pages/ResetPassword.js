@@ -50,6 +50,25 @@ const ResetPassword = () => {
       </h1>
       {message && <CourseraAlert type="success">{message}</CourseraAlert>}
       {error && <CourseraAlert type="error" onClose={() => setError('')}>{error}</CourseraAlert>}
+      <div style={{
+        marginBottom: spacing.lg,
+        padding: spacing.lg,
+        fontSize: typography.fontSize.xs,
+        color: colors.textSecondary,
+        backgroundColor: colors.bgSecondary,
+        borderRadius: '0.5rem',
+        border: `1px solid ${colors.gray200}`,
+      }}>
+        <p style={{ fontWeight: typography.fontWeight.semibold, marginBottom: spacing.sm, color: colors.textPrimary }}>
+          Password requirements:
+        </p>
+        <ul style={{ paddingLeft: spacing.xl, listStyleType: 'disc' }}>
+          <li style={{ marginBottom: spacing.xs }}>At least 8 characters</li>
+          <li style={{ marginBottom: spacing.xs }}>At least 1 uppercase letter (A-Z)</li>
+          <li style={{ marginBottom: spacing.xs }}>At least 1 lowercase letter (a-z)</li>
+          <li style={{ marginBottom: spacing.xs }}>At least 1 number (0-9)</li>
+        </ul>
+      </div>
       <CourseraInput label="New Password" type="password" name="password" value={password} onChange={e => setPassword(e.target.value)} required placeholder="••••••••" />
       <CourseraInput label="Confirm Password" type="password" name="confirm" value={confirm} onChange={e => setConfirm(e.target.value)} required placeholder="••••••••" />
       <CourseraButton

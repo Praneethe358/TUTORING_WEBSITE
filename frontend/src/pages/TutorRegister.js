@@ -185,6 +185,25 @@ const TutorRegister = () => {
         </div>
       </div>
 
+      <div style={{
+        marginBottom: '1rem',
+        padding: '1rem',
+        fontSize: '0.875rem',
+        color: '#6b7280',
+        backgroundColor: '#f3f4f6',
+        borderRadius: '0.5rem',
+        border: '1px solid #e5e7eb',
+      }}>
+        <p style={{ fontWeight: '600', marginBottom: '0.5rem', color: '#374151' }}>
+          Password requirements:
+        </p>
+        <ul style={{ paddingLeft: '1.5rem', listStyleType: 'disc', margin: 0 }}>
+          <li style={{ marginBottom: '0.25rem' }}>At least 8 characters</li>
+          <li style={{ marginBottom: '0.25rem' }}>At least 1 uppercase letter (A-Z)</li>
+          <li style={{ marginBottom: '0.25rem' }}>At least 1 lowercase letter (a-z)</li>
+          <li>At least 1 number (0-9)</li>
+        </ul>
+      </div>
       <FormInput label="Password" name="password" type="password" value={form.password} onChange={onChange} required placeholder="••••••••" />
       <FormInput label="Confirm Password" name="confirm" type="password" value={form.confirm} onChange={onChange} required placeholder="••••••••" />
       <button type="submit" disabled={loading} className="w-full py-3 mt-2 rounded-lg bg-black hover:bg-gray-900 text-white font-semibold transition disabled:opacity-60">
