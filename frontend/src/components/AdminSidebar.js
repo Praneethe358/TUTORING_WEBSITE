@@ -21,6 +21,9 @@ const AdminSidebar = () => {
     { path: '/admin/announcements', label: 'Announcements', icon: '📢' },
     { path: '/admin/analytics', label: 'Analytics', icon: '📈' },
     { path: '/admin/audit-logs', label: 'Audit Logs', icon: '📋' },
+    // Security Section
+    { divider: true, label: 'Security' },
+    { path: '/admin/password-reset-requests', label: 'Password Reset Requests', icon: '🔑' },
     // LMS Section - NEW
     { divider: true, label: 'LMS Monitoring' },
     { path: '/admin/lms/dashboard', label: 'LMS Dashboard', icon: '🎓' },

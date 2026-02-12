@@ -87,6 +87,7 @@ import AdminLmsCoursesMonitor from './pages/AdminLmsCoursesMonitor';
 import AdminLmsCourseDetail from './pages/AdminLmsCourseDetail';
 import AdminLmsGrades from './pages/AdminLmsGrades';
 import AdminLmsReports from './pages/AdminLmsReports';
+import AdminPasswordResetRequests from './pages/AdminPasswordResetRequests';
 
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
@@ -224,6 +225,9 @@ function App() {
     { path: '/admin/lms/courses/:courseId', element: <ProtectedAdminRoute><AdminLmsCourseDetail /></ProtectedAdminRoute> },
     { path: '/admin/lms/grades', element: <ProtectedAdminRoute><AdminLmsGrades /></ProtectedAdminRoute> },
     { path: '/admin/lms/reports', element: <ProtectedAdminRoute><AdminLmsReports /></ProtectedAdminRoute> },
+    
+    // Admin Password Reset Requests
+    { path: '/admin/password-reset-requests', element: <ProtectedAdminRoute><AdminPasswordResetRequests /></ProtectedAdminRoute> },
     
     { path: '*', element: <Navigate to="/login" replace /> }
   ], {
