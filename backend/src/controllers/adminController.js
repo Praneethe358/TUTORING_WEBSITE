@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 const { validationResult } = require('express-validator');
 const Admin = require('../models/Admin');
 const Tutor = require('../models/Tutor');
@@ -7,6 +8,7 @@ const Booking = require('../models/Booking');
 const Course = require('../models/Course');
 const CourseEnrollment = require('../models/CourseEnrollment');
 const AuditLog = require('../models/AuditLog');
+const PasswordResetRequest = require('../models/PasswordResetRequest');
 const Settings = require('../models/Settings');
 const { signToken } = require('../utils/token');
 const { sendTutorStatusEmail } = require('../utils/email');
@@ -593,4 +595,100 @@ exports.exportStudentsCSV = async (req, res, next) => {
     console.error('Export students CSV error:', err);
     next(err);
   }
+};
+// ============ PASSWORD RESET REQUEST MANAGEMENT ============
+
+exports.getPasswordResetRequests = async (req, res, next) => {
+  try {
+    const { status, page = 1, limit = 20 } = req.query;
+    const filter = {};
+    if (status) filter.status = status;
+    
+    const skip = (page - 1) * limit;
+    
+    const requests = await PasswordResetRequest.find(filter)
+      .populate('studentId', 'name email phone')
+      .populate('approvedBy', 'email')
+      .populate('deniedBy', 'email')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+    
+    const total = await PasswordResetRequest.countDocuments(filter);
+    
+    res.json({
+      requests,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (err) { next(err); }
+};
+
+exports.approvePasswordReset = async (req, res, next) => {
+  try {
+    const { requestId } = req.params;
+    const { adminNotes } = req.body;
+    
+    const resetRequest = await PasswordResetRequest.findById(requestId);
+    if (!resetRequest) return res.status(404).json({ message: 'Request not found' });
+    if (resetRequest.status !== 'pending') return res.status(400).json({ message: 'Only pending requests can be approved' });
+    
+    // Generate reset token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    resetRequest.resetToken = resetToken;
+    resetRequest.resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    resetRequest.status = 'approved';
+    resetRequest.approvedBy = req.user._id;
+    resetRequest.approvedAt = new Date();
+    resetRequest.adminNotes = adminNotes || '';
+    await resetRequest.save();
+    
+    // Log action
+    await logAction(req.user._id, 'approve_password_reset', 'Student', resetRequest.studentId, resetRequest.email, { studentName: resetRequest.studentId.name }, req);
+    
+    res.json({ 
+      message: 'Password reset request approved', 
+      request: resetRequest,
+      resetToken: resetToken // Send back for notifying student
+    });
+  } catch (err) { next(err); }
+};
+
+exports.denyPasswordReset = async (req, res, next) => {
+  try {
+    const { requestId } = req.params;
+    const { adminNotes } = req.body;
+    
+    const resetRequest = await PasswordResetRequest.findById(requestId);
+    if (!resetRequest) return res.status(404).json({ message: 'Request not found' });
+    if (resetRequest.status !== 'pending') return res.status(400).json({ message: 'Only pending requests can be denied' });
+    
+    resetRequest.status = 'denied';
+    resetRequest.deniedBy = req.user._id;
+    resetRequest.deniedAt = new Date();
+    resetRequest.adminNotes = adminNotes || 'Request denied by admin';
+    await resetRequest.save();
+    
+    // Log action
+    await logAction(req.user._id, 'deny_password_reset', 'Student', resetRequest.studentId, resetRequest.email, { studentName: resetRequest.studentId.name }, req);
+    
+    res.json({ message: 'Password reset request denied', request: resetRequest });
+  } catch (err) { next(err); }
+};
+
+exports.getPasswordResetRequestStatus = async (req, res, next) => {
+  try {
+    const { email } = req.query;
+    const student = await Student.findOne({ email });
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+    
+    const latestRequest = await PasswordResetRequest.findOne({ studentId: student._id })
+      .sort({ createdAt: -1 });
+    
+    res.json({ request: latestRequest || null });
+  } catch (err) { next(err); }
 };

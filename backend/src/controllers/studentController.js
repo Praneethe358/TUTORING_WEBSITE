@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const { validationResult } = require('express-validator');
 const Student = require('../models/Student');
+const PasswordResetRequest = require('../models/PasswordResetRequest');
 const { signToken } = require('../utils/token');
 const { sendResetEmail, sendVerificationEmail } = require('../utils/email');
 
@@ -116,16 +117,28 @@ exports.changePassword = async (req, res, next) => {
 exports.forgotPassword = async (req, res, next) => {
   try {
     if (handleValidation(req, res)) return;
-    const { email } = req.body;
+    const { email, reason } = req.body;
     const student = await Student.findOne({ email });
-    if (!student) return res.status(200).json({ message: 'If email exists, reset link sent' });
-    const token = crypto.randomBytes(32).toString('hex');
-    student.resetPasswordToken = token;
-    const minutes = Number(process.env.RESET_TOKEN_EXPIRES_MINUTES || 30);
-    student.resetPasswordExpires = Date.now() + minutes * 60 * 1000;
-    await student.save();
-    await sendResetEmail(email, token);
-    res.json({ message: 'Reset link sent' });
+    if (!student) return res.status(200).json({ message: 'If email exists, a password reset request has been submitted to admin.' });
+    
+    // Check if there's already a pending request
+    const existingRequest = await PasswordResetRequest.findOne({ 
+      studentId: student._id, 
+      status: 'pending'
+    });
+    if (existingRequest) {
+      return res.status(200).json({ message: 'You already have a pending password reset request. Please wait for admin approval.' });
+    }
+    
+    // Create new password reset request
+    await PasswordResetRequest.create({
+      studentId: student._id,
+      email: student.email,
+      reason: reason || 'Forgot password',
+      status: 'pending'
+    });
+    
+    res.json({ message: 'Password reset request submitted. Admin will review and approve/deny your request.' });
   } catch (err) { next(err); }
 };
 
@@ -133,15 +146,28 @@ exports.resetPassword = async (req, res, next) => {
   try {
     if (handleValidation(req, res)) return;
     const { token, password } = req.body;
-    const student = await Student.findOne({
-      resetPasswordToken: token,
-      resetPasswordExpires: { $gt: Date.now() }
+    
+    // Find approved reset request with valid token
+    const resetRequest = await PasswordResetRequest.findOne({
+      resetToken: token,
+      resetTokenExpires: { $gt: Date.now() },
+      status: 'approved'
     });
-    if (!student) return res.status(400).json({ message: 'Invalid or expired token' });
+    
+    if (!resetRequest) return res.status(400).json({ message: 'Invalid or expired reset token. Please submit a new password reset request.' });
+    
+    const student = await Student.findById(resetRequest.studentId);
+    if (!student) return res.status(400).json({ message: 'Student not found' });
+    
+    // Reset password
     student.password = await bcrypt.hash(password, 10);
-    student.resetPasswordToken = undefined;
-    student.resetPasswordExpires = undefined;
     await student.save();
-    res.json({ message: 'Password reset successful' });
+    
+    // Mark reset request as completed
+    resetRequest.resetCompletedAt = new Date();
+    resetRequest.resetTokenExpires = undefined; // Invalidate token
+    await resetRequest.save();
+    
+    res.json({ message: 'Password reset successful. You can now login with your new password.' });
   } catch (err) { next(err); }
 };

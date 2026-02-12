@@ -34,7 +34,8 @@ router.post('/login', authLimiter, [
 ], login);
 
 router.post('/forgot-password', passwordResetLimiter, [
-  body('email').isEmail().withMessage('Valid email required')
+  body('email').isEmail().withMessage('Valid email required'),
+  body('reason').optional().isString()
 ], forgotPassword);
 
 router.post('/reset-password', passwordResetLimiter, [

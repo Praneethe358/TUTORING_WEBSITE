@@ -10,7 +10,11 @@ const {
   getSettings, updateSettings,
   exportTutorsCSV,
   exportStudentsCSV,
-  exportEnrollmentsCSV
+  exportEnrollmentsCSV,
+  getPasswordResetRequests,
+  approvePasswordReset,
+  denyPasswordReset,
+  getPasswordResetRequestStatus
 } = require('../controllers/adminController');
 const {
   getPlatformAnalytics,
@@ -116,5 +120,15 @@ router.get('/demo-requests', getAllDemoRequests);
 router.put('/demo-requests/:id', updateDemoRequest);
 router.post('/demo-requests/:id/convert', convertToStudent);
 router.delete('/demo-requests/:id', deleteDemoRequest);
+
+// Password Reset Requests (Admin management)
+router.get('/password-reset-requests', getPasswordResetRequests);
+router.get('/password-reset-requests/status', getPasswordResetRequestStatus);
+router.patch('/password-reset-requests/:requestId/approve', [
+  body('adminNotes').optional().isString()
+], approvePasswordReset);
+router.patch('/password-reset-requests/:requestId/deny', [
+  body('adminNotes').optional().isString()
+], denyPasswordReset);
 
 module.exports = router;
