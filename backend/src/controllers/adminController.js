@@ -631,30 +631,96 @@ exports.getPasswordResetRequests = async (req, res, next) => {
 exports.approvePasswordReset = async (req, res, next) => {
   try {
     const { requestId } = req.params;
-    const { adminNotes } = req.body;
+    const { adminNotes, useTemporaryPassword } = req.body;
     
-    const resetRequest = await PasswordResetRequest.findById(requestId);
+    const resetRequest = await PasswordResetRequest.findById(requestId).populate('studentId');
     if (!resetRequest) return res.status(404).json({ message: 'Request not found' });
     if (resetRequest.status !== 'pending') return res.status(400).json({ message: 'Only pending requests can be approved' });
     
-    // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    resetRequest.resetToken = resetToken;
-    resetRequest.resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    const student = resetRequest.studentId;
     resetRequest.status = 'approved';
     resetRequest.approvedBy = req.user._id;
     resetRequest.approvedAt = new Date();
     resetRequest.adminNotes = adminNotes || '';
-    await resetRequest.save();
     
-    // Log action
-    await logAction(req.user._id, 'approve_password_reset', 'Student', resetRequest.studentId, resetRequest.email, { studentName: resetRequest.studentId.name }, req);
+    // Decision: Use temporary password or email link
+    const hasContactEmail = student.contactEmail && student.contactEmail.trim() !== '';
+    const shouldUseTempPassword = useTemporaryPassword || !hasContactEmail;
     
-    res.json({ 
-      message: 'Password reset request approved', 
-      request: resetRequest,
-      resetToken: resetToken // Send back for notifying student
-    });
+    if (shouldUseTempPassword) {
+      // Method 1: Generate temporary password (admin shares manually via phone/WhatsApp)
+      const tempPassword = crypto.randomBytes(4).toString('hex'); // 8-character temp password
+      const hashedPassword = await bcrypt.hash(tempPassword, 10);
+      
+      // Update student's password directly
+      student.password = hashedPassword;
+      await student.save();
+      
+      resetRequest.tempPassword = tempPassword; // Store plain text for admin to see
+      resetRequest.resetCompletedAt = new Date(); // Mark as completed immediately
+      await resetRequest.save();
+      
+      // Log action
+      await logAction(req.user._id, 'approve_password_reset', 'Student', student._id, resetRequest.email, { 
+        studentName: student.name, 
+        method: 'temporary_password' 
+      }, req);
+      
+      res.json({ 
+        message: 'Temporary password generated. Share it with the student via phone/WhatsApp.', 
+        request: resetRequest,
+        tempPassword: tempPassword,
+        studentPhone: student.phone,
+        method: 'temporary_password',
+        instruction: `Call/WhatsApp student at ${student.phone} and share this temporary password: ${tempPassword}`
+      });
+    } else {
+      // Method 2: Send reset link to contact email
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      resetRequest.resetToken = resetToken;
+      resetRequest.resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+      await resetRequest.save();
+      
+      // Try to send email (requires email setup)
+      try {
+        const { sendPasswordResetEmail } = require('../utils/email');
+        await sendPasswordResetEmail(student.contactEmail, resetToken);
+        
+        // Log action
+        await logAction(req.user._id, 'approve_password_reset', 'Student', student._id, student.contactEmail, { 
+          studentName: student.name, 
+          method: 'email_link' 
+        }, req);
+        
+        res.json({ 
+          message: `Password reset link sent to ${student.contactEmail}`, 
+          request: resetRequest,
+          method: 'email_link',
+          contactEmail: student.contactEmail
+        });
+      } catch (emailError) {
+        console.error('Email send failed:', emailError);
+        // Fallback to temp password if email fails
+        const tempPassword = crypto.randomBytes(4).toString('hex');
+        const hashedPassword = await bcrypt.hash(tempPassword, 10);
+        student.password = hashedPassword;
+        await student.save();
+        
+        resetRequest.tempPassword = tempPassword;
+        resetRequest.resetCompletedAt = new Date();
+        await resetRequest.save();
+        
+        res.json({ 
+          message: 'Email failed. Temporary password generated instead.', 
+          request: resetRequest,
+          tempPassword: tempPassword,
+          studentPhone: student.phone,
+          method: 'temporary_password',
+          error: 'Email sending failed',
+          instruction: `Call/WhatsApp student at ${student.phone} and share: ${tempPassword}`
+        });
+      }
+    }
   } catch (err) { next(err); }
 };
 

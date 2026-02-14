@@ -27,7 +27,7 @@ function setAuthCookie(res, token) {
 exports.register = async (req, res, next) => {
   try {
     if (handleValidation(req, res)) return;
-    const { name, email, phone, course, password } = req.body;
+    const { name, email, phone, contactEmail, course, password } = req.body;
 
     const existing = await Student.findOne({ email });
     if (existing) return res.status(400).json({ message: 'Email already registered' });
@@ -38,6 +38,7 @@ exports.register = async (req, res, next) => {
       name, 
       email, 
       phone, 
+      contactEmail: contactEmail || '', // Optional real email for notifications
       course, 
       password: hashed, 
       role: 'student',
@@ -48,7 +49,7 @@ exports.register = async (req, res, next) => {
     setAuthCookie(res, token);
     res.status(201).json({ 
       message: 'Registration successful. You can now login.', 
-      student: { id: student._id, name, email, phone, course, role: student.role }
+      student: { id: student._id, name, email, phone, contactEmail, course, role: student.role }
     });
   } catch (err) { next(err); }
 };

@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 
 const studentSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
-  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true }, // Used for login/username
   phone: { type: String, required: true, trim: true },
+  contactEmail: { type: String, lowercase: true, trim: true }, // Actual email for notifications (optional)
   password: { type: String, required: true },
   role: { type: String, default: 'student' },
   isActive: { type: Boolean, default: true },

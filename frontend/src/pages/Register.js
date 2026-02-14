@@ -7,7 +7,7 @@ import { colors, typography, spacing, borderRadius } from '../theme/designSystem
 
 const Register = ({ inline = false, onLoginSuccess }) => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', phone: '', course: '', password: '', confirm: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', contactEmail: '', course: '', password: '', confirm: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -49,6 +49,7 @@ const Register = ({ inline = false, onLoginSuccess }) => {
         name: form.name,
         email: form.email,
         phone: form.phone,
+        contactEmail: form.contactEmail || '', // Optional real email for notifications
         course: form.course,
         password: form.password
       });
@@ -86,7 +87,25 @@ const Register = ({ inline = false, onLoginSuccess }) => {
       )}
       {error && <CourseraAlert type="error" onClose={() => setError('')}>{error}</CourseraAlert>}
       <CourseraInput label="Full Name" name="name" value={form.name} onChange={onChange} required placeholder="John Doe" />
-      <CourseraInput label="Email" name="email" type="email" value={form.email} onChange={onChange} required placeholder="student@example.com" />
+      <CourseraInput 
+        label="Username (Login ID)" 
+        name="email" 
+        type="email" 
+        value={form.email} 
+        onChange={onChange} 
+        required 
+        placeholder="username@gmail.com" 
+        helperText="This will be your login username (e.g., john@gmail.com)"
+      />
+      <CourseraInput 
+        label="Contact Email (Optional)" 
+        name="contactEmail" 
+        type="email" 
+        value={form.contactEmail} 
+        onChange={onChange} 
+        placeholder="your.real.email@gmail.com" 
+        helperText="Provide your actual email to receive password reset links and notifications"
+      />
       <CourseraInput label="Mobile Number" name="phone" value={form.phone} onChange={onChange} required placeholder="1234567890" />
       <CourseraInput label="Course" name="course" value={form.course} onChange={onChange} required placeholder="e.g., Mathematics, Science, English" />
       {!inline && (
