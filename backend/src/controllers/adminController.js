@@ -11,7 +11,7 @@ const AuditLog = require('../models/AuditLog');
 const PasswordResetRequest = require('../models/PasswordResetRequest');
 const Settings = require('../models/Settings');
 const { signToken } = require('../utils/token');
-const { sendTutorStatusEmail } = require('../utils/email');
+const { sendTutorStatusEmail, sendPasswordResetEmail } = require('../utils/email');
 
 function handleValidation(req, res) {
   const errors = validationResult(req);
@@ -683,7 +683,6 @@ exports.approvePasswordReset = async (req, res, next) => {
       
       // Try to send email (requires email setup)
       try {
-        const { sendPasswordResetEmail } = require('../utils/email');
         await sendPasswordResetEmail(student.contactEmail, resetToken);
         
         // Log action

@@ -41,4 +41,32 @@ async function sendTutorStatusEmail(to, name, status, reason) {
   });
 }
 
-module.exports = { sendResetEmail, sendTutorStatusEmail };
+async function sendPasswordResetEmail(to, resetToken) {
+  const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+  const subject = 'Password Reset Request - HOPE Online Tuitions';
+  
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM || 'hopetuitionbygd@gmail.com',
+    to,
+    subject,
+    text: `Click the link below to reset your password. This link will expire in 1 hour. ${resetUrl}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #5B2D8B;">🔐 Password Reset Request</h2>
+        <p>Your admin has approved your password reset request. Click the button below to reset your password:</p>
+        <p style="margin: 30px 0;">
+          <a href="${resetUrl}" style="background-color: #5B2D8B; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; display: inline-block; font-weight: bold;">
+            Reset Password
+          </a>
+        </p>
+        <p style="color: #666; font-size: 14px;">Or copy this link: <a href="${resetUrl}">${resetUrl}</a></p>
+        <p style="color: #999; font-size: 12px;">⏱️ This link will expire in 1 hour.</p>
+        <p style="color: #999; font-size: 12px;">If you did not request this, please ignore this email.</p>
+        <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+        <p style="color: #999; font-size: 12px;">HOPE Online Tuitions | hopetuitionbygd@gmail.com</p>
+      </div>
+    `
+  });
+}
+
+module.exports = { sendResetEmail, sendTutorStatusEmail, sendPasswordResetEmail };
