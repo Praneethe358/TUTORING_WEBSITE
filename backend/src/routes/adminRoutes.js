@@ -14,7 +14,10 @@ const {
   getPasswordResetRequests,
   approvePasswordReset,
   denyPasswordReset,
-  getPasswordResetRequestStatus
+  getPasswordResetRequestStatus,
+  changeStudentPassword,
+  changeTutorPassword,
+  changeOwnPassword
 } = require('../controllers/adminController');
 const {
   getPlatformAnalytics,
@@ -130,5 +133,17 @@ router.patch('/password-reset-requests/:requestId/approve', [
 router.patch('/password-reset-requests/:requestId/deny', [
   body('adminNotes').optional().isString()
 ], denyPasswordReset);
+
+// Admin Direct Password Changes
+router.post('/students/:studentId/change-password', [
+  body('adminNotes').optional().isString()
+], changeStudentPassword);
+router.post('/tutors/:tutorId/change-password', [
+  body('adminNotes').optional().isString()
+], changeTutorPassword);
+router.put('/change-own-password', [
+  body('currentPassword').notEmpty().withMessage('Current password required'),
+  body('newPassword').isLength({ min: 8 }).withMessage('New password must be at least 8 characters')
+], changeOwnPassword);
 
 module.exports = router;

@@ -11,7 +11,7 @@ const AuditLog = require('../models/AuditLog');
 const PasswordResetRequest = require('../models/PasswordResetRequest');
 const Settings = require('../models/Settings');
 const { signToken } = require('../utils/token');
-const { sendTutorStatusEmail, sendPasswordResetEmail } = require('../utils/email');
+const { sendTutorStatusEmail } = require('../utils/email');
 
 function handleValidation(req, res) {
   const errors = validationResult(req);
@@ -683,6 +683,7 @@ exports.approvePasswordReset = async (req, res, next) => {
       
       // Try to send email (requires email setup)
       try {
+        const { sendPasswordResetEmail } = require('../utils/email');
         await sendPasswordResetEmail(student.contactEmail, resetToken);
         
         // Log action
@@ -755,5 +756,117 @@ exports.getPasswordResetRequestStatus = async (req, res, next) => {
       .sort({ createdAt: -1 });
     
     res.json({ request: latestRequest || null });
+  } catch (err) { next(err); }
+};
+
+// ============ ADMIN DIRECT PASSWORD CHANGE ============
+
+/**
+ * Admin changes student password directly
+ * Generates a temporary password that admin shares personally
+ */
+exports.changeStudentPassword = async (req, res, next) => {
+  try {
+    const { studentId } = req.params;
+    const { adminNotes } = req.body;
+    
+    const student = await Student.findById(studentId);
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+    
+    // Generate temporary password (8 characters: 4 hex chars = good security)
+    const tempPassword = crypto.randomBytes(4).toString('hex');
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+    
+    student.password = hashedPassword;
+    await student.save();
+    
+    // Log action
+    await logAction(req.user._id, 'change_student_password', 'Student', student._id, student.email, { 
+      studentName: student.name,
+      adminNotes: adminNotes || 'Password changed by admin'
+    }, req);
+    
+    res.json({ 
+      message: 'Password changed successfully', 
+      tempPassword: tempPassword,
+      student: {
+        id: student._id,
+        name: student.name,
+        email: student.email,
+        phone: student.phone,
+        contactEmail: student.contactEmail
+      },
+      instruction: `Share this temporary password with ${student.name}:\n\nLogin ID: ${student.email}\nTemporary Password: ${tempPassword}\n\nThey can change their password after logging in.`
+    });
+  } catch (err) { next(err); }
+};
+
+/**
+ * Admin changes tutor password directly
+ * Generates a temporary password that admin shares personally
+ */
+exports.changeTutorPassword = async (req, res, next) => {
+  try {
+    const { tutorId } = req.params;
+    const { adminNotes } = req.body;
+    
+    const tutor = await Tutor.findById(tutorId);
+    if (!tutor) return res.status(404).json({ message: 'Tutor not found' });
+    
+    // Generate temporary password
+    const tempPassword = crypto.randomBytes(4).toString('hex');
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+    
+    tutor.password = hashedPassword;
+    await tutor.save();
+    
+    // Log action
+    await logAction(req.user._id, 'change_tutor_password', 'Tutor', tutor._id, tutor.email, { 
+      tutorName: tutor.name,
+      adminNotes: adminNotes || 'Password changed by admin'
+    }, req);
+    
+    res.json({ 
+      message: 'Password changed successfully', 
+      tempPassword: tempPassword,
+      tutor: {
+        id: tutor._id,
+        name: tutor.name,
+        email: tutor.email,
+        phone: tutor.phone,
+        contactEmail: tutor.contactEmail
+      },
+      instruction: `Share this temporary password with ${tutor.name}:\n\nLogin ID: ${tutor.email}\nTemporary Password: ${tempPassword}\n\nThey can change their password after logging in.`
+    });
+  } catch (err) { next(err); }
+};
+
+/**
+ * Admin changes their own password
+ */
+exports.changeOwnPassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const admin = req.user;
+    
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new password required' });
+    }
+    
+    // Verify current password
+    const match = await bcrypt.compare(currentPassword, admin.password);
+    if (!match) return res.status(400).json({ message: 'Current password is incorrect' });
+    
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    admin.password = hashedPassword;
+    await admin.save();
+    
+    // Log action
+    await logAction(admin._id, 'change_own_password', 'Admin', admin._id, admin.email, { 
+      adminName: admin.name
+    }, req);
+    
+    res.json({ message: 'Your password has been changed successfully' });
   } catch (err) { next(err); }
 };
