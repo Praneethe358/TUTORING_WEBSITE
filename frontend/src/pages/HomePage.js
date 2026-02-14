@@ -64,16 +64,16 @@ const HomePage = () => {
   return (
     <div className="homepage-premium-purple" style={{ background: colors.bgSecondary, color: brand.text, minHeight: '100vh' }}>
       <Helmet>
-        <title>HOPE Online Tuitions - Best Online Tuition for Classes 6-12 in India</title>
-        <meta name="description" content="HOPE Online Tuitions provides personalized online tutoring for Classes 6-12. Safe, structured online learning from home with expert tutors. Enroll today for quality education." />
-        <meta name="keywords" content="online tuition classes 6-12, online tutoring India, home tuition online, CBSE online classes, ICSE online tuition, personalized online coaching, best online tutors" />
-        <meta property="og:title" content="HOPE Online Tuitions - Safe Online Learning from Home" />
-        <meta property="og:description" content="Structured online tuition for school students Classes 6-12. Expert tutors, personalized attention, and progress tracking." />
+        <title>HOPE Tuitions Online - Best Online Tuition for Classes 6-12 in India</title>
+        <meta name="description" content="HOPE Tuitions Online provides personalized online tutoring for Classes 6-12. Safe, structured online learning from home with expert tutors for CBSE, ICSE & State boards. Enroll today!" />
+        <meta name="keywords" content="hope tuitions online, hope tuitions, online tuition classes 6-12, online tutoring India, home tuition online, CBSE online classes, ICSE online tuition, personalized online coaching, best online tutors India" />
+        <meta property="og:title" content="HOPE Tuitions Online - Best Online Tuition Classes for Students" />
+        <meta property="og:description" content="HOPE Tuitions Online: Structured online tuition for school students Classes 6-12. Expert tutors, personalized attention, and progress tracking. Safe learning from home." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://hope-tuitions-frontend.onrender.com" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="HOPE Online Tuitions - Best Online Tuition Classes" />
-        <meta name="twitter:description" content="Quality online education for Classes 6-12. Safe, structured learning from home." />
+        <meta name="twitter:title" content="HOPE Tuitions Online - Best Online Tuition Classes in India" />
+        <meta name="twitter:description" content="HOPE Tuitions Online: Quality online education for Classes 6-12. Safe, structured learning from home with expert tutors." />
         <link rel="canonical" href="https://hope-tuitions-frontend.onrender.com" />
         
         {/* Structured Data - Organization */}
@@ -81,8 +81,9 @@ const HomePage = () => {
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "EducationalOrganization",
-            "name": "HOPE Online Tuitions",
-            "description": "Online tutoring platform for Classes 6-12 students in India",
+            "name": "HOPE Tuitions Online",
+            "alternateName": "HOPE Online Tuitions",
+            "description": "HOPE Tuitions Online provides personalized online tutoring for Classes 6-12 students in India. Expert tutors for CBSE, ICSE, and State boards.",
             "url": "https://hope-tuitions-frontend.onrender.com",
             "logo": "https://hope-tuitions-frontend.onrender.com/logo-main.jpeg",
             "slogan": "Saving Time, Inspiring Minds",
@@ -90,7 +91,8 @@ const HomePage = () => {
             "telephone": "+91-8807717477",
             "address": {
               "@type": "PostalAddress",
-              "addressCountry": "IN"
+              "addressCountry": "IN",
+              "addressRegion": "India"
             },
             "areaServed": {
               "@type": "Country",
@@ -101,7 +103,10 @@ const HomePage = () => {
               "@type": "EducationalAudience",
               "educationalRole": "student",
               "audienceType": "Students from Classes 6-12"
-            }
+            },
+            "sameAs": [
+              "https://hope-tuitions-frontend.onrender.com"
+            ]
           })}
         </script>
         
@@ -128,6 +133,31 @@ const HomePage = () => {
               "availability": "https://schema.org/InStock",
               "price": "Varies",
               "priceCurrency": "INR"
+            }
+          })}
+        </script>
+        
+        {/* Structured Data - LocalBusiness for better local SEO */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "HOPE Tuitions Online",
+            "image": "https://hope-tuitions-frontend.onrender.com/logo-main.jpeg",
+            "description": "Best online tuition classes for students in India. HOPE Tuitions Online offers personalized tutoring for Classes 6-12 covering CBSE, ICSE, and State boards.",
+            "address": {
+              "@type": "PostalAddress",
+              "addressCountry": "IN"
+            },
+            "telephone": "+91-8807717477",
+            "email": "hopetuitionbygd@gmail.com",
+            "url": "https://hope-tuitions-frontend.onrender.com",
+            "priceRange": "INR",
+            "openingHoursSpecification": {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+              "opens": "00:00",
+              "closes": "23:59"
             }
           })}
         </script>
