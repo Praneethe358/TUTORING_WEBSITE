@@ -161,6 +161,22 @@ const HomePage = () => {
             }
           })}
         </script>
+        
+        {/* WebSite Schema - Controls site name in Google Search */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "HOPE Tuitions Online",
+            "alternateName": "HOPE Online Tuitions",
+            "url": "https://hope-tuitions-frontend.onrender.com",
+            "description": "Best online tuition platform for Classes 6-12 students in India",
+            "publisher": {
+              "@type": "EducationalOrganization",
+              "name": "HOPE Tuitions Online"
+            }
+          })}
+        </script>
       </Helmet>
       
       {/* Header / Navbar */}
