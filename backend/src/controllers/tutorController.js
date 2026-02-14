@@ -131,11 +131,27 @@ exports.uploadProfileImage = async (req, res, next) => {
 exports.changePassword = async (req, res, next) => {
   try {
     const { oldPassword, newPassword } = req.body;
-    const match = await bcrypt.compare(oldPassword, req.user.password);
+    
+    // Validate input
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({ message: 'Old password and new password are required' });
+    }
+    
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters' });
+    }
+    
+    // Fetch the tutor with password field (authMiddleware excludes it, so we need to refetch)
+    const tutor = await Tutor.findById(req.user._id);
+    if (!tutor || !tutor.password) {
+      return res.status(400).json({ message: 'Unable to change password. Please contact support.' });
+    }
+    
+    const match = await bcrypt.compare(oldPassword, tutor.password);
     if (!match) return res.status(400).json({ message: 'Old password incorrect' });
-    req.user.password = await bcrypt.hash(newPassword, 10);
-    await req.user.save();
-    res.json({ message: 'Password changed' });
+    tutor.password = await bcrypt.hash(newPassword, 10);
+    await tutor.save();
+    res.json({ message: 'Password changed successfully' });
   } catch (err) { next(err); }
 };
 

@@ -102,16 +102,17 @@ exports.changePassword = async (req, res, next) => {
       return res.status(400).json({ message: 'New password must be at least 6 characters' });
     }
     
-    // Check if user has a password (should not be null)
-    if (!req.user.password) {
+    // Fetch the student with password field (authMiddleware excludes it, so we need to refetch)
+    const student = await Student.findById(req.user._id);
+    if (!student || !student.password) {
       return res.status(400).json({ message: 'Unable to change password. Please contact support.' });
     }
     
-    const match = await bcrypt.compare(oldPassword, req.user.password);
+    const match = await bcrypt.compare(oldPassword, student.password);
     if (!match) return res.status(400).json({ message: 'Old password incorrect' });
-    req.user.password = await bcrypt.hash(newPassword, 10);
-    await req.user.save();
-    res.json({ message: 'Password changed' });
+    student.password = await bcrypt.hash(newPassword, 10);
+    await student.save();
+    res.json({ message: 'Password changed successfully' });
   } catch (err) { next(err); }
 };
 

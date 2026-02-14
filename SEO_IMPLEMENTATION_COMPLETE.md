@@ -167,7 +167,7 @@ Sitemap: https://frontend.onrender.com/sitemap.xml
 ---
 
 ### **5. Image Alt Text**    
- ## 
+ ##  
 
 #### **EnhancedTutorProfile.js** ([EnhancedTutorProfile.js](frontend/src/pages/EnhancedTutorProfile.js#L97))
 - **Before**: `alt={tutor.name}`
