@@ -14,6 +14,10 @@ const AdminStudents = () => {
   const [deleteStudent, setDeleteStudent] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordModalData, setPasswordModalData] = useState(null);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordAdminNotes, setPasswordAdminNotes] = useState('');
   const [error, setError] = useState(null);
   const [exportLoading, setExportLoading] = useState(false);
 
@@ -98,6 +102,35 @@ const AdminStudents = () => {
     } catch (err) {
       alert('Delete failed: ' + (err.response?.data?.message || err.message));
     }
+  };
+
+  const handleChangePassword = async (studentId) => {
+    try {
+      setPasswordLoading(true);
+      const res = await api.post(`/admin/students/${studentId}/change-password`, {
+        adminNotes: passwordAdminNotes
+      });
+      setPasswordModalData(res.data);
+      success('Password changed successfully! Share the temp password with the student.');
+    } catch (err) {
+      showError('Failed to change password: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  const openChangePasswordModal = (student) => {
+    setSelectedStudent(student);
+    setPasswordModalData(null);
+    setPasswordAdminNotes('');
+    setShowPasswordModal(true);
+  };
+
+  const closePasswordModal = () => {
+    setShowPasswordModal(false);
+    setPasswordModalData(null);
+    setPasswordAdminNotes('');
+    setSelectedStudent(null);
   };
 
   return (
@@ -247,7 +280,7 @@ const AdminStudents = () => {
                         {new Date(student.createdAt).toLocaleDateString()}
                       </td>
                       <td style={{ padding: spacing.lg }}>
-                        <div style={{ display: 'flex', gap: spacing.sm }}>
+                        <div style={{ display: 'flex', gap: spacing.sm, flexWrap: 'wrap' }}>
                           <button
                             onClick={() => handleViewProfile(student)}
                             style={{
@@ -264,6 +297,23 @@ const AdminStudents = () => {
                             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.info}
                           >
                             View
+                          </button>
+                          <button
+                            onClick={() => openChangePasswordModal(student)}
+                            style={{
+                              padding: `${spacing.sm} ${spacing.md}`,
+                              backgroundColor: '#f59e0b',
+                              color: colors.white,
+                              border: 'none',
+                              borderRadius: borderRadius.md,
+                              fontWeight: typography.fontWeight.medium,
+                              cursor: 'pointer',
+                              fontSize: typography.fontSize.sm
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d97706'}
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f59e0b'}
+                          >
+                            🔐 Change Password
                           </button>
                           <button
                             onClick={() => setDeleteStudent(student._id)}
@@ -515,6 +565,165 @@ const AdminStudents = () => {
               >
                 Close
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Change Password Modal */}
+        {showPasswordModal && selectedStudent && (
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000
+          }}>
+            <div style={{
+              backgroundColor: colors.white,
+              borderRadius: borderRadius.lg,
+              padding: spacing.xl,
+              maxWidth: '600px',
+              width: '90%',
+              boxShadow: shadows.lg,
+              maxHeight: '90vh',
+              overflowY: 'auto'
+            }}>
+              {!passwordModalData ? (
+                <>
+                  <h2 style={{ marginBottom: spacing.lg, color: colors.textPrimary }}>
+                    🔐 Change Student Password
+                  </h2>
+                  <p style={{ marginBottom: spacing.lg, color: colors.textSecondary }}>
+                    <strong>Student:</strong> {selectedStudent.name}<br/>
+                    <strong>Email/ID:</strong> {selectedStudent.email}<br/>
+                    <strong>Phone:</strong> {selectedStudent.phone}
+                  </p>
+                  <div style={{ marginBottom: spacing.lg }}>
+                    <label style={{ display: 'block', marginBottom: spacing.sm, fontWeight: typography.fontWeight.medium }}>
+                      Admin Notes (Optional):
+                    </label>
+                    <textarea
+                      value={passwordAdminNotes}
+                      onChange={(e) => setPasswordAdminNotes(e.target.value)}
+                      placeholder="e.g., Password reset requested due to forgot password issue"
+                      style={{
+                        width: '100%',
+                        padding: spacing.md,
+                        border: `1px solid ${colors.border}`,
+                        borderRadius: borderRadius.md,
+                        fontFamily: 'inherit',
+                        fontSize: typography.fontSize.sm,
+                        minHeight: '80px',
+                        resize: 'vertical'
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: spacing.md }}>
+                    <button
+                      onClick={() => handleChangePassword(selectedStudent._id)}
+                      disabled={passwordLoading}
+                      style={{
+                        flex: 1,
+                        padding: spacing.md,
+                        backgroundColor: passwordLoading ? '#cbd5e1' : '#10b981',
+                        color: colors.white,
+                        border: 'none',
+                        borderRadius: borderRadius.md,
+                        fontWeight: typography.fontWeight.semibold,
+                        cursor: passwordLoading ? 'not-allowed' : 'pointer',
+                        opacity: passwordLoading ? 0.7 : 1
+                      }}
+                      onMouseEnter={(e) => !passwordLoading && (e.currentTarget.style.backgroundColor = '#059669')}
+                      onMouseLeave={(e) => !passwordLoading && (e.currentTarget.style.backgroundColor = '#10b981')}
+                    >
+                      {passwordLoading ? 'Processing...' : 'Generate Temporary Password'}
+                    </button>
+                    <button
+                      onClick={closePasswordModal}
+                      disabled={passwordLoading}
+                      style={{
+                        padding: spacing.md,
+                        paddingLeft: spacing.lg,
+                        paddingRight: spacing.lg,
+                        backgroundColor: colors.gray200,
+                        color: colors.textPrimary,
+                        border: 'none',
+                        borderRadius: borderRadius.md,
+                        fontWeight: typography.fontWeight.semibold,
+                        cursor: 'pointer'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.gray300}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.gray200}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h2 style={{ marginBottom: spacing.lg, color: '#10b981', display: 'flex', alignItems: 'center', gap: spacing.md }}>
+                    ✅ Password Generated Successfully
+                  </h2>
+                  <div style={{
+                    backgroundColor: '#d1fae5',
+                    padding: spacing.lg,
+                    borderRadius: borderRadius.md,
+                    marginBottom: spacing.lg,
+                    border: `2px solid #10b981`
+                  }}>
+                    <p style={{ marginBottom: spacing.sm, color: '#065f46', fontWeight: typography.fontWeight.semibold }}>
+                      <strong>📱 Share the following details with the student:</strong>
+                    </p>
+                    <div style={{
+                      backgroundColor: colors.white,
+                      padding: spacing.lg,
+                      borderRadius: borderRadius.md,
+                      marginTop: spacing.md,
+                      fontFamily: 'monospace',
+                      fontSize: typography.fontSize.sm,
+                      color: colors.textPrimary
+                    }}>
+                      <div style={{ marginBottom: spacing.sm }}>
+                        <strong>Login ID:</strong><br/>
+                        {passwordModalData.student.email}
+                      </div>
+                      <div style={{ marginBottom: spacing.sm }}>
+                        <strong>Temporary Password:</strong><br/>
+                        <span style={{ fontSize: typography.fontSize.base, fontWeight: 'bold', color: '#dc2626' }}>
+                          {passwordModalData.tempPassword}
+                        </span>
+                      </div>
+                      <div style={{ marginTop: spacing.lg, paddingTop: spacing.md, borderTop: `1px solid ${colors.border}`, fontSize: typography.fontSize.xs, color: colors.textSecondary }}>
+                        Call or WhatsApp: {passwordModalData.student.phone}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ backgroundColor: '#fef3c7', padding: spacing.lg, borderRadius: borderRadius.md, marginBottom: spacing.lg }}>
+                    <p style={{ margin: 0, color: '#78350f', fontSize: typography.fontSize.sm }}>
+                      💡 <strong>Tip:</strong> Student should change this password after logging in.
+                    </p>
+                  </div>
+                  <button
+                    onClick={closePasswordModal}
+                    style={{
+                      width: '100%',
+                      padding: spacing.md,
+                      backgroundColor: colors.accent,
+                      color: colors.white,
+                      border: 'none',
+                      borderRadius: borderRadius.md,
+                      fontWeight: typography.fontWeight.semibold,
+                      cursor: 'pointer'
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#5b4bcd'}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.accent}
+                  >
+                    Close
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}
