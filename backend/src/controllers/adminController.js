@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+const path = require('path');
+const fs = require('fs');
 const { validationResult } = require('express-validator');
 const Admin = require('../models/Admin');
 const Tutor = require('../models/Tutor');
@@ -868,5 +870,41 @@ exports.changeOwnPassword = async (req, res, next) => {
     }, req);
     
     res.json({ message: 'Your password has been changed successfully' });
+  } catch (err) { next(err); }
+};
+
+// Download Tutor CV
+exports.downloadTutorCV = async (req, res, next) => {
+  try {
+    const { tutorId } = req.params;
+    
+    // Get tutor
+    const tutor = await Tutor.findById(tutorId);
+    if (!tutor) {
+      return res.status(404).json({ message: 'Tutor not found' });
+    }
+    
+    if (!tutor.cvPath) {
+      return res.status(404).json({ message: 'CV not found for this tutor' });
+    }
+    
+    // Construct file path
+    const filePath = path.join(__dirname, '../../', tutor.cvPath);
+    
+    // Check if file exists
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: 'CV file not found on server' });
+    }
+    
+    // Extract filename for download
+    const fileName = path.basename(filePath);
+    
+    // Log action
+    await logAction(req.user._id, 'download_cv', 'Tutor', tutor._id, tutor.email, {
+      tutorName: tutor.name
+    }, req);
+    
+    // Send file as download
+    res.download(filePath, `${tutor.name}_CV${path.extname(filePath)}`);
   } catch (err) { next(err); }
 };

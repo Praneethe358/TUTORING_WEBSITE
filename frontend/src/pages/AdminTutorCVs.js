@@ -42,12 +42,24 @@ const AdminTutorCVs = () => {
     );
   });
 
-  const handleDownloadCV = (tutor) => {
+  const handleDownloadCV = async (tutor) => {
     if (tutor.cvPath) {
-      const cvUrl = tutor.cvPath.startsWith('http') 
-        ? tutor.cvPath 
-        : `http://localhost:5000${tutor.cvPath}`;
-      window.open(cvUrl, '_blank');
+      try {
+        const res = await api.get(`/admin/tutors/${tutor._id}/cv/download`, {
+          responseType: 'blob'
+        });
+        const url = window.URL.createObjectURL(new Blob([res.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${tutor.name}_CV.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error('Failed to download CV:', err);
+        alert('Failed to download CV: ' + (err.response?.data?.message || err.message));
+      }
     }
   };
 

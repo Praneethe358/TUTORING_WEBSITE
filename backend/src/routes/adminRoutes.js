@@ -17,7 +17,8 @@ const {
   getPasswordResetRequestStatus,
   changeStudentPassword,
   changeTutorPassword,
-  changeOwnPassword
+  changeOwnPassword,
+  downloadTutorCV
 } = require('../controllers/adminController');
 const {
   getPlatformAnalytics,
@@ -73,6 +74,7 @@ router.put('/tutors/:id/block', [
   body('reason').optional()
 ], blockTutor);
 router.delete('/tutors/:id', deleteTutor);
+router.get('/tutors/:tutorId/cv/download', downloadTutorCV);
 
 // Students
 router.get('/students', getStudents);
