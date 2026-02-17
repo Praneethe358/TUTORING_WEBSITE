@@ -45,7 +45,7 @@ const AdminTutorCVs = () => {
   const handleDownloadCV = async (tutor) => {
     if (tutor.cvPath) {
       try {
-        const res = await api.get(`/admin/tutors/${tutor._id}/cv/download`, {
+        const res = await api.get(`/admin/tutors/download/cv/${tutor._id}`, {
           responseType: 'blob'
         });
         const url = window.URL.createObjectURL(new Blob([res.data]));

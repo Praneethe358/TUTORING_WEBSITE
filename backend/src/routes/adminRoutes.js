@@ -64,7 +64,10 @@ router.get('/profile', profile);
 // Dashboard
 router.get('/dashboard-stats', dashboardStats);
 
-// Tutors
+// Tutors - Specific routes first (CV download)
+router.get('/tutors/download/cv/:tutorId', downloadTutorCV);
+
+// Tutors - General routes
 router.get('/tutors', getTutors);
 router.put('/tutors/:id/approve', approveTutor);
 router.put('/tutors/:id/reject', [
@@ -74,7 +77,6 @@ router.put('/tutors/:id/block', [
   body('reason').optional()
 ], blockTutor);
 router.delete('/tutors/:id', deleteTutor);
-router.get('/tutors/:tutorId/cv/download', downloadTutorCV);
 
 // Students
 router.get('/students', getStudents);
