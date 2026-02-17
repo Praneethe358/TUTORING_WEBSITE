@@ -45,20 +45,42 @@ const AdminTutorCVs = () => {
   const handleDownloadCV = async (tutor) => {
     if (tutor.cvPath) {
       try {
-        const res = await api.get(`/admin/tutors/download/cv/${tutor._id}`, {
-          responseType: 'blob'
-        });
-        const url = window.URL.createObjectURL(new Blob([res.data]));
+        // Get the backend base URL (strip /api suffix)
+        const apiBaseUrl = api.defaults.baseURL || '';
+        const backendBase = apiBaseUrl.replace(/\/api\/?$/, '');
+        
+        // Build full CV URL using the static file path
+        const cvUrl = tutor.cvPath.startsWith('http') 
+          ? tutor.cvPath 
+          : `${backendBase}${tutor.cvPath}`;
+        
+        // Fetch as blob for proper download
+        const response = await fetch(cvUrl, { credentials: 'include' });
+        if (!response.ok) throw new Error('CV file not found on server');
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `${tutor.name}_CV.pdf`);
+        const ext = tutor.cvPath.split('.').pop() || 'pdf';
+        link.setAttribute('download', `${tutor.name}_CV.${ext}`);
         document.body.appendChild(link);
         link.click();
         link.remove();
         window.URL.revokeObjectURL(url);
       } catch (err) {
         console.error('Failed to download CV:', err);
-        alert('Failed to download CV: ' + (err.response?.data?.message || err.message));
+        // Fallback: open in new tab
+        try {
+          const apiBaseUrl = api.defaults.baseURL || '';
+          const backendBase = apiBaseUrl.replace(/\/api\/?$/, '');
+          const cvUrl = tutor.cvPath.startsWith('http') 
+            ? tutor.cvPath 
+            : `${backendBase}${tutor.cvPath}`;
+          window.open(cvUrl, '_blank');
+        } catch (fallbackErr) {
+          alert('Failed to download CV. The file may no longer exist on the server.');
+        }
       }
     }
   };
