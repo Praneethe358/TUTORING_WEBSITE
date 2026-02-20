@@ -7,7 +7,7 @@ const {
   getBookings, cancelBooking,
   getCourses, approveCourse, rejectCourse,
   getAuditLogs,
-  getSettings, updateSettings,
+
   exportTutorsCSV,
   exportStudentsCSV,
   exportEnrollmentsCSV,
@@ -105,9 +105,7 @@ router.get('/export/students', exportStudentsCSV);
 router.get('/export/enrollments', exportEnrollmentsCSV);
 router.get('/export/analytics-report', exportAnalyticsReport);
 
-// Settings
-router.get('/settings', getSettings);
-router.put('/settings', updateSettings);
+
 
 // Analytics
 router.get('/analytics/platform', getPlatformAnalytics);

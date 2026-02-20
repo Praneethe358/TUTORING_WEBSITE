@@ -76,7 +76,7 @@ import AdminEnrollments from './pages/AdminEnrollments';
 import AdminAuditLogs from './pages/AdminAuditLogs';
 import AdminAnnouncements from './pages/AdminAnnouncements';
 import AdminAnalytics from './pages/AdminAnalytics';
-import AdminSettings from './pages/AdminSettings';
+
 import AdminAssignments from './pages/AdminAssignments';
 import AdminDemoRequests from './pages/AdminDemoRequests';
 import StudentMyTutors from './pages/StudentMyTutors';
@@ -214,7 +214,7 @@ function App() {
     { path: '/admin/announcements', element: <ProtectedAdminRoute><AdminAnnouncements /></ProtectedAdminRoute> },
     { path: '/admin/courses', element: <ProtectedAdminRoute><AdminCourses /></ProtectedAdminRoute> },
     { path: '/admin/analytics', element: <ProtectedAdminRoute><AdminAnalytics /></ProtectedAdminRoute> },
-    { path: '/admin/settings', element: <ProtectedAdminRoute><AdminSettings /></ProtectedAdminRoute> },
+
     { path: '/admin/tutor-availability', element: <ProtectedAdminRoute><AdminTutorAvailability /></ProtectedAdminRoute> },
     { path: '/admin/assignments', element: <ProtectedAdminRoute><AdminAssignments /></ProtectedAdminRoute> },
     { path: '/admin/demo-requests', element: <ProtectedAdminRoute><AdminDemoRequests /></ProtectedAdminRoute> },

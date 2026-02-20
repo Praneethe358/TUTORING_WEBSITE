@@ -11,7 +11,7 @@ const Course = require('../models/Course');
 const CourseEnrollment = require('../models/CourseEnrollment');
 const AuditLog = require('../models/AuditLog');
 const PasswordResetRequest = require('../models/PasswordResetRequest');
-const Settings = require('../models/Settings');
+
 const { signToken } = require('../utils/token');
 const { sendTutorStatusEmail } = require('../utils/email');
 
@@ -458,40 +458,7 @@ exports.getAuditLogs = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-// Settings
-exports.getSettings = async (req, res, next) => {
-  try {
-    let settings = await Settings.findOne();
-    
-    if (!settings) {
-      settings = await Settings.create({});
-    }
 
-    res.json({ settings });
-  } catch (err) { next(err); }
-};
-
-exports.updateSettings = async (req, res, next) => {
-  try {
-    if (handleValidation(req, res)) return;
-
-    const { settings } = req.body;
-
-    let existingSettings = await Settings.findOne();
-    if (!existingSettings) {
-      existingSettings = await Settings.create(settings);
-    } else {
-      Object.assign(existingSettings, settings);
-      existingSettings.updatedBy = req.user.id;
-      await existingSettings.save();
-    }
-
-    // Log the action
-    await logAction(req.user.id, 'UPDATE_SETTINGS', 'Settings', existingSettings._id, 'System', 'Settings updated', req);
-
-    res.json({ message: 'Settings updated successfully', settings: existingSettings });
-  } catch (err) { next(err); }
-};
 
 // EXPORT ENROLLMENTS CSV
 exports.exportEnrollmentsCSV = async (req, res, next) => {

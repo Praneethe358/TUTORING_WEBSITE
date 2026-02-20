@@ -30,9 +30,7 @@ const AdminSidebar = () => {
     { path: '/admin/lms/courses', label: 'Courses Monitor', icon: '📖' },
     { path: '/admin/lms/grades', label: 'Grades & Performance', icon: '⭐' },
     { path: '/admin/lms/reports', label: 'Reports', icon: '📊' },
-    // Settings Section
-    { divider: true, label: 'System' },
-    { path: '/admin/settings', label: 'Settings', icon: '⚙️' },
+
   ];
 
   return (
