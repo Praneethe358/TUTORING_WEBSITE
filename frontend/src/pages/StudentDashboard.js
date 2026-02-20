@@ -46,7 +46,7 @@ const StudentDashboard = () => {
       });
 
       // Fetch assignments
-      const enrollmentsRes = await api.get('/lms/enrollments/student');
+      const enrollmentsRes = await api.get('/lms/enrollments');
       const enrollments = enrollmentsRes.data.data || [];
       
       let allAssignments = [];

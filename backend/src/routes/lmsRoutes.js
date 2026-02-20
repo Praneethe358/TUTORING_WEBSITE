@@ -25,6 +25,7 @@ const {
   getDiscussion,
   addReply,
   likeDiscussion,
+  likeReply,
   togglePin,
   deleteDiscussion,
   updateDiscussion
@@ -141,6 +142,7 @@ router.post('/discussions', protectAny, createDiscussion);
 router.get('/discussions', getDiscussions); // Public
 router.get('/discussions/:id', getDiscussion); // Public
 router.post('/discussions/:id/reply', protectAny, addReply);
+router.post('/discussions/:id/reply/:replyId/like', protectAny, likeReply);
 router.post('/discussions/:id/like', protectAny, likeDiscussion);
 router.patch('/discussions/:id/pin', protectAny, togglePin);
 router.put('/discussions/:id', protectAny, updateDiscussion);

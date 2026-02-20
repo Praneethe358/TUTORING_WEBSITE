@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../lib/api';
 import { colors, typography, spacing, borderRadius } from '../theme/designSystem';
 
@@ -17,17 +17,7 @@ const AdminPasswordResetRequests = () => {
     typeof window !== 'undefined' ? window.innerWidth <= 768 : false
   ));
 
-  useEffect(() => {
-    fetchRequests();
-  }, [filter, page]);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     setLoading(true);
     try {
       const res = await api.get('/admin/password-reset-requests', {
@@ -41,7 +31,17 @@ const AdminPasswordResetRequests = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter, page]);
+
+  useEffect(() => {
+    fetchRequests();
+  }, [fetchRequests]);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleApprove = async (requestId) => {
     setActionLoading(true);

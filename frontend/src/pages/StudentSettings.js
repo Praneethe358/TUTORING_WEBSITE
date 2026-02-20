@@ -16,21 +16,33 @@ import api from '../lib/api';
 const StudentSettings = () => {
   const { user, setUser } = useAuth();
   const [avatar, setAvatar] = useState(user?.avatar || null);
-  const [settings, setSettings] = useState({
-    emailNotifications: true,
-    smsNotifications: false,
-    classReminders: true,
-    assignmentReminders: true,
-    quizReminders: true,
-    gradeNotifications: true,
-    marketingEmails: false,
-    weeklyReports: true
+  const [settings, setSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem('studentSettings');
+      if (saved) return JSON.parse(saved);
+    } catch (e) { /* ignore */ }
+    return {
+      emailNotifications: true,
+      smsNotifications: false,
+      classReminders: true,
+      assignmentReminders: true,
+      quizReminders: true,
+      gradeNotifications: true,
+      marketingEmails: false,
+      weeklyReports: true
+    };
   });
   
-  const [preferences] = useState({
-    language: 'English',
-    timezone: 'UTC',
-    dateFormat: 'MM/DD/YYYY'
+  const [preferences] = useState(() => {
+    try {
+      const saved = localStorage.getItem('studentPreferences');
+      if (saved) return JSON.parse(saved);
+    } catch (e) { /* ignore */ }
+    return {
+      language: 'English',
+      timezone: 'UTC',
+      dateFormat: 'MM/DD/YYYY'
+    };
   });
 
   const [passwordForm, setPasswordForm] = useState({

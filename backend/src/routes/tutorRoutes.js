@@ -2,7 +2,7 @@ const express = require('express');
 const { body } = require('express-validator');
 const {
   register, login, logout, profile, updateProfile, changePassword,
-  updateAvailability, createCourse, myCourses, upcomingBookings,
+  updateAvailability, getAvailability, createCourse, myCourses, upcomingBookings,
   listApprovedTutors, getTutorProfile, bookTutor, studentBookings,
   forgotPassword, resetPassword, getAllStudents, uploadProfileImage
 } = require('../controllers/tutorController');
@@ -54,6 +54,7 @@ router.get('/profile', protectTutor, profile);
 router.put('/profile', protectTutor, updateProfile);
 router.post('/upload-profile-image', protectTutor, upload.single('profileImage'), uploadProfileImage);
 router.post('/change-password', protectTutor, changePassword);
+router.get('/availability', protectTutor, getAvailability);
 router.post('/availability', protectTutor, updateAvailability);
 
 router.post('/courses', protectTutor, createCourse);

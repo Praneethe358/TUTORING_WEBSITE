@@ -216,6 +216,58 @@ exports.likeDiscussion = async (req, res) => {
   }
 };
 
+// @desc    Like a reply within a discussion
+// @route   POST /api/lms/discussions/:id/reply/:replyId/like
+// @access  Logged in users
+exports.likeReply = async (req, res) => {
+  try {
+    const discussion = await Discussion.findById(req.params.id);
+
+    if (!discussion) {
+      return res.status(404).json({
+        success: false,
+        message: 'Discussion not found'
+      });
+    }
+
+    const reply = discussion.replies.id(req.params.replyId);
+    if (!reply) {
+      return res.status(404).json({
+        success: false,
+        message: 'Reply not found'
+      });
+    }
+
+    // Initialize likes array on reply if it doesn't exist
+    if (!reply.likes) {
+      reply.likes = [];
+    }
+
+    const hasLiked = reply.likes.some(id => id.toString() === req.userId);
+
+    if (hasLiked) {
+      reply.likes = reply.likes.filter(id => id.toString() !== req.userId);
+    } else {
+      reply.likes.push(req.userId);
+    }
+
+    await discussion.save();
+
+    res.json({
+      success: true,
+      message: hasLiked ? 'Like removed' : 'Reply liked',
+      data: discussion
+    });
+  } catch (error) {
+    console.error('Like reply error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to like reply',
+      error: error.message
+    });
+  }
+};
+
 // @desc    Pin/Unpin discussion (instructor only)
 // @route   PATCH /api/lms/discussions/:id/pin
 // @access  Instructor

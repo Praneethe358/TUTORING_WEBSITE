@@ -328,6 +328,68 @@ exports.getStudents = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Toggle student active/inactive status
+exports.toggleStudentStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    const student = await Student.findById(id);
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+    
+    student.isActive = status === 'active';
+    await student.save();
+    
+    await logAction(req.user._id, 'toggle_student_status', 'Student', id, student.email, { newStatus: status }, req);
+    
+    res.json({ message: `Student ${status === 'active' ? 'activated' : 'deactivated'} successfully`, student });
+  } catch (err) { next(err); }
+};
+
+// Get detailed student profile
+exports.getStudentProfile = async (req, res, next) => {
+  try {
+    const student = await Student.findById(req.params.id).select('-password');
+    if (!student) return res.status(404).json({ message: 'Student not found' });
+    
+    const [bookings, enrollments] = await Promise.all([
+      Booking.countDocuments({ student: student._id }),
+      CourseEnrollment.countDocuments({ studentId: student._id })
+    ]);
+    
+    res.json({ tutor: student, stats: { totalBookings: bookings, totalEnrollments: enrollments } });
+  } catch (err) { next(err); }
+};
+
+// Get detailed tutor profile for admin
+exports.getTutorProfile = async (req, res, next) => {
+  try {
+    const tutor = await Tutor.findById(req.params.id).select('-password');
+    if (!tutor) return res.status(404).json({ message: 'Tutor not found' });
+    
+    const [bookings, courses] = await Promise.all([
+      Booking.countDocuments({ tutor: tutor._id }),
+      Course.countDocuments({ tutor: tutor._id })
+    ]);
+    
+    res.json({ tutor, stats: { totalBookings: bookings, totalCourses: courses } });
+  } catch (err) { next(err); }
+};
+
+// Get recent activity logs for dashboard
+exports.getActivityLogs = async (req, res, next) => {
+  try {
+    const { limit = 10 } = req.query;
+    const logs = await AuditLog.find()
+      .populate('admin', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .lean();
+    
+    res.json({ logs });
+  } catch (err) { next(err); }
+};
+
 exports.deleteUser = async (req, res, next) => {
   try {
     const { id, type } = req.params; // type: 'student' or 'tutor'

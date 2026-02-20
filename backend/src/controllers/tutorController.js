@@ -164,6 +164,12 @@ exports.updateAvailability = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+exports.getAvailability = async (req, res, next) => {
+  try {
+    res.json({ availability: req.user.availability || [] });
+  } catch (err) { next(err); }
+};
+
 exports.createCourse = async (req, res, next) => {
   try {
     const { subject, durationMinutes, description } = req.body;

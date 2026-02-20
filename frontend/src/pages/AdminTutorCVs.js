@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import AdminDashboardLayout from '../components/AdminDashboardLayout';
 import api from '../lib/api';
 import { colors, typography, spacing, borderRadius, shadows } from '../theme/designSystem';
@@ -13,11 +13,7 @@ const AdminTutorCVs = () => {
   const [filter, setFilter] = useState('all'); // all, pending, approved
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
-    fetchTutorsWithCVs();
-  }, [filter]);
-
-  const fetchTutorsWithCVs = async () => {
+  const fetchTutorsWithCVs = useCallback(async () => {
     try {
       setLoading(true);
       let url = '/admin/tutors?limit=1000'; // Get all tutors
@@ -31,7 +27,11 @@ const AdminTutorCVs = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filter]);
+
+  useEffect(() => {
+    fetchTutorsWithCVs();
+  }, [fetchTutorsWithCVs]);
 
   const filteredTutors = tutors.filter(tutor => {
     const searchLower = searchTerm.toLowerCase();

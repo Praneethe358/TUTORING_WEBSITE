@@ -111,6 +111,24 @@ exports.getAdminLmsDashboard = async (req, res) => {
   }
 };
 
+// @desc    Get enrollment stats summary
+// @route   GET /api/lms/admin/enrollment-stats
+// @access  Admin only
+exports.getEnrollmentStats = async (req, res) => {
+  try {
+    const [total, active, completed] = await Promise.all([
+      CourseEnrollment.countDocuments(),
+      CourseEnrollment.countDocuments({ status: 'active' }),
+      CourseEnrollment.countDocuments({ status: 'completed' })
+    ]);
+    
+    res.json({ total, active, completed });
+  } catch (error) {
+    console.error('Get enrollment stats error:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch enrollment stats' });
+  }
+};
+
 // @desc    Get all LMS courses with enrollment stats
 // @route   GET /api/lms/admin/courses
 // @access  Admin only

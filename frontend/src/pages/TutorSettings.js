@@ -13,13 +13,21 @@ import api from '../lib/api';
  */
 const TutorSettings = () => {
   const { user, setUser } = useAuth();
-  const [settings, setSettings] = useState({
-    emailNotifications: true,
-    smsNotifications: false,
-    bookingReminders: true,
-    marketingEmails: false,
-    autoAcceptBookings: false
+  const [settings, setSettings] = useState(() => {
+    try {
+      const saved = localStorage.getItem('tutorSettings');
+      if (saved) return JSON.parse(saved);
+    } catch (e) { /* ignore */ }
+    return {
+      emailNotifications: true,
+      smsNotifications: false,
+      bookingReminders: true,
+      marketingEmails: false,
+      autoAcceptBookings: false
+    };
   });
+  const [settingsMessage, setSettingsMessage] = useState('');
+  const [savingSettings, setSavingSettings] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -32,6 +40,19 @@ const TutorSettings = () => {
 
   const handleToggle = (key) => {
     setSettings(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleSaveNotificationSettings = () => {
+    try {
+      setSavingSettings(true);
+      localStorage.setItem('tutorSettings', JSON.stringify(settings));
+      setSettingsMessage('Settings saved successfully!');
+      setTimeout(() => setSettingsMessage(''), 3000);
+    } catch (err) {
+      setSettingsMessage('Failed to save settings');
+    } finally {
+      setSavingSettings(false);
+    }
   };
 
   const handleProfileImageUpload = async (e) => {
@@ -195,6 +216,17 @@ const TutorSettings = () => {
               onChange={() => handleToggle('marketingEmails')}
             />
           </div>
+          {settingsMessage && (
+            <p className={`mt-3 text-sm ${settingsMessage.includes('success') ? 'text-green-400' : 'text-red-400'}`}>{settingsMessage}</p>
+          )}
+          <button
+            type="button"
+            onClick={handleSaveNotificationSettings}
+            disabled={savingSettings}
+            className="mt-4 px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors min-h-[44px]"
+          >
+            {savingSettings ? 'Saving...' : 'Save Notification Settings'}
+          </button>
         </div>
 
         {/* Booking Preferences */}

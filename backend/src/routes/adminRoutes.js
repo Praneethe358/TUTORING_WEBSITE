@@ -3,7 +3,7 @@ const { body } = require('express-validator');
 const {
   login, profile, logout, dashboardStats,
   getTutors, approveTutor, rejectTutor, blockTutor, deleteTutor,
-  getStudents, deleteUser,
+  getStudents, deleteUser, toggleStudentStatus, getStudentProfile, getTutorProfile, getActivityLogs,
   getBookings, cancelBooking,
   getCourses, approveCourse, rejectCourse,
   getAuditLogs,
@@ -95,6 +95,16 @@ router.put('/courses/:id/approve', approveCourse);
 router.put('/courses/:id/reject', [
   body('reason').optional()
 ], rejectCourse);
+
+// Student status toggle
+router.patch('/users/:id/status', toggleStudentStatus);
+
+// Detailed profiles
+router.get('/students/:id/profile', getStudentProfile);
+router.get('/tutors/:id/profile', getTutorProfile);
+
+// Activity logs for dashboard
+router.get('/activity-logs', getActivityLogs);
 
 // Audit Logs
 router.get('/audit-logs', getAuditLogs);

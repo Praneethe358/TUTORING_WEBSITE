@@ -48,4 +48,9 @@ router.get('/export/course/:courseId/students', protectAdmin, adminLmsController
 // @access  Admin only
 router.get('/reports', protectAdmin, adminLmsController.getAdminReports);
 
+// @route   GET /api/lms/admin/enrollment-stats
+// @desc    Get enrollment stats summary
+// @access  Admin only
+router.get('/enrollment-stats', protectAdmin, adminLmsController.getEnrollmentStats);
+
 module.exports = router;

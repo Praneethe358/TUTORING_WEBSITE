@@ -47,6 +47,12 @@ const discussionSchema = new mongoose.Schema(
         },
         content: String,
         isInstructorReply: Boolean,
+        likes: [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+          }
+        ],
         createdAt: {
           type: Date,
           default: Date.now
